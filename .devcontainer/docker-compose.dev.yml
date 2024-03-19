@@ -5,4 +5,9 @@ services:
     image: maven:3.9.0-eclipse-temurin-19
     command: ["bash", "-c" , "while true; do sleep 10; done"]
 
+    volumes:
+      - .:/shakethelakebackend:cached
+
+    ports:
+      - "8080:8080"
   
