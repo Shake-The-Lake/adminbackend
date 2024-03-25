@@ -53,10 +53,29 @@
 							<goal>repackage</goal>
 						</goals>
 						<configuration>
-							<mainClass>ch.fhnw.test.TestApplication</mainClass>
+							<mainClass>com.example.shakethelakebackend.ShakeTheLakeBackendApplication</mainClass>
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.2.2</version>
+				<executions>
+					<execution>
+						<id>verify</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<configLocation>${project.basedir}/src/main/config/checks.xml</configLocation>
+					<includeTestSourceDirectory>true</includeTestSourceDirectory>
+					<violationSeverity>warning</violationSeverity>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
