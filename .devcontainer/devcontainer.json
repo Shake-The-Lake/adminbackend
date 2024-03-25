@@ -2,7 +2,8 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/docker-existing-dockerfile
 {
 	"name": "Shake the lake backend",
-	"dockerComposeFile": ["../docker-compose.yml","docker-compose.dev.yml"],
+	"initializeCommand": "docker-compose -f ./docker-compose.yml -f .devcontainer/docker-compose.dev.yml config > .docker-compose.rendered.yml",
+	"dockerComposeFile": "../.docker-compose.rendered.yml",
 	"service": "backend",
 
 	"workspaceFolder": "/shakethelakebackend",
