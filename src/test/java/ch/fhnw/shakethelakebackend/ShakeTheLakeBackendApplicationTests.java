@@ -1,4 +1,4 @@
-package com.example.shakethelakebackend;
+package ch.fhnw.shakethelakebackend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
