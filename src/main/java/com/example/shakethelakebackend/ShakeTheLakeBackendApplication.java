@@ -6,8 +6,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ShakeTheLakeBackendApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(ShakeTheLakeBackendApplication.class, args);
-	}
+    protected ShakeTheLakeBackendApplication() {
+        // This constructor is protected to prevent instantiation
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(ShakeTheLakeBackendApplication.class, args);
+    }
 
 }
