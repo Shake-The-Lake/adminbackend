@@ -6,10 +6,14 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shakethelake
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/shakethelake
       - SPRING_DATASOURCE_USERNAME=shakethelake
       - SPRING_DATASOURCE_PASSWORD=shakethelake
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+      - SPRING_JPA_GENERATE_DDL=true
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
     depends_on:
       - db
 
