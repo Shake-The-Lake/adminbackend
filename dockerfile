@@ -1,4 +1,4 @@
-FROM openjdk:19-ea-alpine3.16
+FROM openjdk:19-ea
 
 # SET THE ENVIRONMENT VARIABLES
 ENV PORT=8080
