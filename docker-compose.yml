@@ -13,13 +13,14 @@ services:
       - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.PostgreSQLDialect
       - SPRING_JPA_GENERATE_DDL=true
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-
+      - TZ=Europe/Berlin
     depends_on:
       - db
 
   db:
     image: postgres:latest
     environment:
+      - TZ=Europe/Berlin
       - POSTGRES_DB=shakethelake
       - POSTGRES_USER=shakethelake
       - POSTGRES_PASSWORD=shakethelake
