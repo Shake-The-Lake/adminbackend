@@ -3,23 +3,18 @@ package ch.fhnw.shakethelakebackend.controller;
 
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.service.BoatService;
-import io.swagger.v3.oas.models.annotations.OpenAPI30;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-@OpenAPI30
 
+@RestController
+@AllArgsConstructor
 @RequestMapping("/boat")
 public class BoatController {
-    public BoatController(BoatService boatService) {
-        this.boatService = boatService;
-    }
 
     private final BoatService boatService;
 
-    @PostMapping(produces = "application/json", consumes = "application/json")
+    @PostMapping()
     public Boat createBoat(@RequestBody Boat boat) {
         return boatService.createBoat(boat);
     }
@@ -27,6 +22,11 @@ public class BoatController {
     @GetMapping("/{id}")
     public Boat getBoat(@PathVariable Long id) {
         return boatService.getBoat(id);
+    }
+
+    @PutMapping("/{id}")
+    public Boat updateBoat(@PathVariable Long id, @RequestBody Boat boat) {
+        return boatService.updateBoat(id, boat);
     }
 
 }

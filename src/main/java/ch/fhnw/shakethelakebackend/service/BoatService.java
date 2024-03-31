@@ -5,19 +5,21 @@ import ch.fhnw.shakethelakebackend.model.repository.BoatRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+@AllArgsConstructor
 @Service
 public class BoatService {
 
-    public BoatService(BoatRepository boatRepository) {
-        this.boatRepository = boatRepository;
-    }
     private final BoatRepository boatRepository;
 
     public Boat getBoat(Long id) {
-        return new Boat();
+        return boatRepository.findById(id).orElseThrow();
     }
 
     public Boat createBoat(Boat boat) {
         return boatRepository.save(boat);
+    }
+
+    public Boat updateBoat(Long id, Boat boat) {
+        
     }
 }
