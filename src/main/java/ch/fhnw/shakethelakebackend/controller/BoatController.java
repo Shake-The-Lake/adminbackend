@@ -3,8 +3,15 @@ package ch.fhnw.shakethelakebackend.controller;
 
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.service.BoatService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
@@ -15,7 +22,7 @@ public class BoatController {
     private final BoatService boatService;
 
     @PostMapping()
-    public Boat createBoat(@RequestBody Boat boat) {
+    public Boat createBoat(@RequestBody @Valid Boat boat) {
         return boatService.createBoat(boat);
     }
 
@@ -25,7 +32,7 @@ public class BoatController {
     }
 
     @PutMapping("/{id}")
-    public Boat updateBoat(@PathVariable Long id, @RequestBody Boat boat) {
+    public Boat updateBoat(@PathVariable Long id, @RequestBody @Valid Boat boat) {
         return boatService.updateBoat(id, boat);
     }
 
