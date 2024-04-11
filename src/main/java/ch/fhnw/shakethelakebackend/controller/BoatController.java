@@ -5,6 +5,7 @@ import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.service.BoatService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +35,11 @@ public class BoatController {
     @PutMapping("/{id}")
     public Boat updateBoat(@PathVariable Long id, @RequestBody @Valid Boat boat) {
         return boatService.updateBoat(id, boat);
+    }
+
+    @DeleteMapping("/{id}")
+    public Boat deleteBoat(@PathVariable Long id) {
+        return boatService.deleteBoat(id);
     }
 
 }
