@@ -11,7 +11,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PersonServiceTest {
@@ -30,7 +32,8 @@ class PersonServiceTest {
 
         when(personRepository.existsById(personToUpdate.getId())).thenReturn(false);
 
-        assertThrows(EntityNotFoundException.class, () -> personService.updatePerson(personToUpdate));
+        assertThrows(EntityNotFoundException.class,
+                () -> personService.updatePerson(personToUpdate));
         verify(personRepository, never()).save(any(Person.class));
     }
 
@@ -39,7 +42,8 @@ class PersonServiceTest {
         Long personId = 1L;
         when(personRepository.findById(personId)).thenReturn(java.util.Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> personService.deletePerson(personId));
+        assertThrows(EntityNotFoundException.class,
+                () -> personService.deletePerson(personId));
         verify(personRepository, never()).delete(any(Person.class));
     }
 

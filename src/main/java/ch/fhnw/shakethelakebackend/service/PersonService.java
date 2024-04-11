@@ -24,7 +24,8 @@ public class PersonService {
     }
 
     public void deletePerson(Long id) {
-        Person person = personRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Person not found"));
+        Person person = personRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Person not found"));
         personRepository.delete(person);
     }
 }
