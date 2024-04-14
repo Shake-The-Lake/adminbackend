@@ -20,7 +20,7 @@ public class EventController {
     private final EventService eventService;
 
     @PostMapping()
-    public Event createEvent(@RequestBody @Valid Event event){
+    public Event createEvent(@RequestBody @Valid Event event) {
         return eventService.createEvent(event);
     }
 
