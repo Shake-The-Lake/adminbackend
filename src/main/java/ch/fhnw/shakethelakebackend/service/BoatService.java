@@ -15,7 +15,8 @@ public class BoatService {
     private final PersonService personService;
 
     public Boat getBoat(Long id) {
-        return boatRepository.findById(id).orElseThrow();
+        return boatRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Boat not found"));
     }
 
     public Boat createBoat(Boat boat) {
@@ -34,5 +35,13 @@ public class BoatService {
         boat.setBoatDriver(updatedBoatDriver);
         return boatRepository.save(boat);
 
+    }
+
+    public Boat deleteBoat(Long id) {
+        Boat boat = boatRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Boat not found"));
+        personService.deletePerson(boat.getBoatDriver().getId());
+        boatRepository.delete(boat);
+        return boat;
     }
 }
