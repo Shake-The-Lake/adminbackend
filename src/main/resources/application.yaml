@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: shake-the-lake-backend
+  banner:
+    location: classpath:banner.txt
+  datasource:
+    url: jdbc:postgresql://localhost:5432/shakethelake
+    username: shakethelake
+    password: shakethelake
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    generate-ddl: true
+    ddl-auto: update
