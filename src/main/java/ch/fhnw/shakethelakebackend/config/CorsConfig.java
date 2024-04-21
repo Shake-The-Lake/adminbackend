@@ -10,7 +10,8 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedOrigins("*")
+            // TODO Adjust for deployment
+            .allowedOrigins("http://localhost:3000", "https://shakethelakebackend.azurewebsites.net")
             .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS")
             .allowedHeaders("*")
             .allowCredentials(true);
