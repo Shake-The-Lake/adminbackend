@@ -3,7 +3,9 @@ package ch.fhnw.shakethelakebackend.service;
 
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.Person;
+import ch.fhnw.shakethelakebackend.model.entity.PersonType;
 import ch.fhnw.shakethelakebackend.model.repository.BoatRepository;
+import ch.fhnw.shakethelakebackend.model.repository.PersonRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -29,11 +31,13 @@ public class BoatServiceTest {
     private BoatRepository boatRepository;
 
     @Mock
+    private PersonRepository personRepository;
+
+    @Mock
     private PersonService personService;
 
     @InjectMocks
     private BoatService boatService;
-
 
     @Test
     void testGetBoatFound() {
@@ -56,39 +60,72 @@ public class BoatServiceTest {
     }
 
     @Test
-    void testCreateBoat() {
+    void testCreateBoatAndReturn() {
         Boat boat = new Boat();
-        Person boatDriver = new Person();
-        boat.setBoatDriver(boatDriver);
+        boat.setId(1L);
+        Person driver = new Person();
+        driver.setId(1L);
+        driver.setPersonType(PersonType.BOAT_DRIVER);
+        boat.setBoatDriver(driver);
+        when(boatRepository.existsById(boat.getId())).thenReturn(false);
+        when(personService.getPerson(boat.getBoatDriver().getId())).thenReturn(driver);
+        when(boatRepository.save(boat)).thenReturn(boat);
 
-        when(personService.createPerson(any(Person.class))).thenReturn(boatDriver);
-        when(boatRepository.save(any(Boat.class))).thenReturn(boat);
+        Boat createdBoat = boatService.createBoat(boat);
 
-        Boat savedBoat = boatService.createBoat(boat);
-
-        assertNotNull(savedBoat);
-        verify(personService).createPerson(boatDriver);
-        verify(boatRepository).save(boat);
+        assertEquals(boat, createdBoat);
+        verify(boatRepository, times(1)).save(boat);
     }
 
     @Test
-    void testUpdateBoatExists() {
-        Long boatId = 1L;
+    void testCreateBoatInvalidPerson() {
         Boat boat = new Boat();
+        boat.setId(1L);
+        Person driver = new Person();
+        boat.setBoatDriver(driver);
+        when(boatRepository.existsById(boat.getId())).thenReturn(false);
+        when(personService.getPerson(boat.getBoatDriver().getId())).thenReturn(driver);
+
+
+        assertThrows((IllegalArgumentException.class), () -> boatService.createBoat(boat));
+        verify(boatRepository, times(0)).save(boat);
+    }
+
+    @Test
+    void testUpdateBoatSuccess() {
+        Long id = 1L;
+        Boat existingBoat = new Boat();
+        existingBoat.setId(id);
+        Boat updatedBoat = new Boat();
         Person boatDriver = new Person();
-        boat.setBoatDriver(boatDriver);
+        boatDriver.setPersonType(PersonType.BOAT_DRIVER);
+        updatedBoat.setId(id);
+        updatedBoat.setBoatDriver(boatDriver);
+        when(boatRepository.existsById(id)).thenReturn(true);
+        when(boatRepository.save(updatedBoat)).thenReturn(updatedBoat);
+        when(personService.getPerson(updatedBoat.getBoatDriver().getId())).thenReturn(updatedBoat.getBoatDriver());
 
-        when(boatRepository.existsById(boatId)).thenReturn(true);
-        when(personService.updatePerson(any(Person.class))).thenReturn(boatDriver);
-        when(boatRepository.save(any(Boat.class))).thenReturn(boat);
+        Boat result = boatService.updateBoat(id, updatedBoat);
 
-        Boat updatedBoat = boatService.updateBoat(boatId, boat);
+        assertEquals(updatedBoat, result);
+        verify(boatRepository, times(1)).existsById(id);
+        verify(boatRepository, times(1)).save(updatedBoat);
+        verify(personService, times(1)).getPerson(updatedBoat.getBoatDriver().getId());
+    }
 
-        assertNotNull(updatedBoat);
-        assertEquals(boatId, updatedBoat.getId());
-        verify(boatRepository).existsById(boatId);
-        verify(personService).updatePerson(boatDriver);
-        verify(boatRepository).save(boat);
+    @Test
+    void testUpdateBoatNonExisting() {
+        Long id = 1L;
+        Boat updatedBoat = new Boat();
+        updatedBoat.setId(id);
+        updatedBoat.setBoatDriver(new Person());
+        when(boatRepository.existsById(id)).thenReturn(false);
+
+        assertThrows(EntityNotFoundException.class, () -> boatService.updateBoat(id, updatedBoat));
+
+        verify(boatRepository, times(1)).existsById(id);
+        verify(boatRepository, never()).save(any());
+        verify(personService, never()).getPerson(any());
     }
 
     @Test
@@ -103,23 +140,26 @@ public class BoatServiceTest {
 
     @Test
     void testDeleteBoatSuccess() {
-        Long boatId = 1L;
-        Person boatDriver = new Person();
-        boatDriver.setId(2L);
+        Long id = 1L;
         Boat boat = new Boat();
-        boat.setId(boatId);
-        boat.setBoatDriver(boatDriver);
+        boat.setId(id);
+        when(boatRepository.findById(id)).thenReturn(Optional.of(boat));
 
-        when(boatRepository.findById(boatId)).thenReturn(Optional.of(boat));
-        doNothing().when(personService).deletePerson(boatDriver.getId());
-        doNothing().when(boatRepository).delete(boat);
+        boatService.deleteBoat(id);
 
-        Boat deletedBoat = boatService.deleteBoat(boatId);
-
-        assertNotNull(deletedBoat);
-        verify(boatRepository, times(1)).findById(boatId);
-        verify(personService, times(1)).deletePerson(boatDriver.getId());
+        verify(boatRepository, times(1)).findById(id);
         verify(boatRepository, times(1)).delete(boat);
+    }
+
+    @Test
+    void testDeleteBoatNonExisting() {
+        Long id = 1L;
+        when(boatRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> boatService.deleteBoat(id));
+
+        verify(boatRepository, times(1)).findById(id);
+        verify(boatRepository, never()).delete(any());
     }
 
     @Test
@@ -130,32 +170,6 @@ public class BoatServiceTest {
         assertThrows(EntityNotFoundException.class, () -> boatService.deleteBoat(boatId));
     }
 
-    @Test
-    void testUpdateBoatWithPersonUpdateSuccess() {
-        Long boatId = 1L;
-        Person originalDriver = new Person();
-        originalDriver.setId(2L); // Assume existing IDs
-        Boat originalBoat = new Boat();
-        originalBoat.setId(boatId);
-        originalBoat.setBoatDriver(originalDriver);
-
-        Person updatedDriver = new Person();
-        updatedDriver.setId(2L);
-        Boat updatedBoat = new Boat();
-        updatedBoat.setBoatDriver(updatedDriver);
-
-        when(boatRepository.existsById(boatId)).thenReturn(true);
-        when(personService.updatePerson(updatedDriver)).thenReturn(updatedDriver);
-        when(boatRepository.save(updatedBoat)).thenReturn(updatedBoat);
-
-        Boat resultBoat = boatService.updateBoat(boatId, updatedBoat);
-
-        assertNotNull(resultBoat);
-        assertEquals(updatedDriver, resultBoat.getBoatDriver());
-        verify(boatRepository, times(1)).existsById(boatId);
-        verify(personService, times(1)).updatePerson(updatedDriver);
-        verify(boatRepository, times(1)).save(updatedBoat);
-    }
 
     @Test
     void testUpdateBoatNotFound() {
@@ -169,3 +183,4 @@ public class BoatServiceTest {
 
 
 }
+

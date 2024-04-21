@@ -1,7 +1,7 @@
 package ch.fhnw.shakethelakebackend.controller;
 
-import ch.fhnw.shakethelakebackend.model.entity.Boat;
-import ch.fhnw.shakethelakebackend.service.BoatService;
+import ch.fhnw.shakethelakebackend.model.entity.Person;
+import ch.fhnw.shakethelakebackend.service.PersonService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,29 +15,29 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/boat")
-public class BoatController {
-
-    private final BoatService boatService;
-
-    @PostMapping()
-    public Boat createBoat(@RequestBody @Valid Boat boat) {
-        return boatService.createBoat(boat);
-    }
+@RequestMapping("/person")
+public class PersonController {
+    private final PersonService personService;
 
     @GetMapping("/{id}")
-    public Boat getBoat(@PathVariable Long id) {
-        return boatService.getBoat(id);
+    public Person getPerson(@PathVariable Long id) {
+        return personService.getPerson(id);
+    }
+
+    @PostMapping()
+    public Person createPerson(@RequestBody @Valid Person person) {
+        return personService.createPerson(person);
     }
 
     @PutMapping("/{id}")
-    public Boat updateBoat(@PathVariable Long id, @RequestBody @Valid Boat boat) {
-        return boatService.updateBoat(id, boat);
+    public Person updatePerson(@PathVariable Long id, @RequestBody @Valid Person person) {
+        return personService.updatePerson(id, person);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteBoat(@PathVariable Long id) {
-        boatService.deleteBoat(id);
+    public void deletePerson(@PathVariable Long id) {
+        personService.deletePerson(id);
     }
+
 
 }

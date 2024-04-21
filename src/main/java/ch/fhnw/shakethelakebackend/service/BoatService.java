@@ -2,6 +2,7 @@ package ch.fhnw.shakethelakebackend.service;
 
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.Person;
+import ch.fhnw.shakethelakebackend.model.entity.PersonType;
 import ch.fhnw.shakethelakebackend.model.repository.BoatRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -19,29 +20,36 @@ public class BoatService {
                 () -> new EntityNotFoundException("Boat not found"));
     }
 
+
     public Boat createBoat(Boat boat) {
-        personService.createPerson(boat.getBoatDriver());
+        if (boat.getId() != null && boatRepository.existsById(boat.getId())) {
+            throw new IllegalArgumentException("Boat already exists");
+        }
+        Person driver = personService.getPerson(boat.getBoatDriver().getId());
+        if (driver.getPersonType() != PersonType.BOAT_DRIVER) {
+            throw new IllegalArgumentException("Person is not a boat driver");
+        }
+        boat.setBoatDriver(driver);
         return boatRepository.save(boat);
     }
 
-    //TODO review update boat. Currently any person can be updated in the body of the boat.
-    //This might be unwanted behavior.
     public Boat updateBoat(Long id, Boat boat) {
         if (!boatRepository.existsById(id)) {
             throw new EntityNotFoundException("Boat not found");
         }
-        Person updatedBoatDriver = personService.updatePerson(boat.getBoatDriver());
+        Person driver = personService.getPerson(boat.getBoatDriver().getId());
+        if (driver.getPersonType() != PersonType.BOAT_DRIVER) {
+            throw new IllegalArgumentException("Person is not a boat driver");
+        }
+        boat.setBoatDriver(driver);
         boat.setId(id);
-        boat.setBoatDriver(updatedBoatDriver);
         return boatRepository.save(boat);
 
     }
 
-    public Boat deleteBoat(Long id) {
+    public void deleteBoat(Long id) {
         Boat boat = boatRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Boat not found"));
-        personService.deletePerson(boat.getBoatDriver().getId());
         boatRepository.delete(boat);
-        return boat;
     }
 }

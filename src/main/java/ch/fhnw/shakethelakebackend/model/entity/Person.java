@@ -1,5 +1,7 @@
 package ch.fhnw.shakethelakebackend.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -39,6 +41,7 @@ public class Person {
     @NotNull
     private String phoneNumber;
 
-    @OneToMany(mappedBy = "person")
+    @JsonManagedReference(value = "person-bookings")
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
     private Set<Booking> bookings;
 }

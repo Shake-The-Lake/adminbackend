@@ -1,7 +1,7 @@
 package ch.fhnw.shakethelakebackend.controller;
 
-import ch.fhnw.shakethelakebackend.model.entity.Boat;
-import ch.fhnw.shakethelakebackend.service.BoatService;
+import ch.fhnw.shakethelakebackend.model.entity.TimeSlot;
+import ch.fhnw.shakethelakebackend.service.TimeSlotService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,29 +15,29 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/boat")
-public class BoatController {
+@RequestMapping("/timeslot")
+public class TimeSlotController {
 
-    private final BoatService boatService;
+    private final TimeSlotService timeSlotService;
 
-    @PostMapping()
-    public Boat createBoat(@RequestBody @Valid Boat boat) {
-        return boatService.createBoat(boat);
+    @PostMapping
+    public TimeSlot createTimeSlot(@RequestBody @Valid TimeSlot timeSlot) {
+        return timeSlotService.createTimeSlot(timeSlot);
     }
 
     @GetMapping("/{id}")
-    public Boat getBoat(@PathVariable Long id) {
-        return boatService.getBoat(id);
+    public TimeSlot getTimeSlot(@PathVariable Long id) {
+        return timeSlotService.getTimeSlot(id);
     }
 
     @PutMapping("/{id}")
-    public Boat updateBoat(@PathVariable Long id, @RequestBody @Valid Boat boat) {
-        return boatService.updateBoat(id, boat);
+    public TimeSlot updateTimeSlot(@PathVariable Long id, @RequestBody @Valid TimeSlot timeSlot) {
+        return timeSlotService.updateTimeSlot(id, timeSlot);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteBoat(@PathVariable Long id) {
-        boatService.deleteBoat(id);
+    public void deleteTimeSlot(@PathVariable Long id) {
+        timeSlotService.deleteTimeSlot(id);
     }
 
 }
