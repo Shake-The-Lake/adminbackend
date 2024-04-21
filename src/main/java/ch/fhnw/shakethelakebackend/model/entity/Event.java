@@ -29,6 +29,14 @@ public class Event {
     private long id;
 
     @NotNull
+    @Column(name = "event_title")
+    private String title;
+
+    @NotNull
+    @Column(name = "event_description")
+    private String description;
+
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Location location;

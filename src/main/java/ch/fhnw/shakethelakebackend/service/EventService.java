@@ -1,8 +1,11 @@
 package ch.fhnw.shakethelakebackend.service;
 
 import ch.fhnw.shakethelakebackend.model.entity.Event;
+import ch.fhnw.shakethelakebackend.model.entity.Location;
 import ch.fhnw.shakethelakebackend.model.repository.EventRepository;
+import ch.fhnw.shakethelakebackend.model.repository.LocationRepository;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
@@ -11,12 +14,19 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class EventService {
     private final EventRepository eventRepository;
+    private final LocationRepository locationRepository;
 
     public Event getEvent(Long id) throws NotFoundException {
         return eventRepository.findById(id).orElseThrow(NotFoundException::new);
     }
 
+    public List<Event> getAllEvents() {
+        return eventRepository.findAll();
+    }
+
     public Event createEvent(Event event) {
+        Location location = locationRepository.save(event.getLocation());
+        event.setLocation(location);
         return eventRepository.save(event);
     }
 
