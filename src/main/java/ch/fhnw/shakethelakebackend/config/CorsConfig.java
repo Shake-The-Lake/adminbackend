@@ -11,7 +11,7 @@ public class CorsConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
             // TODO Adjust for deployment
-            .allowedOrigins("http://localhost:3000", "https://shakethelakebackend.azurewebsites.net")
+            .allowedOrigins("http://localhost:3000", "https://shake-the-lake.ch")
             .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS")
             .allowedHeaders("*")
             .allowCredentials(true);
