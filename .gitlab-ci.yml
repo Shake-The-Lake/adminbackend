@@ -15,14 +15,33 @@ build-job:       # This job runs in the build stage, which runs first.
       - .m2/repository
 
   script:
-    - mvn $MAVEN_CLI_OPTS install test package
+    - mvn $MAVEN_CLI_OPTS test package verify
   artifacts:
     when: always
     reports:
         junit: target/surefire-reports/TEST-*.xml
     paths:
       - target/*.jar
+      - target/site/jacoco/jacoco.xml
 
+visualize-job:
+    stage: visualize
+    image: registry.gitlab.com/haynes/jacoco2cobertura:latest
+
+    script:
+      - python /opt/cover2cover.py target/site/jacoco/jacoco.xml $CI_PROJECT_DIR/src/main/java/ > target/site/coverage.xml
+
+    needs:
+      - "build-job"
+
+    dependencies:
+      - build-job
+
+    artifacts:
+      reports:
+        coverage_report:
+          coverage_format: cobertura
+          path: target/site/coverage.xml
 
 containerize-job:
     stage: containerize
