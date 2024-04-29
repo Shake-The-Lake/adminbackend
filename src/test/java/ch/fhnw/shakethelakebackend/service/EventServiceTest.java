@@ -71,8 +71,7 @@ public class EventServiceTest {
             .location(location)
             .build();
 
-        Event updatedEventDetails = Event.builder()
-            .id(12345)
+        Event updatedEventDetails = Event.builder().id(12345)
             .location(Location.builder().canton("Zürich").town("Zürich").postalCode(8000).build())
             .date(LocalDateTime.now().plusDays(1))
             .customerCode("UPDATED12345")

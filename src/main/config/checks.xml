@@ -52,8 +52,9 @@
             <property name="caseIndent" value="0"/>
         </module>
         <module name="MethodLength">
-            <property name="max" value="100"/>
+            <property name="max" value="25"/>
             <property name="tokens" value="METHOD_DEF"/>
+            <property name="countEmpty" value="false"/>
         </module>
         <module name="ParameterNumber"/>
         <module name="EmptyForIteratorPad"/>
