@@ -5,10 +5,11 @@ import ch.fhnw.shakethelakebackend.model.entity.Location;
 import ch.fhnw.shakethelakebackend.model.repository.EventRepository;
 import ch.fhnw.shakethelakebackend.model.repository.LocationRepository;
 import jakarta.persistence.EntityNotFoundException;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
