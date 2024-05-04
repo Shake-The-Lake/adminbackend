@@ -4,7 +4,7 @@ spring:
   banner:
     location: classpath:banner.txt
   datasource:
-    url: jdbc:postgresql://localhost:5432/shakethelake
+    url: jdbc:postgresql://0.0.0.0:5432/shakethelake
     username: shakethelake
     password: shakethelake
     driver-class-name: org.postgresql.Driver

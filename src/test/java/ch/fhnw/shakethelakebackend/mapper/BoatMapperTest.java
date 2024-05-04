@@ -1,7 +1,7 @@
 package ch.fhnw.shakethelakebackend.mapper;
 
 import ch.fhnw.shakethelakebackend.model.dto.BoatDto;
-import ch.fhnw.shakethelakebackend.model.dto.PostBoatDto;
+import ch.fhnw.shakethelakebackend.model.dto.CreateBoatDto;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.Person;
 import ch.fhnw.shakethelakebackend.model.entity.TimeSlot;
@@ -25,7 +25,7 @@ class BoatMapperTest {
 
     private Boat boat;
     private BoatDto boatDto;
-    private PostBoatDto postBoatDto;
+    private CreateBoatDto createBoatDto;
 
     @BeforeEach
     void setUp() {
@@ -41,14 +41,14 @@ class BoatMapperTest {
         boatDto.setBoatDriverId(1L);
         boatDto.setTimeSlotIds(Set.of(1L, 2L));
 
-        postBoatDto = new PostBoatDto();
-        postBoatDto.setBoatDriverId(1L);
+        createBoatDto = new CreateBoatDto();
+        createBoatDto.setBoatDriverId(1L);
     }
 
     @Test
     void testToEntity() {
-        Boat result = mapper.toEntity(postBoatDto);
-        assertEquals(postBoatDto.getBoatDriverId(), result.getBoatDriver().getId());
+        Boat result = mapper.toEntity(createBoatDto);
+        assertEquals(createBoatDto.getBoatDriverId(), result.getBoatDriver().getId());
     }
 
     @Test
@@ -59,8 +59,8 @@ class BoatMapperTest {
     }
 
     @Test
-    void testToPostDto() {
-        PostBoatDto result = mapper.toPostDto(boat);
+    void testToCreateDto() {
+        CreateBoatDto result = mapper.toCreateDto(boat);
         assertEquals(boat.getBoatDriver().getId(), result.getBoatDriverId());
     }
 

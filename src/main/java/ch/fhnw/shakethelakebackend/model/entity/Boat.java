@@ -1,7 +1,5 @@
 package ch.fhnw.shakethelakebackend.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -67,14 +65,11 @@ public class Boat {
     @Column(name = "available_until", columnDefinition = "TIMESTAMP")
     private LocalDateTime availableUntil;
 
-    // Must ignore boat in TimeSlot to avoid infinite recursion
-    @JsonIdentityInfo(
-            generator = ObjectIdGenerators.PropertyGenerator.class,
-            property = "id")
     @OneToMany(mappedBy = "boat", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<TimeSlot> timeSlots;
 
     public Set<TimeSlot> getTimeSlots() {
-        return timeSlots == null ? Set.of() : timeSlots;
+        return timeSlots == null ? Set.of() : Set.copyOf(timeSlots);
     }
+
 }

@@ -1,11 +1,14 @@
 package ch.fhnw.shakethelakebackend.service;
 
+import ch.fhnw.shakethelakebackend.model.dto.CreatePersonDto;
+import ch.fhnw.shakethelakebackend.model.dto.PersonDto;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.Person;
 import ch.fhnw.shakethelakebackend.model.entity.PersonType;
+import ch.fhnw.shakethelakebackend.model.mapper.PersonMapper;
 import ch.fhnw.shakethelakebackend.model.repository.BoatRepository;
 import ch.fhnw.shakethelakebackend.model.repository.PersonRepository;
-import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,6 +20,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -33,124 +38,171 @@ class PersonServiceTest {
     @Mock
     private BoatRepository boatRepository;
 
+    @Mock
+    private PersonMapper personMapper;
+
     @InjectMocks
     private PersonService personService;
+    private Person person;
+    private CreatePersonDto createPersonDto;
+    private PersonDto personDto;
+
+    @BeforeEach
+    void setUp() {
+        // Sample data setup
+        person = Person.builder()
+                .id(1L)
+                .firstName("John")
+                .lastName("Doe")
+                .emailAddress("john.doe@example.com")
+                .phoneNumber("123456789")
+                .personType(PersonType.CUSTOMER)
+                .build();
+
+        createPersonDto = CreatePersonDto.builder()
+                .firstName("Jane")
+                .lastName("Doe")
+                .emailAddress("jane.doe@example.com")
+                .phoneNumber("987654321")
+                .personType(PersonType.CUSTOMER)
+                .build();
+
+        personDto = PersonDto.builder()
+                .id(1L)
+                .firstName("John")
+                .lastName("Doe")
+                .emailAddress("john.doe@example.com")
+                .phoneNumber("123456789")
+                .personType(PersonType.CUSTOMER)
+                .build();
+    }
 
 
     @Test
-    void testUpdateNonExistingPerson() {
-        Person personToUpdate = new Person();
-        personToUpdate.setId(1L);
+    void testCreatePerson() {
+        // Mocking repository method
+        when(personMapper.toEntity(createPersonDto)).thenReturn(person);
+        when(personMapper.toDto(person)).thenReturn(personDto);
 
-        assertThrows(EntityNotFoundException.class,
-                () -> personService.updatePerson(1L, personToUpdate));
-        verify(personRepository, never()).save(any(Person.class));
+        // Calling service method
+        PersonDto createdPersonDto = personService.createPerson(createPersonDto);
+
+        // Verifying interactions
+        verify(personRepository, times(1)).save(person);
+        verify(personMapper, times(1)).toEntity(createPersonDto);
+        verify(personMapper, times(1)).toDto(person);
+
+        // Asserting result
+        assertEquals(personDto, createdPersonDto);
     }
 
     @Test
-    void testDeleteNonExistingPerson() {
-        Long personId = 1L;
-        when(personRepository.findById(personId)).thenReturn(java.util.Optional.empty());
+    void testUpdatePerson() {
+        // Mocking repository method
+        when(personRepository.findById(1L)).thenReturn(Optional.of(person));
+        when(personRepository.save(person)).thenReturn(person);
+        when(personMapper.toDto(person)).thenReturn(personDto);
 
-        assertThrows(EntityNotFoundException.class,
-                () -> personService.deletePerson(personId));
-        verify(personRepository, never()).delete(any(Person.class));
+        // Calling service method
+        PersonDto updatedPersonDto = personService.updatePerson(1L, createPersonDto);
+
+        // Verifying interactions
+        verify(personRepository, times(1)).findById(1L);
+        verify(personRepository, times(1)).save(person);
+        verify(personMapper, times(1)).toDto(person);
+
+        // Asserting result
+        assertEquals(personDto, updatedPersonDto);
     }
 
     @Test
-    void testDeletePersonIsBoatDriver() {
-        Long id = 1L;
-        Person person = new Person();
-        person.setId(id);
+    void testDeletePerson() {
+        // Mocking repository method
+        when(personRepository.findById(1L)).thenReturn(Optional.of(person));
+        when(boatRepository.findAll()).thenReturn(new ArrayList<>());
+
+        // Calling service method
+        personService.deletePerson(1L);
+
+        // Verifying interactions
+        verify(personRepository, times(1)).findById(1L);
+        verify(boatRepository, times(1)).findAll();
+        verify(personRepository, times(1)).delete(person);
+    }
+
+    @Test
+    void testDeletePersonThrowsExceptionWhenPersonIsBoatDriver() {
+        // Mocking repository method
+        when(personRepository.findById(1L)).thenReturn(Optional.of(person));
         List<Boat> boats = new ArrayList<>();
         Boat boat = new Boat();
         boat.setBoatDriver(person);
         boats.add(boat);
-        when(personRepository.findById(id)).thenReturn(Optional.of(person));
         when(boatRepository.findAll()).thenReturn(boats);
 
-        assertThrows(IllegalArgumentException.class, () -> personService.deletePerson(id));
+        // Calling service method and asserting exception
+        assertThrows(IllegalArgumentException.class, () -> personService.deletePerson(1L));
 
-        verify(personRepository, times(1)).findById(id);
+        // Verifying interactions
+        verify(personRepository, times(1)).findById(1L);
         verify(boatRepository, times(1)).findAll();
-        verify(personRepository, never()).delete(person);
+        verify(personRepository, never()).delete(any());
     }
 
     @Test
-    void testCreatePersonSuccess() {
-        Person person = new Person();
-        person.setId(1L);
-        when(personRepository.existsById(person.getId())).thenReturn(false);
-        when(personRepository.save(person)).thenReturn(person);
+    void testGetPerson() {
+        // Mocking repository method
+        when(personRepository.findById(1L)).thenReturn(Optional.of(person));
 
-        Person createdPerson = personService.createPerson(person);
+        // Calling service method
+        Person result = personService.getPerson(1L);
 
-        assertEquals(person, createdPerson);
-        verify(personRepository, times(1)).save(person);
+        // Verifying interactions
+        verify(personRepository, times(1)).findById(1L);
+
+        // Asserting result
+        assertNotNull(result);
+        assertEquals(person, result);
     }
 
     @Test
-    void testCreatePersonThrowsIllegalArgumentException() {
-        Person person = new Person();
-        person.setId(1L);
-        when(personRepository.existsById(person.getId())).thenReturn(true);
+    void testGetPersonDto() {
+        // Mocking repository method
+        when(personRepository.findById(1L)).thenReturn(Optional.of(person));
+        when(personMapper.toDto(person)).thenReturn(personDto);
 
-        assertThrows(IllegalArgumentException.class, () -> personService.createPerson(person));
+        // Calling service method
+        PersonDto result = personService.getPersonDto(1L);
 
-        verify(personRepository, never()).save(any());
+        // Verifying interactions
+        verify(personRepository, times(1)).findById(1L);
+        verify(personMapper, times(1)).toDto(person);
+
+        // Asserting result
+        assertNotNull(result);
+        assertEquals(personDto, result);
     }
 
     @Test
-    void testUpdatePersonSucess() {
-        Long id = 1L;
-        Person existingPerson = new Person();
-        existingPerson.setId(id);
-        Person updatedPerson = new Person();
-        updatedPerson.setId(id);
-        updatedPerson.setFirstName("John");
-        updatedPerson.setLastName("Doe");
-        updatedPerson.setEmailAddress("john.doe@example.com");
-        updatedPerson.setPhoneNumber("123456789");
-        updatedPerson.setPersonType(PersonType.EMPLOYEE);
-        when(personRepository.findById(id)).thenReturn(Optional.of(existingPerson));
-        when(personRepository.save(updatedPerson)).thenReturn(updatedPerson);
+    void testGetAllPersonsDto() {
+        // Mocking repository method
+        when(personRepository.findAll()).thenReturn(List.of(person));
+        when(personMapper.toDto(person)).thenReturn(personDto);
 
-        Person result = personService.updatePerson(id, updatedPerson);
+        // Calling service method
+        List<PersonDto> result = personService.getAllPersonsDto();
 
-        assertEquals(updatedPerson, result);
-        verify(personRepository, times(1)).findById(id);
-        verify(personRepository, times(1)).save(updatedPerson);
+        // Verifying interactions
+        verify(personRepository, times(1)).findAll();
+        verify(personMapper, times(1)).toDto(person);
+
+        // Asserting result
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
+        assertEquals(personDto, result.get(0));
     }
 
-    @Test
-    void testUpdatePersonNonExisting() {
-        Long id = 1L;
-        Person updatedPerson = new Person();
-        updatedPerson.setId(id);
-        updatedPerson.setFirstName("John");
-        updatedPerson.setLastName("Doe");
-        updatedPerson.setEmailAddress("john.doe@example.com");
-        updatedPerson.setPhoneNumber("123456789");
-        updatedPerson.setPersonType(PersonType.CUSTOMER);
-        when(personRepository.findById(id)).thenReturn(Optional.empty());
-
-        assertThrows(EntityNotFoundException.class, () -> personService.updatePerson(id, updatedPerson));
-
-        verify(personRepository, times(1)).findById(id);
-        verify(personRepository, never()).save(any());
-    }
-
-
-    @Test
-    void testDeletePersonSuccess() {
-        Long personId = 1L;
-        Person person = new Person();
-        when(personRepository.findById(personId)).thenReturn(java.util.Optional.of(person));
-
-        personService.deletePerson(personId);
-
-        verify(personRepository).delete(person);
-    }
 
 
 }

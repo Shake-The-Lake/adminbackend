@@ -1,7 +1,7 @@
 package ch.fhnw.shakethelakebackend.service;
 
 import ch.fhnw.shakethelakebackend.model.dto.BoatDto;
-import ch.fhnw.shakethelakebackend.model.dto.PostBoatDto;
+import ch.fhnw.shakethelakebackend.model.dto.CreateBoatDto;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.Person;
 import ch.fhnw.shakethelakebackend.model.entity.PersonType;
@@ -37,28 +37,28 @@ public class BoatService {
     }
 
 
-    public BoatDto createBoat(PostBoatDto postBoatDto) {
-        if (postBoatDto == null) {
+    public BoatDto createBoat(CreateBoatDto createBoatDto) {
+        if (createBoatDto == null) {
             throw new IllegalArgumentException("Boat data is missing");
         }
-        Person driver = personService.getPerson(postBoatDto.getBoatDriverId());
+        Person driver = personService.getPerson(createBoatDto.getBoatDriverId());
         if (driver.getPersonType() != PersonType.BOAT_DRIVER) {
             throw new IllegalArgumentException(PERSON_NOT_FOUND);
         }
-        Boat boat = boatMapper.toEntity(postBoatDto);
+        Boat boat = boatMapper.toEntity(createBoatDto);
         boatRepository.save(boat);
         return boatMapper.toDto(boat);
     }
 
-    public BoatDto updateBoat(Long id, PostBoatDto postBoatDto) {
+    public BoatDto updateBoat(Long id, CreateBoatDto createBoatDto) {
         if (!boatRepository.existsById(id)) {
             throw new EntityNotFoundException(BOAT_NOT_FOUND);
         }
-        Person driver = personService.getPerson(postBoatDto.getBoatDriverId());
+        Person driver = personService.getPerson(createBoatDto.getBoatDriverId());
         if (driver.getPersonType() != PersonType.BOAT_DRIVER) {
             throw new IllegalArgumentException(PERSON_NOT_FOUND);
         }
-        Boat newBoat = boatMapper.toEntity(postBoatDto);
+        Boat newBoat = boatMapper.toEntity(createBoatDto);
         newBoat.setBoatDriver(driver);
         newBoat.setId(id);
         boatRepository.save(newBoat);

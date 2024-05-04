@@ -2,7 +2,7 @@ package ch.fhnw.shakethelakebackend.service;
 
 
 import ch.fhnw.shakethelakebackend.model.dto.BoatDto;
-import ch.fhnw.shakethelakebackend.model.dto.PostBoatDto;
+import ch.fhnw.shakethelakebackend.model.dto.CreateBoatDto;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.Person;
 import ch.fhnw.shakethelakebackend.model.entity.PersonType;
@@ -46,7 +46,7 @@ class BoatServiceTest {
     private Boat boat;
 
     private Person person;
-    private PostBoatDto postBoatDto;
+    private CreateBoatDto createBoatDto;
     private BoatDto boatDto;
 
     @BeforeEach
@@ -61,10 +61,10 @@ class BoatServiceTest {
         person.setId(1L);
         boat.setBoatDriver(person);
 
-        postBoatDto = new PostBoatDto();
-        postBoatDto.setBoatDriverId(1L);
-        postBoatDto.setName("Odyssey");
-        postBoatDto.setType("Yacht");
+        createBoatDto = new CreateBoatDto();
+        createBoatDto.setBoatDriverId(1L);
+        createBoatDto.setName("Odyssey");
+        createBoatDto.setType("Yacht");
 
         boatDto = new BoatDto();
         boatDto.setId(1L);
@@ -78,15 +78,15 @@ class BoatServiceTest {
     void testCreateBoatSuccess() {
         //when
         when(personService.getPerson(any())).thenReturn(person);
-        when(boatMapper.toEntity(postBoatDto)).thenReturn(boat);
+        when(boatMapper.toEntity(createBoatDto)).thenReturn(boat);
         when(boatMapper.toDto(boat)).thenReturn(boatDto);
         // Act
-        BoatDto result = boatService.createBoat(postBoatDto);
+        BoatDto result = boatService.createBoat(createBoatDto);
 
         // Assert
         assertEquals(boatDto, result);
         verify(boatRepository).save(boat);
-        verify(boatMapper).toEntity(postBoatDto);
+        verify(boatMapper).toEntity(createBoatDto);
         verify(boatMapper).toDto(boat);
     }
 
@@ -102,10 +102,10 @@ class BoatServiceTest {
     void testCreateBoatWithInvalidData() {
         when(personService.getPerson(any())).thenReturn(person);
         // Arrange
-        when(boatMapper.toEntity(any(PostBoatDto.class))).thenThrow(new IllegalArgumentException("Invalid data"));
+        when(boatMapper.toEntity(any(CreateBoatDto.class))).thenThrow(new IllegalArgumentException("Invalid data"));
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> boatService.createBoat(postBoatDto),
+        assertThrows(IllegalArgumentException.class, () -> boatService.createBoat(createBoatDto),
                 "Expected IllegalArgumentException due to invalid data");
         verify(boatRepository, never()).save(any(Boat.class));
     }
@@ -117,7 +117,7 @@ class BoatServiceTest {
         when(personService.getPerson(any())).thenReturn(person);
 
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> boatService.createBoat(postBoatDto),
+        assertThrows(IllegalArgumentException.class, () -> boatService.createBoat(createBoatDto),
                 "Expected IllegalArgumentException due to person not being a driver");
         verify(boatRepository, never()).save(any(Boat.class));
     }
@@ -150,7 +150,7 @@ class BoatServiceTest {
         when(boatRepository.save(any())).thenReturn(boat);
         when(boatMapper.toDto(any())).thenReturn(boatDto);
 
-        BoatDto result = boatService.updateBoat(5L, postBoatDto);
+        BoatDto result = boatService.updateBoat(5L, createBoatDto);
 
         assertEquals(boatDto, result);
         assertEquals(5L, boat.getId());

@@ -1,7 +1,7 @@
 package ch.fhnw.shakethelakebackend.controller;
 
 import ch.fhnw.shakethelakebackend.model.dto.BoatDto;
-import ch.fhnw.shakethelakebackend.model.dto.PostBoatDto;
+import ch.fhnw.shakethelakebackend.model.dto.CreateBoatDto;
 import ch.fhnw.shakethelakebackend.service.BoatService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -33,7 +33,7 @@ public class BoatController {
     })
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
-    public BoatDto createBoat(@RequestBody @Valid PostBoatDto getBoatDto) {
+    public BoatDto createBoat(@RequestBody @Valid CreateBoatDto getBoatDto) {
         return boatService.createBoat(getBoatDto);
     }
 
@@ -54,7 +54,7 @@ public class BoatController {
         @ApiResponse(responseCode = "404", description = "Not found - The boat was not found")
     })
     @PutMapping("/{id}")
-    public BoatDto updateBoat(@PathVariable Long id, @RequestBody @Valid PostBoatDto getBoatDto) {
+    public BoatDto updateBoat(@PathVariable Long id, @RequestBody @Valid CreateBoatDto getBoatDto) {
         return boatService.updateBoat(id, getBoatDto);
     }
 
