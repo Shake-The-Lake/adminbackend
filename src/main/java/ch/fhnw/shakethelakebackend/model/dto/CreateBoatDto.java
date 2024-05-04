@@ -10,12 +10,15 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * DTO for {@link ch.fhnw.shakethelakebackend.model.entity.Boat}
+ */
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PostBoatDto implements Serializable {
+public class CreateBoatDto implements Serializable {
     private Long boatDriverId;
     @NotNull
     private String name;

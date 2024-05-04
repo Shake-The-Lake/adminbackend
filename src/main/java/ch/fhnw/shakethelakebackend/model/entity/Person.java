@@ -1,8 +1,5 @@
 package ch.fhnw.shakethelakebackend.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,8 +10,10 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.Set;
@@ -23,7 +22,9 @@ import java.util.Set;
 @Table(name = "person")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Builder
+@Getter
+@Setter
 public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -33,9 +34,6 @@ public class Person {
     private PersonType personType;
 
     @OneToMany(mappedBy = "boatDriver", cascade = CascadeType.ALL)
-    @JsonIdentityInfo(
-            generator = ObjectIdGenerators.PropertyGenerator.class,
-            property = "id")
     private List<Boat> boats;
 
     @NotNull
@@ -44,13 +42,21 @@ public class Person {
     @NotNull
     private String lastName;
 
-    @Email(message = "Email should be valid")
+    @Email
     private String emailAddress;
 
     @NotNull
     private String phoneNumber;
 
-    @JsonManagedReference(value = "person-bookings")
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
     private Set<Booking> bookings;
+
+    public Set<Booking> getBookings() {
+        return bookings == null ? Set.of() : Set.copyOf(bookings);
+    }
+
+    public List<Boat> getBoats() {
+        return boats == null ? List.of() : List.copyOf(boats);
+    }
+
 }

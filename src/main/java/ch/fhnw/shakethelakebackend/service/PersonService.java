@@ -1,7 +1,10 @@
 package ch.fhnw.shakethelakebackend.service;
 
+import ch.fhnw.shakethelakebackend.model.dto.CreatePersonDto;
+import ch.fhnw.shakethelakebackend.model.dto.PersonDto;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.Person;
+import ch.fhnw.shakethelakebackend.model.mapper.PersonMapper;
 import ch.fhnw.shakethelakebackend.model.repository.BoatRepository;
 import ch.fhnw.shakethelakebackend.model.repository.PersonRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,34 +21,39 @@ public class PersonService {
 
     private final BoatRepository boatRepository;
 
-    public Person createPerson(Person person) {
-        if (person.getId() != null && personRepository.existsById(person.getId())) {
-            throw new IllegalArgumentException("Person already exists");
-        }
-        return personRepository.save(person);
+    private final PersonMapper personMapper;
+
+    private static final String PERSON_NOT_FOUND = "Person not found";
+    private static final String PERSON_IS_BOAT_DRIVER = "Person is still a boat driver";
+
+    public PersonDto createPerson(CreatePersonDto createPersonDto) {
+        Person person = personMapper.toEntity(createPersonDto);
+        personRepository.save(person);
+        return personMapper.toDto(person);
     }
 
-    public Person updatePerson(Long id, Person person) {
+    public PersonDto updatePerson(Long id, CreatePersonDto createPersonDto) {
         Person existingPerson = personRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Person not found"));
+                () -> new EntityNotFoundException(PERSON_NOT_FOUND));
 
         existingPerson.setId(id);
-        existingPerson.setFirstName(person.getFirstName());
-        existingPerson.setLastName(person.getLastName());
-        existingPerson.setEmailAddress(person.getEmailAddress());
-        existingPerson.setPhoneNumber(person.getPhoneNumber());
-        existingPerson.setPersonType(person.getPersonType());
+        existingPerson.setFirstName(createPersonDto.getFirstName());
+        existingPerson.setLastName(createPersonDto.getLastName());
+        existingPerson.setEmailAddress(createPersonDto.getEmailAddress());
+        existingPerson.setPhoneNumber(createPersonDto.getPhoneNumber());
+        existingPerson.setPersonType(createPersonDto.getPersonType());
 
-        return personRepository.save(existingPerson);
+        personRepository.save(existingPerson);
+        return personMapper.toDto(existingPerson);
     }
 
     public void deletePerson(Long id) {
         Person person = personRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Person not found"));
+                () -> new EntityNotFoundException(PERSON_NOT_FOUND));
         List<Boat> boats = new ArrayList<>(boatRepository.findAll());
 
         if (boats.stream().anyMatch(boat -> boat.getBoatDriver().getId().equals(id))) {
-            throw new IllegalArgumentException("Person is a boat driver");
+            throw new IllegalArgumentException(PERSON_IS_BOAT_DRIVER);
         }
         personRepository.delete(person);
     }
@@ -53,6 +61,15 @@ public class PersonService {
 
     public Person getPerson(Long id) {
         return personRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Person not found"));
+                () -> new EntityNotFoundException(PERSON_NOT_FOUND));
+    }
+
+    public PersonDto getPersonDto(Long id) {
+        Person person = getPerson(id);
+        return personMapper.toDto(person);
+    }
+
+    public List<PersonDto> getAllPersonsDto() {
+        return personRepository.findAll().stream().map(personMapper::toDto).toList();
     }
 }
