@@ -1,10 +1,8 @@
 package ch.fhnw.shakethelakebackend.model.entity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -65,8 +63,11 @@ public class Boat {
     @Column(name = "available_until", columnDefinition = "TIMESTAMP")
     private LocalDateTime availableUntil;
 
-    @OneToMany(mappedBy = "boat", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "boat")
     private Set<TimeSlot> timeSlots;
+
+    @ManyToOne
+    private ActivityType activityType;
 
     public Set<TimeSlot> getTimeSlots() {
         return timeSlots == null ? Set.of() : Set.copyOf(timeSlots);

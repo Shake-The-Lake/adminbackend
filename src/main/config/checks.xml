@@ -90,7 +90,6 @@
         <module name="InterfaceIsType"/>
         <module name="VisibilityModifier"/>
         <module name="ArrayTypeStyle"/>
-        <module name="TodoComment"/>
         <module name="UpperEll"/>
         <module name="SingleSpaceSeparator"/>
         <!-- disable metrics

@@ -1,6 +1,6 @@
 package ch.fhnw.shakethelakebackend.model.dto;
 
-import ch.fhnw.shakethelakebackend.model.entity.PersonType;
+import ch.fhnw.shakethelakebackend.model.entity.enums.PersonType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

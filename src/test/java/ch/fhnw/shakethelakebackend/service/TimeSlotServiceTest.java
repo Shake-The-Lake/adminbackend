@@ -94,7 +94,7 @@ class TimeSlotServiceTest {
 
         assertThrows(IllegalArgumentException.class, () -> timeSlotService.createTimeSlot(timeSlot));
     }
-    
+
     @Test
     void testUpdateTimeSlot() {
         TimeSlot timeSlotToUpdate = new TimeSlot();
@@ -113,7 +113,7 @@ class TimeSlotServiceTest {
         when(timeSlotRepository.existsById(timeSlotToUpdate.getId())).thenReturn(false);
 
         assertThrows(EntityNotFoundException.class,
-                () -> timeSlotService.updateTimeSlot(timeSlotToUpdate.getId(), timeSlotToUpdate));
+            () -> timeSlotService.updateTimeSlot(timeSlotToUpdate.getId(), timeSlotToUpdate));
     }
 
 }

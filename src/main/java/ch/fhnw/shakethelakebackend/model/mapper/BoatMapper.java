@@ -18,10 +18,12 @@ import java.util.stream.Collectors;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface BoatMapper {
     @Mapping(source = "boatDriverId", target = "boatDriver.id")
+    @Mapping(target = "activityType.id", source = "activityTypeId")
     Boat toEntity(CreateBoatDto createBoatDto);
 
     @Mapping(target = "timeSlotIds", expression = "java(timeSlotsToTimeSlotIds(boat.getTimeSlots()))")
     @Mapping(source = "boatDriver.id", target = "boatDriverId")
+    @Mapping(target = "activityTypeId", source = "activityType.id")
     BoatDto toDto(Boat boat);
 
     @Mapping(source = "boatDriver.id", target = "boatDriverId")

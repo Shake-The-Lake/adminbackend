@@ -1,6 +1,6 @@
 package ch.fhnw.shakethelakebackend.model.dto;
 
-import ch.fhnw.shakethelakebackend.model.entity.PersonType;
+import ch.fhnw.shakethelakebackend.model.entity.enums.PersonType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

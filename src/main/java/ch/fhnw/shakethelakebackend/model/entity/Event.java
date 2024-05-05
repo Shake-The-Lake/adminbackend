@@ -1,12 +1,12 @@
 package ch.fhnw.shakethelakebackend.model.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -15,6 +15,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "event")
@@ -27,7 +28,7 @@ public class Event {
     // it is not yet on the class diagramm but i would recommend giving an id on a event as well
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     @NotNull
     @Column(name = "event_title")
@@ -37,10 +38,11 @@ public class Event {
     @Column(name = "event_description")
     private String description;
 
-    @NotNull
+    /* TODO: not in mvp
+    @Null
     @ManyToOne
     @JoinColumn(name = "location_id", referencedColumnName = "id")
-    private Location location;
+    private Location location;*/
 
     @NotNull
     @Column(name = "date", columnDefinition = "TIMESTAMP")
@@ -70,4 +72,10 @@ public class Event {
     @Column(name = "ended_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime endedAt;
 
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    private Set<ActivityType> activityTypes;
+
+    public Set<ActivityType> getActivityTypes() {
+        return activityTypes == null ? Set.of() : activityTypes;
+    }
 }

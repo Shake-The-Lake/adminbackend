@@ -54,7 +54,7 @@ public class Booking {
         }
         Booking booking = (Booking) o;
         return Objects.equals(id, booking.id) && Objects.equals(isRider, booking.isRider) && Objects.equals(isManual,
-                booking.isManual) && Objects.equals(pagerNumber, booking.pagerNumber);
+            booking.isManual) && Objects.equals(pagerNumber, booking.pagerNumber);
     }
 
     @Override

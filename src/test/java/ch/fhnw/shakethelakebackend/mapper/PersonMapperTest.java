@@ -56,7 +56,6 @@ class PersonMapperTest {
         assertEquals(person.getFirstName(), personDto.getFirstName());
         assertEquals(person.getLastName(), personDto.getLastName());
     }
-    
 
     @Test
     void testBoatsToBoatIds() {

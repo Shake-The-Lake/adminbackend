@@ -1,5 +1,6 @@
 package ch.fhnw.shakethelakebackend.model.dto;
 
+import ch.fhnw.shakethelakebackend.model.entity.Event;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,29 +12,30 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * DTO for {@link ch.fhnw.shakethelakebackend.model.entity.Boat}
+ * DTO for {@link Event}
  */
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CreateBoatDto implements Serializable {
-    private Long boatDriverId;
+public class CreateEventDto implements Serializable {
     @NotNull
-    private String name;
+    private LocalDateTime customerOnlyTime;
     @NotNull
-    private String type;
+    private String title;
     @NotNull
-    private int seatsRider;
+    private String description;
+    //Long locationId;
     @NotNull
-    private int seatsViewer;
+    private LocalDateTime date;
     @NotNull
-    private int slotDurationInMins;
+    private String customerCode;
     @NotNull
-    private LocalDateTime availableFrom;
+    private String employeeCode;
+    private boolean isStarted;
     @NotNull
-    private LocalDateTime availableUntil;
+    private LocalDateTime startedAt;
     @NotNull
-    private Long activityTypeId;
+    private LocalDateTime endedAt;
 }

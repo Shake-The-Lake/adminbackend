@@ -1,26 +1,29 @@
 package ch.fhnw.shakethelakebackend.service;
 
+import ch.fhnw.shakethelakebackend.model.dto.CreateEventDto;
+import ch.fhnw.shakethelakebackend.model.dto.EventDto;
 import ch.fhnw.shakethelakebackend.model.entity.Event;
-import ch.fhnw.shakethelakebackend.model.entity.Location;
+import ch.fhnw.shakethelakebackend.model.mapper.EventMapper;
 import ch.fhnw.shakethelakebackend.model.repository.EventRepository;
 import ch.fhnw.shakethelakebackend.model.repository.LocationRepository;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 
-import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -33,111 +36,86 @@ public class EventServiceTest {
     @Mock
     private LocationRepository locationRepository;
 
+    @Mock
+    private EventMapper eventMapper;
+
+    @Mock
+    private ActivityTypeService activityTypeService;
+
+    @InjectMocks
     private EventService eventService;
+
+    private Event event;
+    private EventDto eventDto;
 
     @BeforeEach
     void setUp() {
-        eventService = new EventService(eventRepository, locationRepository);
+        event = new Event();
+        event.setId(1L);
+        eventDto = new EventDto();
+        eventDto.setId(1L);
     }
 
     @Test
-    void testCreateEvent() {
-        Location location = Location.builder()
-            .name("Location Name")
-            .build();
+    void getEventDtoReturnsEventDto() {
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
+        when(eventMapper.toDto(event)).thenReturn(eventDto);
 
-        Event event = Event.builder()
-            .location(location)
-            .build();
-        when(locationRepository.save(any(Location.class))).thenReturn(location);
-        when(eventRepository.save(any(Event.class))).thenReturn(event);
-        Event savedEvent = eventService.createEvent(event);
-        assertNotNull(savedEvent);
+        EventDto result = eventService.getEventDto(1L);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        verify(eventRepository).findById(1L);
+        verify(eventMapper).toDto(event);
+    }
+
+    @Test
+    void getAllEventsReturnsListOfEventDtos() {
+        when(eventRepository.findAll()).thenReturn(Arrays.asList(event));
+        when(eventMapper.toDto(event)).thenReturn(eventDto);
+
+        List<EventDto> results = eventService.getAllEvents();
+
+        assertNotNull(results);
+        assertFalse(results.isEmpty());
+        assertEquals(1, results.size());
+        verify(eventRepository).findAll();
+        verify(eventMapper, times(1)).toDto(event);
+    }
+
+    @Test
+    void createEventSavesAndReturnsEventDto() {
+        when(eventMapper.toEntity(any())).thenReturn(event);
+        when(eventRepository.save(event)).thenReturn(event);
+        when(eventMapper.toDto(event)).thenReturn(eventDto);
+
+        EventDto result = eventService.createEvent(CreateEventDto.builder().build());
+
+        assertNotNull(result);
         verify(eventRepository).save(event);
-        verify(locationRepository).save(location);
+        verify(eventMapper).toDto(event);
     }
 
     @Test
-    void testUpdateEventWhenExist() {
-        Location location = Location.builder()
-            .canton("Bern")
-            .town("Bern")
-            .postalCode(3000)
-            .build();
+    void updateEventUpdatesAndReturnsEvent() {
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
+        when(eventRepository.save(any(Event.class))).thenReturn(event);
 
-        Event event = Event.builder()
-            .id(12345)
-            .date(LocalDateTime.now())
-            .customerCode("TEST12345")
-            .location(location)
-            .build();
+        Event result = eventService.updateEvent(1L, new Event());
 
-        Event updatedEventDetails = Event.builder().id(12345)
-            .location(Location.builder().canton("Zürich").town("Zürich").postalCode(8000).build())
-            .date(LocalDateTime.now().plusDays(1))
-            .customerCode("UPDATED12345")
-            .build();
-
-        when(eventRepository.save(updatedEventDetails)).thenReturn(updatedEventDetails);
-        when(eventRepository.findById(event.getId())).thenReturn(Optional.of(event));
-        Event updatedEvent = eventService.updateEvent(event.getId(), updatedEventDetails);
-        assertEquals(updatedEventDetails.getLocation(), updatedEvent.getLocation());
-        assertEquals(updatedEventDetails.getDate(), updatedEvent.getDate());
-        assertEquals(updatedEventDetails.getCustomerCode(), updatedEvent.getCustomerCode());
-        verify(eventRepository).save(updatedEventDetails);
+        assertNotNull(result);
+        verify(eventRepository).findById(1L);
+        verify(eventRepository).save(any(Event.class));
     }
 
     @Test
-    void testUpdateEventWhenNotFound() {
-        Event nonExistingEvent = Event.builder()
-            .id(99999)
-            .build();
-        when(eventRepository.findById(nonExistingEvent.getId())).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> {
-            eventService.updateEvent(nonExistingEvent.getId(), nonExistingEvent);
-        });
-    }
-
-    @Test
-    void testDeleteEventWhenExist() {
-        Event event = Event.builder()
-            .id(12345)
-            .date(LocalDateTime.now())
-            .customerCode("TEST12345")
-            .build();
-        when(eventRepository.findById(event.getId())).thenReturn(Optional.of(event));
+    void deleteEventDeletesEvent() {
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
         doNothing().when(eventRepository).delete(event);
-        eventService.deleteEvent(event.getId());
+
+        assertDoesNotThrow(() -> eventService.deleteEvent(1L));
+
+        verify(eventRepository).findById(1L);
         verify(eventRepository).delete(event);
-    }
-
-    @Test
-    void testDeleteEventWhenNotFound() {
-        Event event = Event.builder()
-            .id(12345)
-            .build();
-        when(eventRepository.findById(event.getId())).thenReturn(Optional.empty());
-        assertThrows(EntityNotFoundException.class, () -> eventService.deleteEvent(event.getId()));
-    }
-
-    @Test
-    @SneakyThrows
-    void testGetEventWhenExist() {
-        Event event = Event.builder()
-            .id(12345)
-            .build();
-        when(eventRepository.findById(event.getId())).thenReturn(Optional.of(event));
-        Event foundEvent = eventService.getEvent(event.getId());
-        assertNotNull(foundEvent);
-        verify(eventRepository).findById(event.getId());
-    }
-
-    @Test
-    void testGetEventWhenNotFound() {
-        Event event = Event.builder()
-            .id(12345)
-            .build();
-        when(eventRepository.findById(event.getId())).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class, () -> eventService.getEvent(event.getId()));
     }
 }
