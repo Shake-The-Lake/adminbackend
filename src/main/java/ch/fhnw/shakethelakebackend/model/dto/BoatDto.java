@@ -33,4 +33,5 @@ public class BoatDto {
     @NotNull
     private LocalDateTime availableUntil;
     private Set<Long> timeSlotIds;
+    private Long activityTypeId;
 }

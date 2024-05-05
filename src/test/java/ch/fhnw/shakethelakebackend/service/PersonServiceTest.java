@@ -4,7 +4,7 @@ import ch.fhnw.shakethelakebackend.model.dto.CreatePersonDto;
 import ch.fhnw.shakethelakebackend.model.dto.PersonDto;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.Person;
-import ch.fhnw.shakethelakebackend.model.entity.PersonType;
+import ch.fhnw.shakethelakebackend.model.entity.enums.PersonType;
 import ch.fhnw.shakethelakebackend.model.mapper.PersonMapper;
 import ch.fhnw.shakethelakebackend.model.repository.BoatRepository;
 import ch.fhnw.shakethelakebackend.model.repository.PersonRepository;
@@ -50,33 +50,15 @@ class PersonServiceTest {
     @BeforeEach
     void setUp() {
         // Sample data setup
-        person = Person.builder()
-                .id(1L)
-                .firstName("John")
-                .lastName("Doe")
-                .emailAddress("john.doe@example.com")
-                .phoneNumber("123456789")
-                .personType(PersonType.CUSTOMER)
-                .build();
+        person = Person.builder().id(1L).firstName("John").lastName("Doe").emailAddress("john.doe@example.com")
+            .phoneNumber("123456789").personType(PersonType.CUSTOMER).build();
 
-        createPersonDto = CreatePersonDto.builder()
-                .firstName("Jane")
-                .lastName("Doe")
-                .emailAddress("jane.doe@example.com")
-                .phoneNumber("987654321")
-                .personType(PersonType.CUSTOMER)
-                .build();
+        createPersonDto = CreatePersonDto.builder().firstName("Jane").lastName("Doe")
+            .emailAddress("jane.doe@example.com").phoneNumber("987654321").personType(PersonType.CUSTOMER).build();
 
-        personDto = PersonDto.builder()
-                .id(1L)
-                .firstName("John")
-                .lastName("Doe")
-                .emailAddress("john.doe@example.com")
-                .phoneNumber("123456789")
-                .personType(PersonType.CUSTOMER)
-                .build();
+        personDto = PersonDto.builder().id(1L).firstName("John").lastName("Doe").emailAddress("john.doe@example.com")
+            .phoneNumber("123456789").personType(PersonType.CUSTOMER).build();
     }
-
 
     @Test
     void testCreatePerson() {
@@ -99,7 +81,8 @@ class PersonServiceTest {
     @Test
     void testUpdatePerson() {
         // Mocking repository method
-        when(personRepository.findById(1L)).thenReturn(Optional.of(person));
+        when(personRepository.existsById(1L)).thenReturn(true);
+        when(personMapper.toEntity(any())).thenReturn(person);
         when(personRepository.save(person)).thenReturn(person);
         when(personMapper.toDto(person)).thenReturn(personDto);
 
@@ -107,7 +90,7 @@ class PersonServiceTest {
         PersonDto updatedPersonDto = personService.updatePerson(1L, createPersonDto);
 
         // Verifying interactions
-        verify(personRepository, times(1)).findById(1L);
+        verify(personRepository, times(1)).existsById(1L);
         verify(personRepository, times(1)).save(person);
         verify(personMapper, times(1)).toDto(person);
 
@@ -202,7 +185,5 @@ class PersonServiceTest {
         assertEquals(1, result.size());
         assertEquals(personDto, result.get(0));
     }
-
-
 
 }

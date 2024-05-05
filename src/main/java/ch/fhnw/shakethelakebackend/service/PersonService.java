@@ -17,14 +17,11 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class PersonService {
+    public static final String PERSON_NOT_FOUND = "Person not found";
+    public static final String PERSON_IS_BOAT_DRIVER = "Person is still a boat driver";
     private final PersonRepository personRepository;
-
     private final BoatRepository boatRepository;
-
     private final PersonMapper personMapper;
-
-    private static final String PERSON_NOT_FOUND = "Person not found";
-    private static final String PERSON_IS_BOAT_DRIVER = "Person is still a boat driver";
 
     public PersonDto createPerson(CreatePersonDto createPersonDto) {
         Person person = personMapper.toEntity(createPersonDto);
@@ -33,23 +30,18 @@ public class PersonService {
     }
 
     public PersonDto updatePerson(Long id, CreatePersonDto createPersonDto) {
-        Person existingPerson = personRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException(PERSON_NOT_FOUND));
+        if (!personRepository.existsById(id)) {
+            throw new EntityNotFoundException(PERSON_NOT_FOUND);
+        }
+        Person updatePerson = personMapper.toEntity(createPersonDto);
+        updatePerson.setId(id);
+        personRepository.save(updatePerson);
+        return personMapper.toDto(updatePerson);
 
-        existingPerson.setId(id);
-        existingPerson.setFirstName(createPersonDto.getFirstName());
-        existingPerson.setLastName(createPersonDto.getLastName());
-        existingPerson.setEmailAddress(createPersonDto.getEmailAddress());
-        existingPerson.setPhoneNumber(createPersonDto.getPhoneNumber());
-        existingPerson.setPersonType(createPersonDto.getPersonType());
-
-        personRepository.save(existingPerson);
-        return personMapper.toDto(existingPerson);
     }
 
     public void deletePerson(Long id) {
-        Person person = personRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException(PERSON_NOT_FOUND));
+        Person person = personRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(PERSON_NOT_FOUND));
         List<Boat> boats = new ArrayList<>(boatRepository.findAll());
 
         if (boats.stream().anyMatch(boat -> boat.getBoatDriver().getId().equals(id))) {
@@ -58,10 +50,8 @@ public class PersonService {
         personRepository.delete(person);
     }
 
-
     public Person getPerson(Long id) {
-        return personRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException(PERSON_NOT_FOUND));
+        return personRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(PERSON_NOT_FOUND));
     }
 
     public PersonDto getPersonDto(Long id) {

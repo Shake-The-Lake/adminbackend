@@ -2,7 +2,9 @@ package ch.fhnw.shakethelakebackend.controller;
 
 import ch.fhnw.shakethelakebackend.model.dto.BoatDto;
 import ch.fhnw.shakethelakebackend.model.dto.CreateBoatDto;
+import ch.fhnw.shakethelakebackend.service.ActivityTypeService;
 import ch.fhnw.shakethelakebackend.service.BoatService;
+import ch.fhnw.shakethelakebackend.service.PersonService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -29,8 +31,9 @@ public class BoatController {
     private final BoatService boatService;
 
     @Operation(summary = "Create a boat", description = "Creates a boat")
-    @ApiResponses(value = {@ApiResponse(responseCode = "201", description = "Successfully created a boat")
-    })
+    @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Successfully created a boat"),
+        @ApiResponse(responseCode = "404", description = BoatService.PERSON_NOT_FOUND + " or "
+            + ActivityTypeService.ACTIVITY_TYPE_NOT_FOUND) })
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
     public BoatDto createBoat(@RequestBody @Valid CreateBoatDto getBoatDto) {
@@ -38,40 +41,33 @@ public class BoatController {
     }
 
     @Operation(summary = "Get a boat by id", description = "Returns a boat as per the id")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Successfully retrieved a boat by id"),
-        @ApiResponse(responseCode = "404", description = "Not found - The boat was not found")
-    })
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully retrieved a boat by id"),
+        @ApiResponse(responseCode = "404", description = BoatService.BOAT_NOT_FOUND) })
     @GetMapping("/{id}")
     public BoatDto getBoat(@PathVariable Long id) {
         return boatService.getBoatDto(id);
     }
 
-
     @Operation(summary = "Update a boat by id", description = "Updates a boat as per the id")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Successfully updated a boat by id"),
-        @ApiResponse(responseCode = "404", description = "Not found - The boat was not found")
-    })
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully updated a boat by id"),
+        @ApiResponse(responseCode = "404", description = BoatService.BOAT_NOT_FOUND + " or "
+            + PersonService.PERSON_NOT_FOUND) })
     @PutMapping("/{id}")
     public BoatDto updateBoat(@PathVariable Long id, @RequestBody @Valid CreateBoatDto getBoatDto) {
         return boatService.updateBoat(id, getBoatDto);
     }
 
     @Operation(summary = "Delete a boat by id", description = "Deletes a boat as per the id")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Successfully deleted a boat by id"),
-        @ApiResponse(responseCode = "404", description = "Not found - The boat was not found")
-    })
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully deleted a boat by id"),
+        @ApiResponse(responseCode = "404", description = BoatService.BOAT_NOT_FOUND + " or "
+            + PersonService.PERSON_NOT_FOUND) })
     @DeleteMapping("/{id}")
     public void deleteBoat(@PathVariable Long id) {
         boatService.deleteBoat(id);
     }
 
     @Operation(summary = "Get all boats", description = "Returns a list of all boats")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Successfully retrieved all boats")
-    })
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully retrieved all boats") })
     @GetMapping()
     public List<BoatDto> getAllBoats() {
         return boatService.getAllBoats();

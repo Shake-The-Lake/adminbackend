@@ -2,10 +2,8 @@ package ch.fhnw.shakethelakebackend.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -45,12 +43,12 @@ public class TimeSlot {
 
     // Must ignore timeSlots in Boat to avoid infinite recursion
     @JsonBackReference(value = "boat-timeSlots")
-    @ManyToOne(cascade = CascadeType.REFRESH)
+    @ManyToOne
     @JoinColumn(name = "boat_id", nullable = false)
     private Boat boat;
 
     @JsonManagedReference(value = "timeSlot-bookings")
-    @OneToMany(mappedBy = "timeSlot", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "timeSlot")
     private Set<Booking> bookings;
 
     @Override
@@ -63,7 +61,7 @@ public class TimeSlot {
         }
         TimeSlot timeSlot = (TimeSlot) o;
         return Objects.equals(id, timeSlot.id) && Objects.equals(fromTime, timeSlot.fromTime) && Objects.equals(
-                untilTime, timeSlot.untilTime);
+            untilTime, timeSlot.untilTime);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package ch.fhnw.shakethelakebackend.model.entity;
 
+import ch.fhnw.shakethelakebackend.model.entity.enums.PersonType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -48,7 +49,7 @@ public class Person {
     @NotNull
     private String phoneNumber;
 
-    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "person")
     private Set<Booking> bookings;
 
     public Set<Booking> getBookings() {

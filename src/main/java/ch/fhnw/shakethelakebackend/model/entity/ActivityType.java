@@ -1,30 +1,49 @@
 package ch.fhnw.shakethelakebackend.model.entity;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Table(name = "activityType")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public class ActivityType {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
-    private String activityName;
+    @Embedded
+    private LocalizedString name;
 
-    // String icon ?
+    @Embedded
+    @AttributeOverrides({ @AttributeOverride(name = "en", column = @Column(name = "description_en")),
+        @AttributeOverride(name = "de", column = @Column(name = "description_de")),
+        @AttributeOverride(name = "swissGerman", column = @Column(name = "description_swiss_german")) })
+    private LocalizedString description;
+
+    @Embedded
+    @AttributeOverrides({ @AttributeOverride(name = "en", column = @Column(name = "checklist_en")),
+        @AttributeOverride(name = "de", column = @Column(name = "checklist_de")),
+        @AttributeOverride(name = "swissGerman", column = @Column(name = "checklist_swiss_german")) })
+    private LocalizedString checklist;
+
     private String icon;
-    private String description;
-    private String checklist;
+
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    private Event event;
 
 }

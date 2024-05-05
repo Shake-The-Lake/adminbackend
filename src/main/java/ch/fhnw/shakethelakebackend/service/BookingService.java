@@ -63,7 +63,7 @@ public class BookingService {
     public Booking updateBooking(Long id, Booking booking) {
 
         Booking oldBooking = bookingRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
+            .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
         TimeSlot timeSlot = timeSlotService.getTimeSlot(booking.getTimeSlot().getId());
         Person person = personService.getPerson(booking.getPerson().getId());
 
@@ -82,7 +82,7 @@ public class BookingService {
 
     public void deleteBooking(Long id) {
         Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
+            .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
         bookingRepository.delete(booking);
     }
 }

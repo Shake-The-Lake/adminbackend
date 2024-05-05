@@ -20,7 +20,7 @@ public class TimeSlotService {
         //Time slot must be in boats time
         Boat boat = boatService.getBoat(timeSlot.getBoat().getId());
         if (boat.getAvailableFrom().isAfter(timeSlot.getFromTime()) || boat.getAvailableUntil()
-                .isBefore(timeSlot.getUntilTime())) {
+            .isBefore(timeSlot.getUntilTime())) {
             throw new IllegalArgumentException("Time slot must be in boats available time");
         }
 
