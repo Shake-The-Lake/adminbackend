@@ -4,6 +4,7 @@ import ch.fhnw.shakethelakebackend.model.dto.BoatDto;
 import ch.fhnw.shakethelakebackend.model.dto.CreateBoatDto;
 import ch.fhnw.shakethelakebackend.model.entity.ActivityType;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
+import ch.fhnw.shakethelakebackend.model.entity.Event;
 import ch.fhnw.shakethelakebackend.model.entity.Person;
 import ch.fhnw.shakethelakebackend.model.entity.enums.PersonType;
 import ch.fhnw.shakethelakebackend.model.mapper.BoatMapper;
@@ -26,6 +27,7 @@ public class BoatService {
     private final BoatRepository boatRepository;
     private final PersonService personService;
     private final ActivityTypeService activityTypeService;
+    private final EventService eventService;
 
     public BoatDto getBoatDto(Long id) {
         Boat boat = boatRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(BOAT_NOT_FOUND));
@@ -43,9 +45,11 @@ public class BoatService {
             throw new IllegalArgumentException(PERSON_IS_NOT_BOAT_DRIVER);
         }
         ActivityType activityType = activityTypeService.getActivityType(createBoatDto.getActivityTypeId());
+        Event event = eventService.getEvent(createBoatDto.getEventId());
         Boat boat = boatMapper.toEntity(createBoatDto);
         boat.setBoatDriver(driver);
         boat.setActivityType(activityType);
+        boat.setEvent(event);
         boatRepository.save(boat);
         return boatMapper.toDto(boat);
     }
@@ -59,13 +63,14 @@ public class BoatService {
             throw new IllegalArgumentException(PERSON_IS_NOT_BOAT_DRIVER);
         }
         ActivityType activityType = activityTypeService.getActivityType(createBoatDto.getActivityTypeId());
+        Event event = eventService.getEvent(createBoatDto.getEventId());
         Boat newBoat = boatMapper.toEntity(createBoatDto);
         newBoat.setBoatDriver(driver);
         newBoat.setActivityType(activityType);
+        newBoat.setEvent(event);
         newBoat.setId(id);
         boatRepository.save(newBoat);
         return boatMapper.toDto(newBoat);
-
     }
 
     public void deleteBoat(Long id) {

@@ -1,6 +1,8 @@
 package ch.fhnw.shakethelakebackend;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -41,8 +43,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Object> handleConstraintViolation(DataIntegrityViolationException ex) {
+        if (ex.getCause() instanceof ConstraintViolationException) {
+            return new ResponseEntity<>("Entity is still referenced by another table", HttpStatus.CONFLICT);
+        }
+        return new ResponseEntity<>(ex.getMostSpecificCause().getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handle(Exception ex) {
+    public ResponseEntity<Object> handleInternalErrors(Exception ex) {
         System.out.println(ex.getMessage()); //TODO: replace with logging
         if (ex instanceof NullPointerException) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

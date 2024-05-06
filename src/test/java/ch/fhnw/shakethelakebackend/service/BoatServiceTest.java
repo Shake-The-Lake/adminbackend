@@ -42,6 +42,9 @@ class BoatServiceTest {
     @Mock
     private ActivityTypeService activityTypeService;
 
+    @Mock
+    private EventService eventService;
+
     @InjectMocks
     private BoatService boatService;
 
