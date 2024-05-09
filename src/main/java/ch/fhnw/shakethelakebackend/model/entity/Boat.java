@@ -67,6 +67,9 @@ public class Boat {
     private Set<TimeSlot> timeSlots;
 
     @ManyToOne
+    private Event event;
+
+    @ManyToOne
     private ActivityType activityType;
 
     public Set<TimeSlot> getTimeSlots() {

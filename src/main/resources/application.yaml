@@ -12,6 +12,8 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     generate-ddl: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
 
-
+springdoc:
+  swagger-ui:
+    default-models-expand-depth: -1

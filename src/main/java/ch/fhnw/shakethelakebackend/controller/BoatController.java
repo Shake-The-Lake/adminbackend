@@ -2,9 +2,7 @@ package ch.fhnw.shakethelakebackend.controller;
 
 import ch.fhnw.shakethelakebackend.model.dto.BoatDto;
 import ch.fhnw.shakethelakebackend.model.dto.CreateBoatDto;
-import ch.fhnw.shakethelakebackend.service.ActivityTypeService;
 import ch.fhnw.shakethelakebackend.service.BoatService;
-import ch.fhnw.shakethelakebackend.service.PersonService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -32,8 +30,7 @@ public class BoatController {
 
     @Operation(summary = "Create a boat", description = "Creates a boat")
     @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Successfully created a boat"),
-        @ApiResponse(responseCode = "404", description = BoatService.PERSON_NOT_FOUND + " or "
-            + ActivityTypeService.ACTIVITY_TYPE_NOT_FOUND) })
+        @ApiResponse(responseCode = "404", description = "Related entity not found") })
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
     public BoatDto createBoat(@RequestBody @Valid CreateBoatDto getBoatDto) {
@@ -50,8 +47,7 @@ public class BoatController {
 
     @Operation(summary = "Update a boat by id", description = "Updates a boat as per the id")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully updated a boat by id"),
-        @ApiResponse(responseCode = "404", description = BoatService.BOAT_NOT_FOUND + " or "
-            + PersonService.PERSON_NOT_FOUND) })
+        @ApiResponse(responseCode = "404", description = "Related entity not found") })
     @PutMapping("/{id}")
     public BoatDto updateBoat(@PathVariable Long id, @RequestBody @Valid CreateBoatDto getBoatDto) {
         return boatService.updateBoat(id, getBoatDto);
@@ -59,8 +55,7 @@ public class BoatController {
 
     @Operation(summary = "Delete a boat by id", description = "Deletes a boat as per the id")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully deleted a boat by id"),
-        @ApiResponse(responseCode = "404", description = BoatService.BOAT_NOT_FOUND + " or "
-            + PersonService.PERSON_NOT_FOUND) })
+        @ApiResponse(responseCode = "404", description = "Related entity not found") })
     @DeleteMapping("/{id}")
     public void deleteBoat(@PathVariable Long id) {
         boatService.deleteBoat(id);

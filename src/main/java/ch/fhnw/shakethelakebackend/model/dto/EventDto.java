@@ -42,4 +42,5 @@ public class EventDto implements Serializable {
     @NotNull
     private LocalDateTime endedAt;
     private Set<Long> activityTypeIds;
+    private Set<Long> boatIds;
 }
