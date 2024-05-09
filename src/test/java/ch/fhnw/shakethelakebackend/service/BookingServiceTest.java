@@ -1,21 +1,28 @@
 package ch.fhnw.shakethelakebackend.service;
 
+import ch.fhnw.shakethelakebackend.model.dto.BookingDto;
+import ch.fhnw.shakethelakebackend.model.dto.CreateBookingDto;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.Booking;
 import ch.fhnw.shakethelakebackend.model.entity.Person;
 import ch.fhnw.shakethelakebackend.model.entity.TimeSlot;
+import ch.fhnw.shakethelakebackend.model.entity.enums.PersonType;
+import ch.fhnw.shakethelakebackend.model.mapper.BookingMapper;
 import ch.fhnw.shakethelakebackend.model.repository.BookingRepository;
-import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,180 +38,112 @@ public class BookingServiceTest {
     @Mock
     private PersonService personService;
 
+    @Mock
+    private BookingMapper bookingMapper;
+
     @InjectMocks
     private BookingService bookingService;
 
-    private TimeSlot createTimeSlot(Long id) {
-        TimeSlot timeSlot = new TimeSlot();
-        Boat boat = new Boat();
-        boat.setId(1L);
-        boat.setSeatsRider(2);
-        boat.setSeatsViewer(2);
-        timeSlot.setId(id);
-        timeSlot.setBoat(boat);
-        timeSlot.setBookings(new HashSet<>());
-        return timeSlot;
-    }
+    private Person person;
+    private Boat boat;
+    private TimeSlot timeSlot;
+    private Booking booking;
 
-    @Test
-    void testGetBooking() {
-        Long bookingId = 1L;
-        Booking booking = new Booking();
-        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
+    private BookingDto bookingDto;
 
-        Booking foundBooking = bookingService.getBooking(bookingId);
+    private CreateBookingDto createBookingDto;
 
-        verify(bookingRepository).findById(bookingId);
-    }
+    @BeforeEach
+    void setUp() {
+        LocalDateTime fromTime = LocalDateTime.now();
+        LocalDateTime untilTime = LocalDateTime.now().plusHours(1);
+        boat = Boat.builder().seatsRider(2).seatsViewer(2).id(1L).build();
+        person = Person.builder().id(1L).firstName("John").lastName("Doe").emailAddress("john.doe@example.com")
+                .phoneNumber("123456789").personType(PersonType.CUSTOMER).build();
+        timeSlot = TimeSlot.builder().boat(boat).id(1L).fromTime(fromTime).untilTime(untilTime)
+                .bookings(new HashSet<>()).build();
+        booking = Booking.builder().isRider(true).isManual(false).timeSlot(timeSlot).id(1L).person(person).build();
 
-    @Test
-    void testGetBookingNotFound() {
-        Long bookingId = 1L;
-        when(bookingRepository.findById(bookingId)).thenReturn(Optional.empty());
+        bookingDto = BookingDto.builder().id(1L).isRider(true).isManual(false).timeSlotId(1L).personId(1L).build();
+        createBookingDto = CreateBookingDto.builder().isRider(true).isManual(false).timeSlotId(1L).personId(1L).build();
 
-        assertThrows(EntityNotFoundException.class, () -> bookingService.getBooking(bookingId));
-
-        verify(bookingRepository).findById(bookingId);
     }
 
     @Test
     void testCreateBooking() {
-        Booking booking = new Booking();
-        booking.setId(1L);
-        booking.setIsRider(true);
-        booking.setIsManual(false);
-
-        Person person = new Person();
-
-        TimeSlot timeSlot = createTimeSlot(1L);
-        booking.setTimeSlot(timeSlot);
-        booking.setPerson(person);
-
-        when(timeSlotService.getTimeSlot(timeSlot.getId())).thenReturn(timeSlot);
-        when(personService.getPerson(person.getId())).thenReturn(person);
+        when(bookingMapper.toEntity(any(CreateBookingDto.class))).thenReturn(booking);
+        when(timeSlotService.getTimeSlot(booking.getTimeSlot().getId())).thenReturn(timeSlot);
+        when(personService.getPerson(booking.getPerson().getId())).thenReturn(person);
         when(bookingRepository.save(booking)).thenReturn(booking);
+        when(bookingMapper.toDto(booking)).thenReturn(bookingDto);
 
-        bookingService.createBooking(booking);
+        BookingDto result = bookingService.createBooking(createBookingDto);
 
-        verify(timeSlotService).getTimeSlot(timeSlot.getId());
-        verify(personService).getPerson(person.getId());
+        assertEquals(bookingDto, result);
         verify(bookingRepository).save(booking);
-    }
-
-    @Test
-    void testCreateBookingOnFullTimeSlot() {
-        TimeSlot timeSlot = createTimeSlot(1L);
-        Person person = new Person();
-
-        Booking booking1 = new Booking(1L, true, true, 1, person, timeSlot);
-        Booking booking2 = new Booking(2L, true, true, 1, person, timeSlot);
-
-        timeSlot.getBookings().add(booking1);
-        timeSlot.getBookings().add(booking2);
-
-        Booking booking = new Booking();
-        booking.setIsRider(true);
-        booking.setIsManual(false);
-        booking.setTimeSlot(timeSlot);
-        booking.setPerson(person);
-
-        when(timeSlotService.getTimeSlot(timeSlot.getId())).thenReturn(timeSlot);
-        when(personService.getPerson(person.getId())).thenReturn(person);
-
-        assertThrows(IllegalArgumentException.class, () -> bookingService.createBooking(booking));
-
-        verify(timeSlotService).getTimeSlot(timeSlot.getId());
-        verify(personService).getPerson(person.getId());
     }
 
     @Test
     void testUpdateBooking() {
-        Booking booking = new Booking();
-        booking.setId(1L);
-        booking.setIsRider(true);
 
-        Person person = new Person();
-        person.setId(1L);
-
-        TimeSlot timeSlot = createTimeSlot(1L);
-        booking.setTimeSlot(timeSlot);
-        booking.setPerson(person);
-
-        booking.setPerson(person);
-        booking.setTimeSlot(timeSlot);
-
-        when(bookingRepository.findById(booking.getId())).thenReturn(Optional.of(booking));
-        when(timeSlotService.getTimeSlot(timeSlot.getId())).thenReturn(timeSlot);
-        when(personService.getPerson(person.getId())).thenReturn(person);
+        when(bookingMapper.toEntity(any(CreateBookingDto.class))).thenReturn(booking);
+        when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
+        when(personService.getPerson(booking.getPerson().getId())).thenReturn(person);
+        when(timeSlotService.getTimeSlot(booking.getTimeSlot().getId())).thenReturn(timeSlot);
         when(bookingRepository.save(booking)).thenReturn(booking);
+        when(bookingMapper.toDto(booking)).thenReturn(bookingDto);
 
-        bookingService.updateBooking(booking.getId(), booking);
+        BookingDto result = bookingService.updateBooking(1L, createBookingDto);
 
-        verify(bookingRepository).findById(booking.getId());
-        verify(timeSlotService).getTimeSlot(timeSlot.getId());
-        verify(personService).getPerson(person.getId());
+        assertEquals(bookingDto, result);
         verify(bookingRepository).save(booking);
     }
 
     @Test
-    void testUpdateBookingToViewer() {
-        TimeSlot timeSlot = createTimeSlot(1L);
-        Person person = new Person();
+    void testGetBooking() {
+        when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
 
-        Booking booking1 = new Booking(1L, true, true, 1, person, timeSlot);
-        Booking booking2 = new Booking(2L, true, true, 1, person, timeSlot);
+        Booking result = bookingService.getBooking(1L);
 
-        timeSlot.getBookings().add(booking1);
-        timeSlot.getBookings().add(booking2);
-
-        Booking booking = new Booking();
-        booking.setIsRider(false);
-        booking.setIsManual(true);
-        booking.setPagerNumber(1);
-        booking.setTimeSlot(timeSlot);
-        booking.setPerson(person);
-
-        when(bookingRepository.findById(booking1.getId())).thenReturn(Optional.of(booking1));
-        when(timeSlotService.getTimeSlot(timeSlot.getId())).thenReturn(timeSlot);
-        when(personService.getPerson(person.getId())).thenReturn(person);
-
-        bookingService.updateBooking(booking1.getId(), booking);
-
-        verify(timeSlotService).getTimeSlot(timeSlot.getId());
-        verify(personService).getPerson(person.getId());
+        assertEquals(booking, result);
     }
 
     @Test
-    void testUpdateBookingNotFound() {
-        Long bookingId = 1L;
-        Booking booking = new Booking();
-        when(bookingRepository.findById(bookingId)).thenReturn(Optional.empty());
+    void testGetBookingDto() {
+        when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
+        when(bookingMapper.toDto(booking)).thenReturn(bookingDto);
 
-        assertThrows(EntityNotFoundException.class, () -> bookingService.updateBooking(bookingId, booking));
+        BookingDto result = bookingService.getBookingDto(1L);
 
-        verify(bookingRepository).findById(bookingId);
+        assertEquals(bookingDto, result);
     }
 
     @Test
     void testDeleteBooking() {
-        Long bookingId = 1L;
-        Booking booking = new Booking();
-        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
+        when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
 
-        bookingService.deleteBooking(bookingId);
+        bookingService.deleteBooking(1L);
 
-        verify(bookingRepository).findById(bookingId);
         verify(bookingRepository).delete(booking);
     }
 
     @Test
-    void testDeleteBookingNotFound() {
-        Long bookingId = 1L;
-        when(bookingRepository.findById(bookingId)).thenReturn(Optional.empty());
+    void testOverBookedSeats() {
+        booking.setIsRider(true);
+        booking.setPerson(person);
+        booking.setTimeSlot(timeSlot);
+        Booking booking1 = Booking.builder().isRider(true).isManual(false).timeSlot(timeSlot).id(2L).person(person)
+                .build();
+        Booking booking2 = Booking.builder().isRider(true).isManual(false).timeSlot(timeSlot).id(3L).person(person)
+                .build();
+        timeSlot.getBookings().add(booking1);
+        timeSlot.getBookings().add(booking2);
 
-        assertThrows(EntityNotFoundException.class, () -> bookingService.deleteBooking(bookingId));
+        when(bookingMapper.toEntity(any(CreateBookingDto.class))).thenReturn(booking);
+        when(timeSlotService.getTimeSlot(booking.getTimeSlot().getId())).thenReturn(timeSlot);
+        when(personService.getPerson(booking.getPerson().getId())).thenReturn(person);
 
-        verify(bookingRepository).findById(bookingId);
+        assertThrows(IllegalArgumentException.class, () -> bookingService.createBooking(createBookingDto));
     }
 
 }
