@@ -34,4 +34,5 @@ public class BoatDto {
     private LocalDateTime availableUntil;
     private Set<Long> timeSlotIds;
     private Long activityTypeId;
+    private Long eventId;
 }

@@ -3,6 +3,7 @@ package ch.fhnw.shakethelakebackend.model.mapper;
 import ch.fhnw.shakethelakebackend.model.dto.CreateEventDto;
 import ch.fhnw.shakethelakebackend.model.dto.EventDto;
 import ch.fhnw.shakethelakebackend.model.entity.ActivityType;
+import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.Event;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -19,10 +20,14 @@ public interface EventMapper {
     Event toEntity(CreateEventDto createEventDto);
 
     @Mapping(target = "activityTypeIds", expression = "java(mapActivityTypesToIds(event.getActivityTypes()))")
+    @Mapping(target = "boatIds", expression = "java(mapBoatsToIds(event.getBoats()))")
     EventDto toDto(Event event);
 
     default Set<Long> mapActivityTypesToIds(Set<ActivityType> activityTypes) {
         return activityTypes.stream().map(ActivityType::getId).collect(Collectors.toSet());
+    }
 
+    default Set<Long> mapBoatsToIds(Set<Boat> boats) {
+        return boats.stream().map(Boat::getId).collect(Collectors.toSet());
     }
 }

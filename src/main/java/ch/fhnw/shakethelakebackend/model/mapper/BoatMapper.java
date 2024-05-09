@@ -19,11 +19,13 @@ import java.util.stream.Collectors;
 public interface BoatMapper {
     @Mapping(source = "boatDriverId", target = "boatDriver.id")
     @Mapping(target = "activityType.id", source = "activityTypeId")
+    @Mapping(target = "event.id", source = "eventId")
     Boat toEntity(CreateBoatDto createBoatDto);
 
     @Mapping(target = "timeSlotIds", expression = "java(timeSlotsToTimeSlotIds(boat.getTimeSlots()))")
     @Mapping(source = "boatDriver.id", target = "boatDriverId")
     @Mapping(target = "activityTypeId", source = "activityType.id")
+    @Mapping(target = "eventId", source = "event.id")
     BoatDto toDto(Boat boat);
 
     @Mapping(source = "boatDriver.id", target = "boatDriverId")

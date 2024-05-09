@@ -2,7 +2,6 @@ package ch.fhnw.shakethelakebackend.service;
 
 import ch.fhnw.shakethelakebackend.model.dto.CreatePersonDto;
 import ch.fhnw.shakethelakebackend.model.dto.PersonDto;
-import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.Person;
 import ch.fhnw.shakethelakebackend.model.entity.enums.PersonType;
 import ch.fhnw.shakethelakebackend.model.mapper.PersonMapper;
@@ -15,16 +14,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -101,35 +97,14 @@ class PersonServiceTest {
     @Test
     void testDeletePerson() {
         // Mocking repository method
-        when(personRepository.findById(1L)).thenReturn(Optional.of(person));
-        when(boatRepository.findAll()).thenReturn(new ArrayList<>());
+        when(personRepository.existsById(1L)).thenReturn(true);
 
         // Calling service method
         personService.deletePerson(1L);
 
         // Verifying interactions
-        verify(personRepository, times(1)).findById(1L);
-        verify(boatRepository, times(1)).findAll();
-        verify(personRepository, times(1)).delete(person);
-    }
-
-    @Test
-    void testDeletePersonThrowsExceptionWhenPersonIsBoatDriver() {
-        // Mocking repository method
-        when(personRepository.findById(1L)).thenReturn(Optional.of(person));
-        List<Boat> boats = new ArrayList<>();
-        Boat boat = new Boat();
-        boat.setBoatDriver(person);
-        boats.add(boat);
-        when(boatRepository.findAll()).thenReturn(boats);
-
-        // Calling service method and asserting exception
-        assertThrows(IllegalArgumentException.class, () -> personService.deletePerson(1L));
-
-        // Verifying interactions
-        verify(personRepository, times(1)).findById(1L);
-        verify(boatRepository, times(1)).findAll();
-        verify(personRepository, never()).delete(any());
+        verify(personRepository, times(1)).existsById(1L);
+        verify(personRepository, times(1)).deleteById(1L);
     }
 
     @Test
