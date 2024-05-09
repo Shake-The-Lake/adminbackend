@@ -1,10 +1,15 @@
 package ch.fhnw.shakethelakebackend.service;
 
+import ch.fhnw.shakethelakebackend.model.dto.CreateTimeSlotDto;
+import ch.fhnw.shakethelakebackend.model.dto.TimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
+import ch.fhnw.shakethelakebackend.model.entity.Booking;
 import ch.fhnw.shakethelakebackend.model.entity.TimeSlot;
+import ch.fhnw.shakethelakebackend.model.mapper.TimeSlotMapper;
 import ch.fhnw.shakethelakebackend.model.repository.BoatRepository;
 import ch.fhnw.shakethelakebackend.model.repository.TimeSlotRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,10 +17,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,89 +36,85 @@ class TimeSlotServiceTest {
     @Mock
     private BoatService boatService;
 
+    @Mock
+    private TimeSlotMapper timeSlotMapper;
+
     @InjectMocks
     private TimeSlotService timeSlotService;
 
-    @Test
-    void testGetTimeSlotFound() {
-        Long timeSlotId = 1L;
-        TimeSlot timeSlot = new TimeSlot();
-        when(timeSlotRepository.findById(timeSlotId)).thenReturn(Optional.of(timeSlot));
+    private TimeSlot timeSlot;
 
-        TimeSlot foundTimeSlot = timeSlotService.getTimeSlot(timeSlotId);
+    private TimeSlotDto timeSlotDto;
 
-        assertNotNull(foundTimeSlot);
-        verify(timeSlotRepository).findById(timeSlotId);
-    }
+    private CreateTimeSlotDto createTimeSlotDto;
 
-    @Test
-    void testGetTimeSlotNotFound() {
-        Long timeSlotId = 1L;
-        when(timeSlotRepository.findById(timeSlotId)).thenReturn(Optional.empty());
+    private Booking booking;
 
-        assertThrows(EntityNotFoundException.class, () -> timeSlotService.getTimeSlot(timeSlotId));
+    private Boat boat;
+
+    private LocalDateTime fromTime;
+    private LocalDateTime untilTime;
+
+    @BeforeEach
+    void setup() {
+        fromTime = LocalDateTime.now();
+        untilTime = LocalDateTime.now().plusHours(1);
+        boat = Boat.builder().seatsRider(2).seatsViewer(2).id(1L).availableFrom(fromTime).availableUntil(untilTime)
+                .build();
+        timeSlot = TimeSlot.builder().fromTime(fromTime).untilTime(untilTime).boat(boat).id(1L).build();
+        timeSlotDto = TimeSlotDto.builder().fromTime(fromTime).untilTime(untilTime).boatId(1L).id(1L).build();
+        createTimeSlotDto = CreateTimeSlotDto.builder().fromTime(fromTime).untilTime(untilTime).boatId(1L).build();
+        booking = Booking.builder().id(1L).build();
     }
 
     @Test
     void testCreateTimeSlot() {
-        TimeSlot timeSlot = new TimeSlot();
-        Boat boat = new Boat();
+        when(timeSlotMapper.toEntity(any(CreateTimeSlotDto.class))).thenReturn(timeSlot);
+        when(boatService.getBoat(1L)).thenReturn(boat);
+        when(timeSlotRepository.save(any(TimeSlot.class))).thenReturn(timeSlot);
+        when(timeSlotMapper.toDto(any(TimeSlot.class))).thenReturn(timeSlotDto);
 
-        boat.setId(1L);
-        boat.setAvailableFrom(LocalDateTime.now());
-        boat.setAvailableUntil(LocalDateTime.now().plusHours(1));
+        TimeSlotDto result = timeSlotService.createTimeSlot(createTimeSlotDto);
 
-        timeSlot.setBoat(boat);
-        timeSlot.setFromTime(boat.getAvailableFrom());
-        timeSlot.setUntilTime(boat.getAvailableUntil());
-
-        when(timeSlotRepository.existsById(timeSlot.getId())).thenReturn(false);
-        when(boatService.getBoat(boat.getId())).thenReturn(boat);
-        when(timeSlotRepository.save(timeSlot)).thenReturn(timeSlot);
-
-        timeSlotService.createTimeSlot(timeSlot);
-
+        assertEquals(timeSlotDto, result);
         verify(timeSlotRepository).save(timeSlot);
     }
 
     @Test
-    void testCreateTimeSlotInvalidTime() {
-        TimeSlot timeSlot = new TimeSlot();
-        Boat boat = new Boat();
-
-        boat.setId(1L);
-        boat.setAvailableFrom(LocalDateTime.now());
-        boat.setAvailableUntil(LocalDateTime.now().plusHours(1));
-
-        timeSlot.setBoat(boat);
-        timeSlot.setFromTime(boat.getAvailableFrom().minusHours(1));
-        timeSlot.setUntilTime(boat.getAvailableUntil().plusHours(1));
-
-        when(timeSlotRepository.existsById(timeSlot.getId())).thenReturn(false);
-        when(boatService.getBoat(boat.getId())).thenReturn(boat);
-
-        assertThrows(IllegalArgumentException.class, () -> timeSlotService.createTimeSlot(timeSlot));
-    }
-
-    @Test
     void testUpdateTimeSlot() {
-        TimeSlot timeSlotToUpdate = new TimeSlot();
-        timeSlotToUpdate.setId(1L);
-        when(timeSlotRepository.existsById(timeSlotToUpdate.getId())).thenReturn(true);
+        when(timeSlotRepository.existsById(1L)).thenReturn(true);
+        when(timeSlotMapper.toEntity(any(CreateTimeSlotDto.class))).thenReturn(timeSlot);
+        when(timeSlotRepository.save(any(TimeSlot.class))).thenReturn(timeSlot);
+        when(timeSlotMapper.toDto(any(TimeSlot.class))).thenReturn(timeSlotDto);
 
-        timeSlotService.updateTimeSlot(timeSlotToUpdate.getId(), timeSlotToUpdate);
+        TimeSlotDto result = timeSlotService.updateTimeSlot(1L, createTimeSlotDto);
 
-        verify(timeSlotRepository).save(timeSlotToUpdate);
+        assertEquals(timeSlotDto, result);
+        verify(timeSlotRepository).save(timeSlot);
     }
 
     @Test
-    void testUpdateNonExistingTimeSlot() {
-        TimeSlot timeSlotToUpdate = new TimeSlot();
-        timeSlotToUpdate.setId(1L);
-        when(timeSlotRepository.existsById(timeSlotToUpdate.getId())).thenReturn(false);
+    void testDeleteTimeSlot() {
+        when(timeSlotRepository.existsById(1L)).thenReturn(true);
 
-        assertThrows(EntityNotFoundException.class,
-            () -> timeSlotService.updateTimeSlot(timeSlotToUpdate.getId(), timeSlotToUpdate));
+        timeSlotService.deleteTimeSlot(1L);
+
+        verify(timeSlotRepository).deleteById(1L);
     }
 
+    @Test
+    void testGetTimeSlot() {
+        when(timeSlotRepository.findById(1L)).thenReturn(java.util.Optional.of(timeSlot));
+
+        TimeSlot result = timeSlotService.getTimeSlot(1L);
+
+        assertEquals(timeSlot, result);
+    }
+
+    @Test
+    void testGetTimeSlotNotFound() {
+        when(timeSlotRepository.findById(1L)).thenReturn(java.util.Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> timeSlotService.getTimeSlot(1L));
+    }
 }
