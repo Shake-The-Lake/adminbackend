@@ -77,9 +77,6 @@ release-job:
       description: $CI_COMMIT_TAG
       ref: $CI_COMMIT_REF_NAME
   
-    needs:
-        - "containerize-job"
-
     only:
         - tags
    
