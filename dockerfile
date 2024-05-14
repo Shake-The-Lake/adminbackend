@@ -1,14 +1,21 @@
-FROM openjdk:19-ea
+FROM maven:latest AS build
 
 # SET THE ENVIRONMENT VARIABLES
 ENV PORT=8080
 ENV SPRING_PROFILES_ACTIVE=prod
 
-# Set the working directory
-WORKDIR /opt/shake-the-lake-backend
+WORKDIR /code
+COPY pom.xml .
+COPY src ./src
+
+RUN ["mvn", "package", "-DskipTests"]
+
+FROM openjdk:19-ea
+
+WORKDIR /code
 
 # Copy the application's jar to the container
-COPY target/*.jar app.jar
+COPY --from=build /code/target/shake-the-lake-backend.jar ./
 
 # Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "shake-the-lake-backend.jar"]
