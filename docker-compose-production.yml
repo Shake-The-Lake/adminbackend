@@ -31,7 +31,7 @@ services:
       - 'traefik.http.routers.frontend.rule=PathPrefix(`/`)'
       - 'custom.label=${COMPOSE_PROJECT_NAME}'
   backend:
-    build: .
+    image: ghcr.io/shake-the-lake/adminbackend:sha-8274e57
     environment:
       - SERVER_PORT=8080
       - SERVER_PATH=/api
