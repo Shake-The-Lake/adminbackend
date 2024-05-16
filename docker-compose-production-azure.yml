@@ -14,22 +14,24 @@ services:
       - '--providers.docker'
       # Do not expose containers unless explicitly told so
       - '--providers.docker.exposedbydefault=false'
-      - '--entryPoints.${PORT}-web.address=:${PORT}'
-      - '--providers.docker.constraints=Label(`custom.label`,`${COMPOSE_PROJECT_NAME}`)'
+      - '--entryPoints.80-web.address=:80'
+      - '--providers.docker.constraints=Label(`custom.label`,`shakethe`)'
     ports:
       # The HTTP port
-      - ${PORT}:${PORT}
+      - 80:80
     volumes:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
   frontend:
     image: ghcr.io/shake-the-lake/adminfrontend:main
+    depends_on:
+      - backend
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.frontend.rule=PathPrefix(`/`)'
-      - 'custom.label=${COMPOSE_PROJECT_NAME}'
+      - 'custom.label=shakethe'
   backend:
-    image: ghcr.io/shake-the-lake/adminbackend:main
+    image: ghcr.io/shake-the-lake/adminbackend:sha-8274e57
     environment:
       - SERVER_PORT=8080
       - SERVER_PATH=/api
@@ -42,14 +44,13 @@ services:
       - SPRING_JPA_GENERATE_DDL=true
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - TZ=Europe/Berlin
-    restart: always
     depends_on:
       - db
     labels:
       - 'traefik.enable=true'
       - 'traefik.http.routers.backend.rule=PathPrefix(`/api`)'
       - 'traefik.http.services.backend.loadbalancer.server.port=8080'
-      - 'custom.label=${COMPOSE_PROJECT_NAME}'
+      - 'custom.label=shakethe'
   db:
     image: postgres:latest
     environment:
@@ -58,4 +59,4 @@ services:
       - POSTGRES_USER=shakethelake
       - POSTGRES_PASSWORD=shakethelake
     labels:
-      - 'custom.label=${COMPOSE_PROJECT_NAME}'
+      - 'custom.label=shakethe'
