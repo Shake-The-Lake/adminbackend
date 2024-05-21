@@ -17,8 +17,6 @@ public class EventService {
     public static final String EVENT_NOT_FOUND = "Event not found";
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
-    private final TimeSlotService timeSlotService;
-    private final ActivityTypeService activityTypeService;
 
     public EventDto getEventDto(Long id) {
         Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(EVENT_NOT_FOUND));
