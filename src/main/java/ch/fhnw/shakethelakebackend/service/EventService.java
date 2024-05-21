@@ -39,21 +39,15 @@ public class EventService {
         return eventMapper.toDto(event);
     }
 
-    // May need to be discussed what should be updatable or not
-    // Just a first implementation which allows us to update all properties
-    public Event updateEvent(Long id, Event event) {
-        Event existingEvent = eventRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException(EVENT_NOT_FOUND));
+    public EventDto updateEvent(Long id, CreateEventDto createEventDto) {
+        if (!eventRepository.existsById(id)) {
+            throw new EntityNotFoundException(EVENT_NOT_FOUND);
+        }
 
-        Event updatedEvent = Event.builder().id(existingEvent.getId())
-            .date(event.getDate() != null ? event.getDate() : existingEvent.getDate())
-            .customerCode(event.getCustomerCode() != null ? event.getCustomerCode() : existingEvent.getCustomerCode())
-            .employeeCode(event.getEmployeeCode() != null ? event.getEmployeeCode() : existingEvent.getEmployeeCode())
-            .customerOnlyTime(
-                event.getCustomerOnlyTime() != null ? event.getCustomerOnlyTime() : existingEvent.getCustomerOnlyTime())
-            .startedAt(event.getStartedAt() != null ? event.getStartedAt() : existingEvent.getStartedAt())
-            .endedAt(event.getEndedAt() != null ? event.getEndedAt() : existingEvent.getEndedAt()).build();
-        return eventRepository.save(updatedEvent);
+        Event newEvent = eventMapper.toEntity(createEventDto);
+        newEvent.setId(id);
+        eventRepository.save(newEvent);
+        return eventMapper.toDto(newEvent);
     }
 
     public void deleteEvent(Long id) {

@@ -98,14 +98,17 @@ public class EventServiceTest {
 
     @Test
     void updateEventUpdatesAndReturnsEvent() {
-        when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
-        when(eventRepository.save(any(Event.class))).thenReturn(event);
+        when(eventRepository.existsById(1L)).thenReturn(true);
+        when(eventMapper.toEntity(any())).thenReturn(event);
+        when(eventRepository.save(event)).thenReturn(event);
+        when(eventMapper.toDto(event)).thenReturn(eventDto);
 
-        Event result = eventService.updateEvent(1L, new Event());
+        EventDto result = eventService.updateEvent(1L, CreateEventDto.builder().build());
 
         assertNotNull(result);
-        verify(eventRepository).findById(1L);
-        verify(eventRepository).save(any(Event.class));
+        verify(eventRepository).existsById(1L);
+        verify(eventRepository).save(event);
+        verify(eventMapper).toDto(event);
     }
 
     @Test
