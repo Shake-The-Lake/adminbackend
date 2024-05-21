@@ -34,7 +34,6 @@ public class CreateBoatDto implements Serializable {
     private LocalDateTime availableFrom;
     @NotNull
     private LocalDateTime availableUntil;
-    @NotNull
     private Long activityTypeId;
     @NotNull
     private Long eventId;
