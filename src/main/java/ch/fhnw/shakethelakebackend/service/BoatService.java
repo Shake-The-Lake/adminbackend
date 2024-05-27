@@ -1,5 +1,6 @@
 package ch.fhnw.shakethelakebackend.service;
 
+import ch.fhnw.shakethelakebackend.model.dto.ActivityTypeDto;
 import ch.fhnw.shakethelakebackend.model.dto.BoatDto;
 import ch.fhnw.shakethelakebackend.model.dto.CreateActivityTypeDto;
 import ch.fhnw.shakethelakebackend.model.dto.CreateBoatDto;
@@ -62,29 +63,9 @@ public class BoatService {
 
     public BoatDto createBoat(CreateBoatDto createBoatDto) {
         // FIXME this is temporary while users can't be created in the frontend
-        if(this.testUser != null) {
+        if (this.testUser != null) {
             createBoatDto.setBoatDriverId(this.testUser.getId());
-
-            // FIXME this is only for test purpose
-            var activityType = this.activityTypeService.createActivityType(
-                CreateActivityTypeDto.builder()
-                .eventId(createBoatDto.getEventId())
-                .description(
-                    new LocalizedString(
-                        "Wakeboarding",
-                        "Wakeboarding",
-                        "Wakeboarding")
-                )
-                .checklist(
-                    new LocalizedString(
-                    "Wakeboarding",
-                    "Wakeboarding",
-                    "Wakeboarding")
-                )
-                .icon("icon")
-                .build()
-            );
-            createBoatDto.setActivityTypeId(activityType.getId());
+            createBoatDto.setActivityTypeId(createDummyActivityType(createBoatDto.getEventId()).getId());
         }
         Person driver = personService.getPerson(createBoatDto.getBoatDriverId());
         if (driver.getPersonType() != PersonType.BOAT_DRIVER) {
@@ -98,6 +79,28 @@ public class BoatService {
         boat.setEvent(event);
         boatRepository.save(boat);
         return boatMapper.toDto(boat);
+    }
+
+    private ActivityTypeDto createDummyActivityType(Long eventId) {
+        // FIXME this is only for test purpose
+        return this.activityTypeService.createActivityType(
+            CreateActivityTypeDto.builder()
+            .eventId(eventId)
+            .description(
+                new LocalizedString(
+                    "Wakeboarding",
+                    "Wakeboarding",
+                    "Wakeboarding")
+            )
+            .checklist(
+                new LocalizedString(
+                "Wakeboarding",
+                "Wakeboarding",
+                "Wakeboarding")
+            )
+            .icon("icon")
+            .build()
+        );
     }
 
     public BoatDto updateBoat(Long id, CreateBoatDto createBoatDto) {
