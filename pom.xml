@@ -87,6 +87,7 @@
                         </goals>
                         <configuration>
                             <mainClass>ch.fhnw.shakethelakebackend.ShakeTheLakeBackendApplication</mainClass>
+                            <finalName>shake-the-lake-backend</finalName>
                         </configuration>
                     </execution>
                 </executions>
