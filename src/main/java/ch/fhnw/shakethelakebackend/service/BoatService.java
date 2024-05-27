@@ -1,22 +1,25 @@
 package ch.fhnw.shakethelakebackend.service;
 
+import ch.fhnw.shakethelakebackend.model.dto.ActivityTypeDto;
 import ch.fhnw.shakethelakebackend.model.dto.BoatDto;
+import ch.fhnw.shakethelakebackend.model.dto.CreateActivityTypeDto;
 import ch.fhnw.shakethelakebackend.model.dto.CreateBoatDto;
+import ch.fhnw.shakethelakebackend.model.dto.CreatePersonDto;
+import ch.fhnw.shakethelakebackend.model.dto.PersonDto;
 import ch.fhnw.shakethelakebackend.model.entity.ActivityType;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.Event;
+import ch.fhnw.shakethelakebackend.model.entity.LocalizedString;
 import ch.fhnw.shakethelakebackend.model.entity.Person;
 import ch.fhnw.shakethelakebackend.model.entity.enums.PersonType;
 import ch.fhnw.shakethelakebackend.model.mapper.BoatMapper;
 import ch.fhnw.shakethelakebackend.model.repository.BoatRepository;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
 @Service
 public class BoatService {
 
@@ -28,6 +31,25 @@ public class BoatService {
     private final PersonService personService;
     private final ActivityTypeService activityTypeService;
     private final EventService eventService;
+    private final PersonDto testUser; 
+
+    public BoatService(BoatMapper boatMapper, BoatRepository boatRepository, PersonService personService,
+            ActivityTypeService activityTypeService, EventService eventService) {
+        this.boatMapper = boatMapper;
+        this.boatRepository = boatRepository;
+        this.personService = personService;
+        this.activityTypeService = activityTypeService;
+        this.eventService = eventService;
+
+        this.testUser = this.personService.createPerson(CreatePersonDto.builder()
+            .firstName("Charon")   
+            .lastName("Fährmann")
+            .personType(PersonType.BOAT_DRIVER)
+            .emailAddress("mymy@ti8m.ch")
+            .phoneNumber("079 hät si gseit")
+            .build()
+        );
+    }
 
     public BoatDto getBoatDto(Long id) {
         Boat boat = boatRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(BOAT_NOT_FOUND));
@@ -40,6 +62,11 @@ public class BoatService {
     }
 
     public BoatDto createBoat(CreateBoatDto createBoatDto) {
+        // FIXME this is temporary while users can't be created in the frontend
+        if (this.testUser != null) {
+            createBoatDto.setBoatDriverId(this.testUser.getId());
+            createBoatDto.setActivityTypeId(createDummyActivityType(createBoatDto.getEventId()).getId());
+        }
         Person driver = personService.getPerson(createBoatDto.getBoatDriverId());
         if (driver.getPersonType() != PersonType.BOAT_DRIVER) {
             throw new IllegalArgumentException(PERSON_IS_NOT_BOAT_DRIVER);
@@ -52,6 +79,28 @@ public class BoatService {
         boat.setEvent(event);
         boatRepository.save(boat);
         return boatMapper.toDto(boat);
+    }
+
+    private ActivityTypeDto createDummyActivityType(Long eventId) {
+        // FIXME this is only for test purpose
+        return this.activityTypeService.createActivityType(
+            CreateActivityTypeDto.builder()
+            .eventId(eventId)
+            .description(
+                new LocalizedString(
+                    "Wakeboarding",
+                    "Wakeboarding",
+                    "Wakeboarding")
+            )
+            .checklist(
+                new LocalizedString(
+                "Wakeboarding",
+                "Wakeboarding",
+                "Wakeboarding")
+            )
+            .icon("icon")
+            .build()
+        );
     }
 
     public BoatDto updateBoat(Long id, CreateBoatDto createBoatDto) {
