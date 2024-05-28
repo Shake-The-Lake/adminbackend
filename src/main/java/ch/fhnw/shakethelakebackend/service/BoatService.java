@@ -18,13 +18,13 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service
 public class BoatService {
 
     public static final String BOAT_NOT_FOUND = "Boat not found";
-    public static final String PERSON_NOT_FOUND = "Person not found";
     public static final String PERSON_IS_NOT_BOAT_DRIVER = "Person is not a boat driver";
     private final BoatMapper boatMapper;
     private final BoatRepository boatRepository;
@@ -108,10 +108,53 @@ public class BoatService {
     }
 
     public List<BoatDto> getAllBoats() {
-        return boatRepository.findAll().stream().map(boatMapper::toDto).collect(Collectors.toList());
+        return boatRepository.findAll().stream().map(boatMapper::toDto).toList();
     }
 
-    public List<BoatDto> getBoatsByEvent(Long id) {
-        return boatRepository.findForEventId(id).stream().map(boatMapper::toDto).collect(Collectors.toList());
+    public List<BoatDto> getBoatsWithDetails(Optional<String> expand) {
+        List<Boat> boats = boatRepository.findAll();
+        List<BoatDto> boatDtos = getAllBoats();
+        if (expand.isPresent()) {
+            String expandString = expand.get().trim();
+            List<String> expandList = Stream.of(expandString.split(",")).map(String::trim).toList();
+            if (expandList.contains("timeSlots")) {
+                boatDtos = boats.stream().map(boatMapper::toDtoWithTimeSlots).toList();
+            }
+            if (expandList.contains("activityType")) {
+                boatDtos = boats.stream().map(boat -> {
+                    ActivityTypeDto activityTypeDto = activityTypeService.toDto(boat.getActivityType());
+                    BoatDto boatDto = boatMapper.toDto(boat);
+                    boatDto.setActivityType(activityTypeDto);
+                    return boatDto;
+                }).toList();
+            }
+            if (expandList.contains("activityType") && expandList.contains("timeSlots")) {
+                boatDtos = boats.stream().map(boat -> {
+                    ActivityTypeDto activityTypeDto = activityTypeService.toDto(boat.getActivityType());
+                    BoatDto boatDto = boatMapper.toDtoWithTimeSlots(boat);
+                    boatDto.setActivityType(activityTypeDto);
+                    return boatDto;
+                }).toList();
+            }
+
+        }
+        return boatDtos;
+    }
+
+    public BoatDto getBoatWithDetails(Long id, Optional<String> expand) {
+        Boat boat = getBoat(id);
+        BoatDto boatDto = getBoatDto(id);
+        if (expand.isPresent()) {
+            String expandString = expand.get().trim();
+            List<String> expandList = List.of(expandString.split(",")).stream().map(String::trim).toList();
+            if (expandList.contains("timeSlots")) {
+                boatDto = boatMapper.toDtoWithTimeSlots(boat);
+            }
+            if (expandList.contains("activityType")) {
+                ActivityTypeDto activityTypeDto = activityTypeService.toDto(boat.getActivityType());
+                boatDto.setActivityType(activityTypeDto);
+            }
+        }
+        return boatDto;
     }
 }

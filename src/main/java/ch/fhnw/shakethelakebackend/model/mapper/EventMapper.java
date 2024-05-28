@@ -21,6 +21,8 @@ public interface EventMapper {
 
     @Mapping(target = "activityTypeIds", expression = "java(mapActivityTypesToIds(event.getActivityTypes()))")
     @Mapping(target = "boatIds", expression = "java(mapBoatsToIds(event.getBoats()))")
+    @Mapping(target = "boats", ignore = true)
+    @Mapping(target = "activityTypes", ignore = true)
     EventDto toDto(Event event);
 
     default Set<Long> mapActivityTypesToIds(Set<ActivityType> activityTypes) {

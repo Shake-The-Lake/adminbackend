@@ -2,9 +2,10 @@ package ch.fhnw.shakethelakebackend.controller;
 
 import ch.fhnw.shakethelakebackend.model.dto.CreateEventDto;
 import ch.fhnw.shakethelakebackend.model.dto.EventDto;
-import ch.fhnw.shakethelakebackend.service.EventManagementFacade;
 import ch.fhnw.shakethelakebackend.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
@@ -30,7 +31,6 @@ import java.util.Optional;
 public class EventController {
 
     private final EventService eventService;
-    private final EventManagementFacade eventManagementFacade;
 
     @Operation(summary = "Create an event", description = "Creates an event")
     @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Successfully created an Event"),
@@ -41,12 +41,13 @@ public class EventController {
         return eventService.createEvent(createEventDto);
     }
 
-    @Operation(summary = "Get an event by id", description = "Returns an event as per the id")
+    @Operation(summary = "Get an event by id", description = "Returns an event as per the id", parameters = {
+        @Parameter(name = "expand", description = "Expand the response with more details from related objects", required = false, example = "boats,boats.timeSlots,activityTypes", schema = @Schema(type = "string")) })
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully retrieved an event by id"),
         @ApiResponse(responseCode = "404", description = EventService.EVENT_NOT_FOUND) })
     @GetMapping("/{id}")
     public EventDto getEvent(@PathVariable Long id, @RequestParam(required = false) Optional<String> expand) {
-        return eventManagementFacade.getEventWithDetails(id, expand);
+        return eventService.getEventWithDetails(id, expand);
     }
 
     @Operation(summary = "Get all events", description = "Returns all events")
