@@ -61,4 +61,8 @@ public class ActivityTypeService {
         activityTypeRepository.save(updateActivityType);
         return activityTypeMapper.toDto(updateActivityType);
     }
+
+    public List<ActivityTypeDto> getActivityTypesByEvent(Long id) {
+        return activityTypeRepository.findForEventId(id).stream().map(activityTypeMapper::toDto).toList();
+    }
 }

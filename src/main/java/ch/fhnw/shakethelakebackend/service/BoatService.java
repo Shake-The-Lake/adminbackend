@@ -31,24 +31,19 @@ public class BoatService {
     private final PersonService personService;
     private final ActivityTypeService activityTypeService;
     private final EventService eventService;
-    private final PersonDto testUser; 
+    private final PersonDto testUser;
 
     public BoatService(BoatMapper boatMapper, BoatRepository boatRepository, PersonService personService,
-            ActivityTypeService activityTypeService, EventService eventService) {
+        ActivityTypeService activityTypeService, EventService eventService) {
         this.boatMapper = boatMapper;
         this.boatRepository = boatRepository;
         this.personService = personService;
         this.activityTypeService = activityTypeService;
         this.eventService = eventService;
 
-        this.testUser = this.personService.createPerson(CreatePersonDto.builder()
-            .firstName("Charon")   
-            .lastName("Fährmann")
-            .personType(PersonType.BOAT_DRIVER)
-            .emailAddress("mymy@ti8m.ch")
-            .phoneNumber("079 hät si gseit")
-            .build()
-        );
+        this.testUser = this.personService.createPerson(
+            CreatePersonDto.builder().firstName("Charon").lastName("Fährmann").personType(PersonType.BOAT_DRIVER)
+                .emailAddress("mymy@ti8m.ch").phoneNumber("079 hät si gseit").build());
     }
 
     public BoatDto getBoatDto(Long id) {
@@ -83,24 +78,9 @@ public class BoatService {
 
     private ActivityTypeDto createDummyActivityType(Long eventId) {
         // FIXME this is only for test purpose
-        return this.activityTypeService.createActivityType(
-            CreateActivityTypeDto.builder()
-            .eventId(eventId)
-            .description(
-                new LocalizedString(
-                    "Wakeboarding",
-                    "Wakeboarding",
-                    "Wakeboarding")
-            )
-            .checklist(
-                new LocalizedString(
-                "Wakeboarding",
-                "Wakeboarding",
-                "Wakeboarding")
-            )
-            .icon("icon")
-            .build()
-        );
+        return this.activityTypeService.createActivityType(CreateActivityTypeDto.builder().eventId(eventId)
+            .description(new LocalizedString("Wakeboarding", "Wakeboarding", "Wakeboarding"))
+            .checklist(new LocalizedString("Wakeboarding", "Wakeboarding", "Wakeboarding")).icon("icon").build());
     }
 
     public BoatDto updateBoat(Long id, CreateBoatDto createBoatDto) {
@@ -129,5 +109,9 @@ public class BoatService {
 
     public List<BoatDto> getAllBoats() {
         return boatRepository.findAll().stream().map(boatMapper::toDto).collect(Collectors.toList());
+    }
+
+    public List<BoatDto> getBoatsByEvent(Long id) {
+        return boatRepository.findForEventId(id).stream().map(boatMapper::toDto).collect(Collectors.toList());
     }
 }

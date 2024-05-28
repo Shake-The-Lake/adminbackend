@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -43,4 +44,6 @@ public class EventDto implements Serializable {
     private LocalDateTime endedAt;
     private Set<Long> activityTypeIds;
     private Set<Long> boatIds;
+    private List<BoatDto> boats = null;
+    private List<ActivityTypeDto> activityTypes = null;
 }

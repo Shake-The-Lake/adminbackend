@@ -24,5 +24,4 @@ public class ActivityTypeDto implements Serializable {
     private LocalizedString description;
     private LocalizedString checklist;
     private String icon;
-    private Long eventId;
 }

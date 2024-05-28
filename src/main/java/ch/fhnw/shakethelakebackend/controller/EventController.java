@@ -2,6 +2,7 @@ package ch.fhnw.shakethelakebackend.controller;
 
 import ch.fhnw.shakethelakebackend.model.dto.CreateEventDto;
 import ch.fhnw.shakethelakebackend.model.dto.EventDto;
+import ch.fhnw.shakethelakebackend.service.EventManagementFacade;
 import ch.fhnw.shakethelakebackend.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,10 +17,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -27,6 +30,7 @@ import java.util.List;
 public class EventController {
 
     private final EventService eventService;
+    private final EventManagementFacade eventManagementFacade;
 
     @Operation(summary = "Create an event", description = "Creates an event")
     @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Successfully created an Event"),
@@ -41,8 +45,8 @@ public class EventController {
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully retrieved an event by id"),
         @ApiResponse(responseCode = "404", description = EventService.EVENT_NOT_FOUND) })
     @GetMapping("/{id}")
-    public EventDto getEvent(@PathVariable Long id) {
-        return eventService.getEventDto(id);
+    public EventDto getEvent(@PathVariable Long id, @RequestParam(required = false) Optional<String> expand) {
+        return eventManagementFacade.getEventWithDetails(id, expand);
     }
 
     @Operation(summary = "Get all events", description = "Returns all events")
