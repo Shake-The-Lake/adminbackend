@@ -27,13 +27,22 @@ public interface BoatMapper {
     @Mapping(target = "activityTypeId", source = "activityType.id")
     @Mapping(target = "eventId", source = "event.id")
     @Mapping(target = "timeSlots", ignore = true)
+    @Mapping(target = "activityType", ignore = true)
     BoatDto toDto(Boat boat);
 
     @Mapping(target = "timeSlotIds", expression = "java(timeSlotsToTimeSlotIds(boat.getTimeSlots()))")
     @Mapping(source = "boatDriver.id", target = "boatDriverId")
     @Mapping(target = "activityTypeId", source = "activityType.id")
     @Mapping(target = "eventId", source = "event.id")
+    @Mapping(target = "activityType", ignore = true)
     BoatDto toDtoWithTimeSlots(Boat boat);
+
+
+    @Mapping(target = "timeSlotIds", expression = "java(timeSlotsToTimeSlotIds(boat.getTimeSlots()))")
+    @Mapping(source = "boatDriver.id", target = "boatDriverId")
+    @Mapping(target = "activityTypeId", source = "activityType.id")
+    @Mapping(target = "eventId", source = "event.id")
+    BoatDto toDtoWithTimeSlotsAndActivityType(Boat boat);
 
     @Mapping(source = "boatDriver.id", target = "boatDriverId")
     CreateBoatDto toCreateDto(Boat boat);

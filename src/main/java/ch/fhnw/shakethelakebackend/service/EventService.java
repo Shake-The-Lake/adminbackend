@@ -13,7 +13,6 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +24,7 @@ public class EventService {
     private final EventMapper eventMapper;
     private final BoatMapper boatMapper;
     private final ActivityTypeMapper activityTypeMapper;
+    private final ExpandHelper expandHelper;
 
     public EventDto getEventDto(Long id) {
         Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(EVENT_NOT_FOUND));
@@ -68,23 +68,25 @@ public class EventService {
         Event event = getEvent(id);
         EventDto eventDto = eventMapper.toDto(event);
 
-        if (expand.isPresent()) {
-            String expandString = expand.get().trim();
-            List<String> expandList = Arrays.asList(expandString.split(",")).stream().map(String::trim).toList();
-            if (expandList.contains("boats")) {
+        expandHelper.applyExpansion(expand, "boats", shouldExpand -> {
+            if (shouldExpand.isPresent() && shouldExpand.get()) {
                 List<BoatDto> boatDtos = event.getBoats().stream().map(boatMapper::toDto).toList();
                 eventDto.setBoats(boatDtos);
             }
-            if (expandList.contains("boats.timeSlots")) {
+        });
+        expandHelper.applyExpansion(expand, "boats.timeSlots", shouldExpand -> {
+            if (shouldExpand.isPresent() && shouldExpand.get()) {
                 List<BoatDto> boatDtos = event.getBoats().stream().map(boatMapper::toDtoWithTimeSlots).toList();
                 eventDto.setBoats(boatDtos);
             }
-            if (expandList.contains("activityTypes")) {
+        });
+        expandHelper.applyExpansion(expand, "activityTypes", shouldExpand -> {
+            if (shouldExpand.isPresent() && shouldExpand.get()) {
                 List<ActivityTypeDto> activityTypeDtos = event.getActivityTypes().stream()
                     .map(activityTypeMapper::toDto).toList();
                 eventDto.setActivityTypes(activityTypeDtos);
             }
-        }
+        });
 
         return eventDto;
     }

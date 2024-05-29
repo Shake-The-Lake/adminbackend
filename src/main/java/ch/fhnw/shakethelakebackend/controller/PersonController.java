@@ -4,6 +4,8 @@ import ch.fhnw.shakethelakebackend.model.dto.CreatePersonDto;
 import ch.fhnw.shakethelakebackend.model.dto.PersonDto;
 import ch.fhnw.shakethelakebackend.service.PersonService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
@@ -30,15 +32,18 @@ public class PersonController {
     private final PersonService personService;
 
     @Operation(summary = "Get a person by id", description = "Returns a person as per the id")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully retrieved a person by id"),
-        @ApiResponse(responseCode = "404", description = "Not found - The person was not found") })
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully retrieved a person by id"),
+        @ApiResponse(responseCode = "404", description = PersonService.PERSON_NOT_FOUND,
+            content = @Content(schema = @Schema(implementation = String.class))) })
     @GetMapping("/{id}")
     public PersonDto getPerson(@PathVariable Long id) {
         return personService.getPersonDto(id);
     }
 
     @Operation(summary = "Create a person", description = "Creates a person")
-    @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Successfully created a person") })
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Successfully created a person") })
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
     public PersonDto createPerson(@Valid @RequestBody CreatePersonDto createPersonDto) {
@@ -46,23 +51,30 @@ public class PersonController {
     }
 
     @Operation(summary = "Update a person by id", description = "Updates a person as per the id")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully updated a person by id"),
-        @ApiResponse(responseCode = "404", description = "Not found - The person was not found") })
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully updated a person by id"),
+        @ApiResponse(responseCode = "404", description = PersonService.PERSON_NOT_FOUND,
+            content = @Content(schema = @Schema(implementation = String.class))) })
     @PutMapping("/{id}")
-    public PersonDto updatePerson(@PathVariable Long id, @RequestBody @Valid CreatePersonDto createPersonDto) {
+    public PersonDto updatePerson(@PathVariable Long id,
+        @RequestBody @Valid CreatePersonDto createPersonDto) {
         return personService.updatePerson(id, createPersonDto);
     }
 
     @Operation(summary = "Delete a person by id", description = "Deletes a person as per the id")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully deleted a person by id"),
-        @ApiResponse(responseCode = "404", description = "Not found - The person was not found") })
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully deleted a person by id"),
+        @ApiResponse(responseCode = "404", description = PersonService.PERSON_NOT_FOUND,
+            content = @Content(schema = @Schema(implementation = String.class))),
+        @ApiResponse(responseCode = "409", description = "This is still related to other entites") })
     @DeleteMapping("/{id}")
     public void deletePerson(@PathVariable Long id) {
         personService.deletePerson(id);
     }
 
     @Operation(summary = "Get all persons", description = "Returns all persons")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully retrieved all persons") })
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully retrieved all persons") })
     @GetMapping()
     public List<PersonDto> getAllPersons() {
         return personService.getAllPersonsDto();

@@ -77,4 +77,26 @@ class BoatMapperTest {
         Set<Long> ids = mapper.timeSlotsToTimeSlotIds(boat.getTimeSlots());
         assertEquals(2, ids.size());
     }
+
+    @Test
+    void testTimeSlotsToTimeSlotIdsEmpty() {
+        Set<Long> ids = mapper.timeSlotsToTimeSlotIds(new HashSet<>());
+        assertEquals(0, ids.size());
+    }
+
+    @Test
+    void testToDtoWithTimeSlotsAndActivityType() {
+        BoatDto result = mapper.toDtoWithTimeSlotsAndActivityType(boat);
+        assertEquals(boat.getBoatDriver().getId(), result.getBoatDriverId());
+        assertEquals(2, result.getTimeSlotIds().size());
+    }
+
+    @Test
+    void testToDtoWithTimeSlots() {
+        BoatDto result = mapper.toDtoWithTimeSlots(boat);
+        assertEquals(boat.getBoatDriver().getId(), result.getBoatDriverId());
+        assertEquals(2, result.getTimeSlotIds().size());
+    }
+
+
 }
