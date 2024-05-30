@@ -22,10 +22,10 @@ public class TimeSlotService {
 
     private final TimeSlotRepository timeSlotRepository;
     private final BoatService boatService;
-    private final TimeSlotMapper timeSlotMappe;
+    private final TimeSlotMapper timeSlotMapper;
 
     public TimeSlotDto createTimeSlot(CreateTimeSlotDto timeSlotDto) {
-        TimeSlot timeSlot = timeSlotMappe.toEntity(timeSlotDto);
+        TimeSlot timeSlot = timeSlotMapper.toEntity(timeSlotDto);
 
         //Time slot must be in boats time
         Boat boat = boatService.getBoat(timeSlotDto.getBoatId());
@@ -39,18 +39,18 @@ public class TimeSlotService {
         timeSlot.setBookings(new HashSet<>());
         timeSlot = timeSlotRepository.save(timeSlot);
 
-        return timeSlotMappe.toDto(timeSlot);
+        return timeSlotMapper.toDto(timeSlot);
     }
 
     public TimeSlotDto updateTimeSlot(long id, CreateTimeSlotDto timeSlotDto) {
-        TimeSlot timeSlot = timeSlotMappe.toEntity(timeSlotDto);
+        TimeSlot timeSlot = timeSlotMapper.toEntity(timeSlotDto);
         if (!timeSlotRepository.existsById(id)) {
             throw new EntityNotFoundException("TimeSlot not found");
         }
 
         timeSlot.setId(id);
         timeSlotRepository.save(timeSlot);
-        return timeSlotMappe.toDto(timeSlot);
+        return timeSlotMapper.toDto(timeSlot);
     }
 
     public void deleteTimeSlot(Long id) {
@@ -68,10 +68,10 @@ public class TimeSlotService {
     public TimeSlotDto getTimeSlotDto(Long id) {
         TimeSlot timeSlot = timeSlotRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("TimeSlot not found"));
-        return timeSlotMappe.toDto(timeSlot);
+        return timeSlotMapper.toDto(timeSlot);
     }
 
     public List<TimeSlotDto> getAllTimeSlots() {
-        return timeSlotRepository.findAll().stream().map(timeSlotMappe::toDto).collect(Collectors.toList());
+        return timeSlotRepository.findAll().stream().map(timeSlotMapper::toDto).collect(Collectors.toList());
     }
 }

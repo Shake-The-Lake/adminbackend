@@ -4,7 +4,6 @@ import ch.fhnw.shakethelakebackend.model.dto.CreatePersonDto;
 import ch.fhnw.shakethelakebackend.model.dto.PersonDto;
 import ch.fhnw.shakethelakebackend.model.entity.Person;
 import ch.fhnw.shakethelakebackend.model.mapper.PersonMapper;
-import ch.fhnw.shakethelakebackend.model.repository.BoatRepository;
 import ch.fhnw.shakethelakebackend.model.repository.PersonRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -16,9 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class PersonService {
     public static final String PERSON_NOT_FOUND = "Person not found";
-    public static final String PERSON_IS_BOAT_DRIVER = "Person is still a boat driver";
     private final PersonRepository personRepository;
-    private final BoatRepository boatRepository;
     private final PersonMapper personMapper;
 
     public PersonDto createPerson(CreatePersonDto createPersonDto) {

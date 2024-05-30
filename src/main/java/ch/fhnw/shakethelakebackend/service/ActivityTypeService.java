@@ -61,4 +61,8 @@ public class ActivityTypeService {
         activityTypeRepository.save(updateActivityType);
         return activityTypeMapper.toDto(updateActivityType);
     }
+
+    public ActivityTypeDto toDto(ActivityType activityType) {
+        return activityTypeMapper.toDto(activityType);
+    }
 }

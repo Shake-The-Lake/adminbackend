@@ -5,6 +5,8 @@ import ch.fhnw.shakethelakebackend.model.dto.CreateActivityTypeDto;
 import ch.fhnw.shakethelakebackend.service.ActivityTypeService;
 import ch.fhnw.shakethelakebackend.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
@@ -40,35 +42,48 @@ public class ActivityTypeController {
     @Operation(summary = "Get an activity type by id", description = "Returns an activity type as per the id")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successfully retrieved an activity type by id"),
-        @ApiResponse(responseCode = "404", description = ActivityTypeService.ACTIVITY_TYPE_NOT_FOUND) })
+        @ApiResponse(responseCode = "404", description = ActivityTypeService.ACTIVITY_TYPE_NOT_FOUND,
+            content = @Content(schema = @Schema(implementation = String.class, example = "Event not found"))) })
     @GetMapping("/{id}")
-    public ActivityTypeDto getActivityType(@PathVariable Long id) {
-        return activityTypeService.getActivityTypeDto(id);
+    public ActivityTypeDto getActivityType(
+        @PathVariable Long id) {
+        return activityTypeService.getActivityTypeDto(
+            id);
     }
 
     @Operation(summary = "Create an activity type", description = "Creates an activity type")
-    @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Successfully created an activity type"),
-        @ApiResponse(responseCode = "404", description = EventService.EVENT_NOT_FOUND) })
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Successfully created an activity type"),
+        @ApiResponse(responseCode = "404", description = EventService.EVENT_NOT_FOUND,
+            content = @Content(schema = @Schema(implementation = String.class, example = "Event not found"))) })
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ActivityTypeDto createActivityType(@RequestBody @Valid CreateActivityTypeDto createActivityTypeDto) {
-        return activityTypeService.createActivityType(createActivityTypeDto);
+    public ActivityTypeDto createActivityType(
+        @RequestBody @Valid CreateActivityTypeDto createActivityTypeDto) {
+        return activityTypeService.createActivityType(
+            createActivityTypeDto);
     }
 
     @Operation(summary = "Update an activity type", description = "Updates an activity type")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully updated an activity type"),
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully updated an activity type"),
         @ApiResponse(responseCode = "404", description = ActivityTypeService.ACTIVITY_TYPE_NOT_FOUND) })
     @PutMapping("/{id}")
-    public ActivityTypeDto updateActivityType(@PathVariable Long id,
+    public ActivityTypeDto updateActivityType(
+        @PathVariable Long id,
         @RequestBody @Valid CreateActivityTypeDto createActivityTypeDto) {
-        return activityTypeService.updateActivityType(id, createActivityTypeDto);
+        return activityTypeService.updateActivityType(
+            id, createActivityTypeDto);
     }
 
     @Operation(summary = "Delete an activity type", description = "Deletes an activity type")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully deleted an activity type"),
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully deleted an activity type"),
         @ApiResponse(responseCode = "404", description = ActivityTypeService.ACTIVITY_TYPE_NOT_FOUND) })
     @DeleteMapping("/{id}")
-    public void deleteActivityType(@PathVariable Long id) {
-        activityTypeService.deleteActivityType(id);
+    public void deleteActivityType(
+        @PathVariable Long id) {
+        activityTypeService.deleteActivityType(
+            id);
     }
 }
