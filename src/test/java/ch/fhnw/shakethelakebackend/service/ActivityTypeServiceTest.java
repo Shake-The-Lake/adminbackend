@@ -153,4 +153,18 @@ class ActivityTypeServiceTest {
         verify(activityTypeRepository).existsById(activityTypeId);
         verify(activityTypeRepository, never()).deleteById(activityTypeId);
     }
+
+    @Test
+    void updateActivityTypeWithInvalidId() {
+        Long activityTypeId = 1L;
+        when(activityTypeRepository.existsById(activityTypeId)).thenReturn(false);
+
+        Exception exception = assertThrows(EntityNotFoundException.class, () -> {
+            activityTypeService.updateActivityType(activityTypeId, createActivityTypeDto);
+        });
+
+        assertEquals(ActivityTypeService.ACTIVITY_TYPE_NOT_FOUND, exception.getMessage());
+        verify(activityTypeRepository).existsById(activityTypeId);
+        verify(activityTypeRepository, never()).save(any(ActivityType.class));
+    }
 }

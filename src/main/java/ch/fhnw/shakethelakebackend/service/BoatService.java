@@ -18,37 +18,34 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class BoatService {
 
     public static final String BOAT_NOT_FOUND = "Boat not found";
-    public static final String PERSON_NOT_FOUND = "Person not found";
     public static final String PERSON_IS_NOT_BOAT_DRIVER = "Person is not a boat driver";
     private final BoatMapper boatMapper;
     private final BoatRepository boatRepository;
     private final PersonService personService;
     private final ActivityTypeService activityTypeService;
     private final EventService eventService;
-    private final PersonDto testUser; 
+    private final PersonDto testUser;
+    private final ExpandHelper expandHelper;
 
     public BoatService(BoatMapper boatMapper, BoatRepository boatRepository, PersonService personService,
-            ActivityTypeService activityTypeService, EventService eventService) {
+        ActivityTypeService activityTypeService, EventService eventService, ExpandHelper expandHelper) {
         this.boatMapper = boatMapper;
         this.boatRepository = boatRepository;
         this.personService = personService;
         this.activityTypeService = activityTypeService;
         this.eventService = eventService;
+        this.expandHelper = expandHelper;
 
-        this.testUser = this.personService.createPerson(CreatePersonDto.builder()
-            .firstName("Charon")   
-            .lastName("Fährmann")
-            .personType(PersonType.BOAT_DRIVER)
-            .emailAddress("mymy@ti8m.ch")
-            .phoneNumber("079 hät si gseit")
-            .build()
-        );
+        this.testUser = this.personService.createPerson(
+            CreatePersonDto.builder().firstName("Charon").lastName("Fährmann").personType(PersonType.BOAT_DRIVER)
+                .emailAddress("mymy@ti8m.ch").phoneNumber("079 hät si gseit").build());
     }
 
     public BoatDto getBoatDto(Long id) {
@@ -83,24 +80,9 @@ public class BoatService {
 
     private ActivityTypeDto createDummyActivityType(Long eventId) {
         // FIXME this is only for test purpose
-        return this.activityTypeService.createActivityType(
-            CreateActivityTypeDto.builder()
-            .eventId(eventId)
-            .description(
-                new LocalizedString(
-                    "Wakeboarding",
-                    "Wakeboarding",
-                    "Wakeboarding")
-            )
-            .checklist(
-                new LocalizedString(
-                "Wakeboarding",
-                "Wakeboarding",
-                "Wakeboarding")
-            )
-            .icon("icon")
-            .build()
-        );
+        return this.activityTypeService.createActivityType(CreateActivityTypeDto.builder().eventId(eventId)
+            .description(new LocalizedString("Wakeboarding", "Wakeboarding", "Wakeboarding"))
+            .checklist(new LocalizedString("Wakeboarding", "Wakeboarding", "Wakeboarding")).icon("icon").build());
     }
 
     public BoatDto updateBoat(Long id, CreateBoatDto createBoatDto) {
@@ -128,6 +110,47 @@ public class BoatService {
     }
 
     public List<BoatDto> getAllBoats() {
-        return boatRepository.findAll().stream().map(boatMapper::toDto).collect(Collectors.toList());
+        return boatRepository.findAll().stream().map(boatMapper::toDto).toList();
+    }
+
+    public List<BoatDto> getBoatsWithDetails(Optional<String> expand) {
+        List<Boat> boats = boatRepository.findAll();
+        List<BoatDto> boatDtos = getAllBoats();
+
+        boatDtos = boatDtos.stream().map(boat -> getBoatWithDetails(boat.getId(), expand)).toList();
+
+        List<BoatDto> finalBoatDtos = boatDtos;
+        boatDtos = expandHelper.applyExpansion(expand, Set.of("activityType", "timeSlots"), shouldExpand -> {
+            if (shouldExpand.isPresent() && shouldExpand.get()) {
+                return boats.stream().map(boatMapper::toDtoWithTimeSlotsAndActivityType).toList();
+            } else {
+                return finalBoatDtos;
+            }
+        });
+
+        return boatDtos;
+    }
+
+    public BoatDto getBoatWithDetails(Long id, Optional<String> expand) {
+        Boat boat = getBoat(id);
+        BoatDto boatDto = getBoatDto(id);
+        BoatDto originalBoatDto = boatDto;
+
+        boatDto = expandHelper.applyExpansion(expand, "timeSlots", shouldExpand -> {
+            if (shouldExpand.isPresent() && shouldExpand.get()) {
+                return boatMapper.toDtoWithTimeSlots(boat);
+            } else {
+                return originalBoatDto;
+            }
+        });
+        boatDto.setActivityType(expandHelper.applyExpansion(expand, "activityType", shouldExpand -> {
+            if (shouldExpand.isPresent() && shouldExpand.get()) {
+                return activityTypeService.toDto(boat.getActivityType());
+            } else {
+                return null;
+            }
+        }));
+
+        return boatDto;
     }
 }
