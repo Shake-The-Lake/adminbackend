@@ -4,8 +4,6 @@ import ch.fhnw.shakethelakebackend.model.dto.BoatDto;
 import ch.fhnw.shakethelakebackend.model.dto.CreateBoatDto;
 import ch.fhnw.shakethelakebackend.model.entity.ActivityType;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
-import ch.fhnw.shakethelakebackend.model.entity.Person;
-import ch.fhnw.shakethelakebackend.model.entity.enums.PersonType;
 import ch.fhnw.shakethelakebackend.model.mapper.BoatMapper;
 import ch.fhnw.shakethelakebackend.model.repository.BoatRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -50,7 +48,6 @@ class BoatServiceTest {
 
     private Boat boat;
 
-    private Person person;
     private CreateBoatDto createBoatDto;
     private BoatDto boatDto;
     private ActivityType activityType;
@@ -62,10 +59,7 @@ class BoatServiceTest {
         boat.setId(1L);
         boat.setName("Odyssey");
         boat.setType("Yacht");
-        person = new Person();
-        person.setPersonType(PersonType.BOAT_DRIVER);
-        person.setId(1L);
-        boat.setBoatDriver(person);
+        boat.setOperator("John Doe");
 
         createBoatDto = new CreateBoatDto();
         createBoatDto.setBoatDriverId(1L);
@@ -83,7 +77,6 @@ class BoatServiceTest {
     @Test
     void testCreateBoatSuccess() {
         //when
-        when(personService.getPerson(any())).thenReturn(person);
         when(activityTypeService.getActivityType(any())).thenReturn(activityType);
         when(boatMapper.toEntity(createBoatDto)).thenReturn(boat);
         when(boatMapper.toDto(boat)).thenReturn(boatDto);
@@ -99,25 +92,12 @@ class BoatServiceTest {
 
     @Test
     void testCreateBoatWithInvalidData() {
-        when(personService.getPerson(any())).thenReturn(person);
         // Arrange
         when(boatMapper.toEntity(any(CreateBoatDto.class))).thenThrow(new IllegalArgumentException("Invalid data"));
 
         // Act & Assert
         assertThrows(IllegalArgumentException.class, () -> boatService.createBoat(createBoatDto),
-            "Expected IllegalArgumentException due to invalid data");
-        verify(boatRepository, never()).save(any(Boat.class));
-    }
-
-    @Test
-    void testCreateBoatPersonNotDriver() {
-        // Arrange
-        person.setPersonType(PersonType.CUSTOMER);
-        when(personService.getPerson(any())).thenReturn(person);
-
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> boatService.createBoat(createBoatDto),
-            "Expected IllegalArgumentException due to person not being a driver");
+                "Expected IllegalArgumentException due to invalid data");
         verify(boatRepository, never()).save(any(Boat.class));
     }
 
@@ -138,13 +118,12 @@ class BoatServiceTest {
         when(boatRepository.findById(any())).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> boatService.getBoatDto(1L),
-            "Expected EntityNotFoundException due to non-existing boat");
+                "Expected EntityNotFoundException due to non-existing boat");
     }
 
     @Test
     void testUpdateBoatSuccess() {
         when(boatRepository.existsById(any())).thenReturn(true);
-        when(personService.getPerson(any())).thenReturn(person);
         when(boatMapper.toEntity(any())).thenReturn(boat);
         when(boatRepository.save(any())).thenReturn(boat);
         when(boatMapper.toDto(any())).thenReturn(boatDto);
@@ -170,7 +149,7 @@ class BoatServiceTest {
         when(boatRepository.findById(any())).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> boatService.deleteBoat(1L),
-            "Expected EntityNotFoundException due to non-existing boat");
+                "Expected EntityNotFoundException due to non-existing boat");
     }
 
     @Test

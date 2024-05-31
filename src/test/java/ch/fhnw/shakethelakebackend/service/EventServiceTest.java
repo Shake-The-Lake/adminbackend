@@ -38,11 +38,10 @@ class EventServiceTest {
     private EventMapper eventMapper;
 
     @Mock
-    private ExpandHelper expandHelper;
+    private Expander expander;
 
     @Mock
     private BoatMapper boatMapper;
-
 
     @InjectMocks
     private EventService eventService;
@@ -50,14 +49,12 @@ class EventServiceTest {
     private Event event;
     private EventDto eventDto;
 
-
     @BeforeEach
     void setUp() {
         event = new Event();
         event.setId(1L);
         eventDto = new EventDto();
         eventDto.setId(1L);
-
 
     }
 
@@ -127,12 +124,29 @@ class EventServiceTest {
         verify(eventRepository).delete(event);
     }
 
-
     @Test
     void testGetEventWithDetailsExpandActivityTypes() {
         when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
 
         eventService.getEventWithDetails(1L, Optional.of("activityTypes"));
+
+        verify(boatMapper, never()).toDtoWithTimeSlots(any());
+    }
+
+    @Test
+    void testGetEventWithDetailsExpandBoats() {
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
+
+        eventService.getEventWithDetails(1L, Optional.of("boats"));
+
+        verify(boatMapper, never()).toDtoWithTimeSlots(any());
+    }
+
+    @Test
+    void testGetEventWithDetailsExpandBoatsAndActivityTypes() {
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
+
+        eventService.getEventWithDetails(1L, Optional.of("boats,activityTypes"));
 
         verify(boatMapper, never()).toDtoWithTimeSlots(any());
     }

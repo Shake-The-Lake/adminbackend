@@ -24,7 +24,6 @@ import java.util.Set;
 @Builder
 public class Event {
 
-    // it is not yet on the class diagramm but i would recommend giving an id on a event as well
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -37,39 +36,9 @@ public class Event {
     @Column(name = "event_description")
     private String description;
 
-    /* TODO: not in mvp
-    @Null
-    @ManyToOne
-    @JoinColumn(name = "location_id", referencedColumnName = "id")
-    private Location location;*/
-
     @NotNull
     @Column(name = "date", columnDefinition = "TIMESTAMP")
     private LocalDateTime date;
-
-    @NotNull
-    @Column(name = "customer_code")
-    private String customerCode;
-
-    @NotNull
-    @Column(name = "employee_code")
-    private String employeeCode;
-
-    @NotNull
-    @Column(name = "customer_only_time", columnDefinition = "TIMESTAMP")
-    private LocalDateTime customerOnlyTime;
-
-    @NotNull
-    @Column(name = "is_started")
-    private boolean isStarted;
-
-    @NotNull
-    @Column(name = "started_at", columnDefinition = "TIMESTAMP")
-    private LocalDateTime startedAt;
-
-    @NotNull
-    @Column(name = "ended_at", columnDefinition = "TIMESTAMP")
-    private LocalDateTime endedAt;
 
     @OneToMany(mappedBy = "event")
     private Set<ActivityType> activityTypes;

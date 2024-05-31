@@ -6,7 +6,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -35,9 +34,7 @@ public class Boat {
     private Long id;
 
     @NotNull
-    @ManyToOne
-    @JoinColumn(name = "driver_id", referencedColumnName = "id")
-    private Person boatDriver;
+    private String operator;
 
     @NotNull
     private String name;

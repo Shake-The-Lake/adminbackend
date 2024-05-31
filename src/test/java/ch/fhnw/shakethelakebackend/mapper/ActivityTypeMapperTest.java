@@ -44,4 +44,5 @@ class ActivityTypeMapperTest {
         ActivityTypeDto result = mapper.toDto(activityType);
         assertEquals(activityType.getId(), result.getId());
     }
+
 }

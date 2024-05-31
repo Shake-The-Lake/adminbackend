@@ -1,7 +1,6 @@
 package ch.fhnw.shakethelakebackend.model.entity;
 
 import ch.fhnw.shakethelakebackend.model.entity.enums.PersonType;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,7 +15,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -33,9 +31,6 @@ public class Person {
 
     @NotNull
     private PersonType personType;
-
-    @OneToMany(mappedBy = "boatDriver", cascade = CascadeType.ALL)
-    private List<Boat> boats;
 
     @NotNull
     private String firstName;
@@ -54,10 +49,6 @@ public class Person {
 
     public Set<Booking> getBookings() {
         return bookings == null ? Set.of() : Set.copyOf(bookings);
-    }
-
-    public List<Boat> getBoats() {
-        return boats == null ? List.of() : List.copyOf(boats);
     }
 
 }
