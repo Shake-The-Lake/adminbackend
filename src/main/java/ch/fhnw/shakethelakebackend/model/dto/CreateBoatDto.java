@@ -25,6 +25,8 @@ public class CreateBoatDto implements Serializable {
     @NotNull
     private String type;
     @NotNull
+    private String operator;
+    @NotNull
     private int seatsRider;
     @NotNull
     private int seatsViewer;

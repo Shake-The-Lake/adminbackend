@@ -15,13 +15,18 @@ import java.util.stream.Collectors;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface TimeSlotMapper {
 
-    @Mapping(target = "boat", ignore = true)
     @Mapping(target = "bookings", ignore = true)
     TimeSlot toEntity(CreateTimeSlotDto timeSlotDto);
 
+    @ToDtoDefault
     @Mapping(target = "boatId", expression = "java(timeSlot.getBoat().getId())")
     @Mapping(target = "bookingIds", expression = "java(bookingsToBookingIds(timeSlot.getBookings()))")
     TimeSlotDto toDto(TimeSlot timeSlot);
+
+    @Mapping(target = "boatId", expression = "java(timeSlot.getBoat().getId())")
+    @Mapping(target = "bookingIds", expression = "java(bookingsToBookingIds(timeSlot.getBookings()))")
+    @Mapping(target = "boatName", source = "boat.name")
+    TimeSlotDto toDtoWithBoatName(TimeSlot timeSlot);
 
     default Set<Long> bookingsToBookingIds(Set<Booking> bookings) {
         return bookings.stream().map(Booking::getId).collect(Collectors.toSet());
