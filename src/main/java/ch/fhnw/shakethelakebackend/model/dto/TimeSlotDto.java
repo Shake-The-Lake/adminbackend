@@ -1,5 +1,6 @@
 package ch.fhnw.shakethelakebackend.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,4 +25,7 @@ public class TimeSlotDto {
     private LocalDateTime untilTime;
     private Long boatId;
     private Set<Long> bookingIds;
+    //With parameter
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String boatName;
 }

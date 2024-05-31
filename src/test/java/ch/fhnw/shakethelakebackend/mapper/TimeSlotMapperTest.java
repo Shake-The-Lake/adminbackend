@@ -102,4 +102,42 @@ class TimeSlotMapperTest {
         assertTrue(bookingIds.isEmpty());
     }
 
+    @Test
+    void bookingsToBookingIdsShouldHandleNonNullElements() {
+        Set<Booking> bookings = new HashSet<>();
+        Booking booking1 = new Booking();
+        booking1.setId(1L);
+        bookings.add(booking1);
+        Booking booking2 = new Booking();
+        booking2.setId(2L);
+        bookings.add(booking2);
+
+        Set<Long> bookingIds = timeSlotMapper.bookingsToBookingIds(bookings);
+
+        assertTrue(bookingIds.contains(1L));
+        assertTrue(bookingIds.contains(2L));
+    }
+
+    @Test
+    void bookingIdsToBookingsShouldMapCorrectly() {
+        Set<Booking> bookings = new HashSet<>();
+        bookings.add(Booking.builder().id(1L).build());
+        bookings.add(Booking.builder().id(2L).build());
+
+        Set<Long> bookingIds = timeSlotMapper.bookingsToBookingIds(bookings);
+
+        assertEquals(2, bookings.size());
+        assertTrue(bookings.stream().anyMatch(booking -> booking.getId().equals(1L)));
+        assertTrue(bookings.stream().anyMatch(booking -> booking.getId().equals(2L)));
+    }
+
+    @Test
+    void testTimeSlotMapperWithBoatName() {
+        Boat boat = Boat.builder().name("Boat").build();
+        TimeSlot timeSlot = TimeSlot.builder().boat(boat).bookings(Set.of()).build();
+
+        TimeSlotDto timeSlotDto = timeSlotMapper.toDtoWithBoatName(timeSlot);
+
+        assertEquals("Boat", timeSlotDto.getBoatName());
+    }
 }

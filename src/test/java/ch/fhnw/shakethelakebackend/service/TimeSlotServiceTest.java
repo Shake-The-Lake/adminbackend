@@ -117,4 +117,21 @@ class TimeSlotServiceTest {
 
         assertThrows(EntityNotFoundException.class, () -> timeSlotService.getTimeSlot(1L));
     }
+
+    @Test
+    void testGetTimeSlotDto() {
+        when(timeSlotRepository.findById(1L)).thenReturn(java.util.Optional.of(timeSlot));
+        when(timeSlotMapper.toDto(timeSlot)).thenReturn(timeSlotDto);
+
+        TimeSlotDto result = timeSlotService.getTimeSlotDto(1L);
+
+        assertEquals(timeSlotDto, result);
+    }
+
+    @Test
+    void testGetTimeSlotDtoNotFound() {
+        when(timeSlotRepository.findById(1L)).thenReturn(java.util.Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> timeSlotService.getTimeSlotDto(1L));
+    }
 }

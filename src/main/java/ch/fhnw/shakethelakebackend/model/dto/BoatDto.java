@@ -26,6 +26,8 @@ public class BoatDto {
     private String name;
     @NotNull
     private String type;
+    @NotNull
+    private String operator;
     private int seatsRider;
     private int seatsViewer;
     private int slotDurationInMins;
@@ -36,6 +38,7 @@ public class BoatDto {
     private Set<Long> timeSlotIds;
     private Long activityTypeId;
     private Long eventId;
+    //With parameter
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Set<TimeSlotDto> timeSlots = null;
     @JsonInclude(JsonInclude.Include.NON_NULL)
