@@ -1,5 +1,6 @@
 package ch.fhnw.shakethelakebackend.model.entity;
 
+import ch.fhnw.shakethelakebackend.model.entity.enums.TimeSlotType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
@@ -50,6 +51,9 @@ public class TimeSlot {
     @JsonManagedReference(value = "timeSlot-bookings")
     @OneToMany(mappedBy = "timeSlot")
     private Set<Booking> bookings;
+
+    @NotNull
+    private TimeSlotType status;
 
     @Override
     public boolean equals(Object o) {
