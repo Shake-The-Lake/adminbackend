@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,5 +76,28 @@ public class BookingController {
     @GetMapping()
     public List<BookingDto> getAllBookings() {
         return bookingService.getAllBookings();
+    }
+
+    @Operation(summary = "Get a booking by id", description = "Returns a booking as per the id", parameters = {
+        @Parameter(name = "personName", description = "Search by person name", required = false,
+            example = "John Doe", schema = @Schema(type = "string")),
+        @Parameter(name = "boatName", description = "Search by boat name", required = false,
+            example = "Boat 1", schema = @Schema(type = "string")),
+        @Parameter(name = "from", description = "Search by date from", required = false,
+            example = "2021-01-01", schema = @Schema(type = "LocalDateTime")),
+        @Parameter(name = "to", description = "Search by date to", required = false,
+            example = "2021-12-31", schema = @Schema(type = "LocalDateTime")),
+        @Parameter(name = "activity", description = "Search by activity", required = false,
+            example = "Wakeboarding", schema = @Schema(type = "string")) })
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully retrieved a booking by id"),
+        @ApiResponse(responseCode = "404", description = BookingService.BOOKING_NOT_FOUND, content = @Content(
+            schema = @Schema(implementation = String.class))) })
+    @GetMapping("/search")
+    public List<BookingDto> getBookingSearch(@RequestParam(required = false) Optional<String> personName,
+        @RequestParam(required = false) Optional<String> boatName,
+        @RequestParam(required = false) Optional<LocalDateTime> from,
+        @RequestParam(required = false) Optional<LocalDateTime> to,
+        @RequestParam(required = false) Optional<String> activity) {
+        return bookingService.getBookingSearch(personName, boatName, from, to, activity);
     }
 }

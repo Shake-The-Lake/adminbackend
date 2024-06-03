@@ -13,10 +13,14 @@ import ch.fhnw.shakethelakebackend.model.mapper.BookingMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.PersonMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.TimeSlotMapper;
 import ch.fhnw.shakethelakebackend.model.repository.BookingRepository;
+import ch.fhnw.shakethelakebackend.model.specification.SpecificationBooking;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -134,5 +138,26 @@ public class BookingService {
         });
 
         return bookingDto;
+    }
+
+    public List<BookingDto> getBookingSearch(Optional<String> personName, Optional<String> boatName,
+            Optional<LocalDateTime> from, Optional<LocalDateTime> to, Optional<String> activity) {
+        List<BookingDto> bookingDtos = List.of();
+        List<Specification<Booking>> specifications = new ArrayList<>();
+
+        personName.ifPresent(name -> specifications.add(
+            new SpecificationBooking("person.name", ":", name)));
+        boatName.ifPresent(name -> specifications.add(
+            new SpecificationBooking("timeSlot.boat.name", ":", name)));
+        from.ifPresent(date -> specifications.add(
+            new SpecificationBooking("timeSlot.from", ">", date)));
+        to.ifPresent(date -> specifications.add(
+            new SpecificationBooking("timeSlot.to", "<", date)));
+        activity.ifPresent(act -> specifications.add(
+            new SpecificationBooking("timeSlot.activity", ":", act)));
+
+        bookingDtos = bookingRepository.findAll(Specification.allOf(specifications))
+                .stream().map(bookingMapper::toDto).toList();
+        return bookingDtos;
     }
 }
