@@ -44,10 +44,11 @@ public class TimeSlotService {
 
     public TimeSlotDto updateTimeSlot(long id, CreateTimeSlotDto timeSlotDto) {
         TimeSlot timeSlot = timeSlotMapper.toEntity(timeSlotDto);
+        Boat boat = boatService.getBoat(timeSlotDto.getBoatId());
         if (!timeSlotRepository.existsById(id)) {
             throw new EntityNotFoundException("TimeSlot not found");
         }
-
+        timeSlot.setBoat(boat);
         timeSlot.setId(id);
         timeSlotRepository.save(timeSlot);
         return timeSlotMapper.toDto(timeSlot);
