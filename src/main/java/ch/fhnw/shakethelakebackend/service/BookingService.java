@@ -141,23 +141,23 @@ public class BookingService {
     }
 
     public List<BookingDto> getBookingSearch(Optional<String> personName, Optional<String> boatName,
-            Optional<LocalDateTime> from, Optional<LocalDateTime> to, Optional<String> activity) {
+            Optional<LocalDateTime> from, Optional<LocalDateTime> to, Optional<Long> activity) {
         List<BookingDto> bookingDtos = List.of();
         List<Specification<Booking>> specifications = new ArrayList<>();
 
         personName.ifPresent(name -> specifications.add(
-            new SpecificationBooking("person.name", ":", name)));
+            new SpecificationBooking("person.lastName", "?", name)));
         boatName.ifPresent(name -> specifications.add(
             new SpecificationBooking("timeSlot.boat.name", ":", name)));
         from.ifPresent(date -> specifications.add(
-            new SpecificationBooking("timeSlot.from", ">", date)));
+            new SpecificationBooking("timeSlot.fromTime", ">", date)));
         to.ifPresent(date -> specifications.add(
-            new SpecificationBooking("timeSlot.to", "<", date)));
+            new SpecificationBooking("timeSlot.toTime", "<", date)));
         activity.ifPresent(act -> specifications.add(
-            new SpecificationBooking("timeSlot.activity", ":", act)));
+            new SpecificationBooking("timeSlot.activity.id", ":", act)));
 
         bookingDtos = bookingRepository.findAll(Specification.allOf(specifications))
-                .stream().map(bookingMapper::toDto).toList();
+                .stream().map(bookingMapper::toDtoExtended).toList();
         return bookingDtos;
     }
 }

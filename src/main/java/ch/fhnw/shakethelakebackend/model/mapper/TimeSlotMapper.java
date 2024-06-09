@@ -23,6 +23,7 @@ public interface TimeSlotMapper {
     @Mapping(target = "bookingIds", expression = "java(bookingsToBookingIds(timeSlot.getBookings()))")
     TimeSlotDto toDto(TimeSlot timeSlot);
 
+    @ToDtoExtended
     @Mapping(target = "boatId", expression = "java(timeSlot.getBoat().getId())")
     @Mapping(target = "bookingIds", expression = "java(bookingsToBookingIds(timeSlot.getBookings()))")
     @Mapping(target = "boatName", source = "boat.name")
