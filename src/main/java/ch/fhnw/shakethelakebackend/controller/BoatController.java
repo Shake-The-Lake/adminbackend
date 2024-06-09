@@ -3,6 +3,7 @@ package ch.fhnw.shakethelakebackend.controller;
 import ch.fhnw.shakethelakebackend.model.dto.BoatDto;
 import ch.fhnw.shakethelakebackend.model.dto.CreateBoatDto;
 import ch.fhnw.shakethelakebackend.service.BoatService;
+import ch.fhnw.shakethelakebackend.service.CsvService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +34,7 @@ import java.util.Optional;
 public class BoatController {
 
     private final BoatService boatService;
+    private final CsvService csvService;
 
     @Operation(summary = "Create a boat", description = "Creates a boat")
     @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Successfully created a boat"),
@@ -82,6 +85,17 @@ public class BoatController {
     @GetMapping()
     public List<BoatDto> getAllBoats(@RequestParam(required = false) Optional<String> expand) {
         return boatService.getBoatsWithDetails(expand);
+    }
+
+    @Operation(summary = "Export time slots from a boat", description = "Exports time slots from a boat as a CSV file")
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully exported time slots from a boat"),
+        @ApiResponse(responseCode = "400", description = "No data available for the provided boat ID",
+            content = @Content(mediaType = "",
+            schema = @Schema(implementation = String.class))) })
+    @GetMapping("{id}/exportTimeSlots")
+    public ResponseEntity<String> exportTimeSlotsFromBoat(@PathVariable Long id) {
+        return csvService.exportTimeSlotsFromBoat(id, "timeslots.csv");
+
     }
 
 }

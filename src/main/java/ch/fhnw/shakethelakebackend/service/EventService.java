@@ -39,6 +39,10 @@ public class EventService {
         return eventRepository.findAll().stream().map(eventMapper::toDto).toList();
     }
 
+    public List<Event> getAllEventEntities() {
+        return eventRepository.findAll();
+    }
+
     public EventDto createEvent(CreateEventDto createEventDto) {
         //TODO; location not mvp
         // Location location = locationRepository.save(createEventDto.getLocationId());
