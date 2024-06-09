@@ -33,6 +33,7 @@ public class TimeSlotDto {
     private Long boatId;
     @CsvIgnore
     private Set<Long> bookingIds;
+    @CsvBindByName(column = "Type")
     private TimeSlotType status;
     //With parameter
     @CsvBindByName(column = "Boat")
