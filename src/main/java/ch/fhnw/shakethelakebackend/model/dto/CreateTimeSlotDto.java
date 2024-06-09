@@ -1,5 +1,6 @@
 package ch.fhnw.shakethelakebackend.model.dto;
 
+import ch.fhnw.shakethelakebackend.model.entity.enums.TimeSlotType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,5 +21,6 @@ import java.time.LocalDateTime;
 public class CreateTimeSlotDto {
     private LocalDateTime fromTime;
     private LocalDateTime untilTime;
+    private TimeSlotType status;
     private Long boatId;
 }

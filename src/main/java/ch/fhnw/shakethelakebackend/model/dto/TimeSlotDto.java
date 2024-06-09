@@ -1,5 +1,6 @@
 package ch.fhnw.shakethelakebackend.model.dto;
 
+import ch.fhnw.shakethelakebackend.model.entity.enums.TimeSlotType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvIgnore;
@@ -32,6 +33,7 @@ public class TimeSlotDto {
     private Long boatId;
     @CsvIgnore
     private Set<Long> bookingIds;
+    private TimeSlotType status;
     //With parameter
     @CsvBindByName(column = "Boat")
     @JsonInclude(JsonInclude.Include.NON_NULL)
