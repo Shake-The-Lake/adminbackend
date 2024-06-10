@@ -35,12 +35,10 @@ class BoatMapperTest {
         boat.setTimeSlots(timeSlots);
 
         boatDto = new BoatDto();
-        boatDto.setBoatDriverId(1L);
         boatDto.setTimeSlotIds(Set.of(1L, 2L));
         boatDto.setOperator("operator");
 
         createBoatDto = new CreateBoatDto();
-        createBoatDto.setBoatDriverId(1L);
     }
 
     @Test

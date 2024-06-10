@@ -2,13 +2,11 @@ package ch.fhnw.shakethelakebackend.service;
 
 import ch.fhnw.shakethelakebackend.model.dto.ActivityTypeDto;
 import ch.fhnw.shakethelakebackend.model.dto.BoatDto;
-import ch.fhnw.shakethelakebackend.model.dto.CreateActivityTypeDto;
 import ch.fhnw.shakethelakebackend.model.dto.CreateBoatDto;
 import ch.fhnw.shakethelakebackend.model.dto.TimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.entity.ActivityType;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.Event;
-import ch.fhnw.shakethelakebackend.model.entity.LocalizedString;
 import ch.fhnw.shakethelakebackend.model.mapper.ActivityTypeMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.BoatMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.TimeSlotMapper;
@@ -57,12 +55,6 @@ public class BoatService {
         return boatMapper.toDto(boat);
     }
 
-    private ActivityTypeDto createDummyActivityType(Long eventId) {
-        // FIXME this is only for test purpose
-        return this.activityTypeService.createActivityType(CreateActivityTypeDto.builder().eventId(eventId)
-                .description(new LocalizedString("Wakeboarding", "Wakeboarding", "Wakeboarding"))
-                .checklist(new LocalizedString("Wakeboarding", "Wakeboarding", "Wakeboarding")).icon("icon").build());
-    }
 
     public BoatDto updateBoat(Long id, CreateBoatDto createBoatDto) {
         if (!boatRepository.existsById(id)) {
@@ -71,7 +63,7 @@ public class BoatService {
 
         ActivityType activityType = activityTypeService.getActivityType(createBoatDto.getActivityTypeId());
         Event event = eventService.getEvent(createBoatDto.getEventId());
-        Boat newBoat = boatMapper.toEntity(createBoatDto);
+        Boat newBoat = getBoat(id);
         newBoat.setActivityType(activityType);
         newBoat.setEvent(event);
         newBoat.setId(id);
