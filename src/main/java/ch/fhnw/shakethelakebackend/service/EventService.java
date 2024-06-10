@@ -57,7 +57,7 @@ public class EventService {
             throw new EntityNotFoundException(EVENT_NOT_FOUND);
         }
 
-        Event newEvent = eventMapper.toEntity(createEventDto);
+        Event newEvent = getEvent(id);
         newEvent.setId(id);
         eventRepository.save(newEvent);
         return eventMapper.toDto(newEvent);

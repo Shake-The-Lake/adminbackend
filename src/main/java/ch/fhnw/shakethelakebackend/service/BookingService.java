@@ -89,8 +89,8 @@ public class BookingService {
 
         Booking oldBooking = bookingRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
-        TimeSlot timeSlot = timeSlotService.getTimeSlot(booking.getTimeSlot().getId());
-        Person person = personService.getPerson(booking.getPerson().getId());
+        TimeSlot timeSlot = timeSlotService.getTimeSlot(bookingDto.getTimeSlotId());
+        Person person = personService.getPerson(bookingDto.getPersonId());
 
         if (oldBooking.getTimeSlot().equals(timeSlot)) {
             timeSlot.getBookings().remove(oldBooking);

@@ -62,13 +62,11 @@ class BoatServiceTest {
         boat.setOperator("John Doe");
 
         createBoatDto = new CreateBoatDto();
-        createBoatDto.setBoatDriverId(1L);
         createBoatDto.setName("Odyssey");
         createBoatDto.setType("Yacht");
 
         boatDto = new BoatDto();
         boatDto.setId(1L);
-        boatDto.setBoatDriverId(1L);
         boatDto.setName("Odyssey");
         boatDto.setType("Yacht");
 
@@ -124,7 +122,7 @@ class BoatServiceTest {
     @Test
     void testUpdateBoatSuccess() {
         when(boatRepository.existsById(any())).thenReturn(true);
-        when(boatMapper.toEntity(any())).thenReturn(boat);
+        when(boatRepository.findById(any())).thenReturn(Optional.of(boat));
         when(boatRepository.save(any())).thenReturn(boat);
         when(boatMapper.toDto(any())).thenReturn(boatDto);
 
