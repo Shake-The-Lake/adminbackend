@@ -1,6 +1,7 @@
 package ch.fhnw.shakethelakebackend.model.entity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -60,7 +61,7 @@ public class Boat {
     @Column(name = "available_until", columnDefinition = "TIMESTAMP")
     private LocalDateTime availableUntil;
 
-    @OneToMany(mappedBy = "boat")
+    @OneToMany(mappedBy = "boat", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<TimeSlot> timeSlots;
 
     @ManyToOne
