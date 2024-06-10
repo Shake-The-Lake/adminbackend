@@ -36,7 +36,7 @@ class CsvServiceTest {
 
 
     @Test
-    void testExportTimeSlotsFromBoat_Success() {
+    void testExportTimeSlotsFromBoatSuccess() {
         // Setup
         Long boatId = 1L;
         String filename = "timeslots.csv";
@@ -59,7 +59,7 @@ class CsvServiceTest {
     }
 
     @Test
-    void testExportTimeSlotsFromBoat_NoContent() {
+    void testExportTimeSlotsFromBoatNoContent() {
         Long boatId = 1L;
         String filename = "empty.csv";
         Boat boat = mock(Boat.class);

@@ -88,7 +88,8 @@ public class BoatController {
     }
 
     @Operation(summary = "Export time slots from a boat", description = "Exports time slots from a boat as a CSV file")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully exported time slots from a boat"),
+    @ApiResponses(value = { @ApiResponse(responseCode = "200",
+            description = "Successfully exported time slots from a boat"),
         @ApiResponse(responseCode = "400", description = "No data available for the provided boat ID",
             content = @Content(mediaType = "",
             schema = @Schema(implementation = String.class))) })
