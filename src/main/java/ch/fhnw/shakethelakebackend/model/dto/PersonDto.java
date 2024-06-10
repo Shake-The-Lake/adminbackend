@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -22,7 +21,6 @@ import java.util.Set;
 public class PersonDto implements Serializable {
     private Long id;
     private PersonType personType;
-    private List<Long> boatIds;
     private String firstName;
     private String lastName;
     private String emailAddress;
