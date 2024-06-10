@@ -101,7 +101,7 @@ class EventServiceTest {
     @Test
     void updateEventUpdatesAndReturnsEvent() {
         when(eventRepository.existsById(1L)).thenReturn(true);
-        when(eventMapper.toEntity(any())).thenReturn(event);
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
         when(eventRepository.save(event)).thenReturn(event);
         when(eventMapper.toDto(event)).thenReturn(eventDto);
 
