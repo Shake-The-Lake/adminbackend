@@ -8,7 +8,6 @@ import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.Booking;
 import ch.fhnw.shakethelakebackend.model.entity.Person;
 import ch.fhnw.shakethelakebackend.model.entity.TimeSlot;
-import ch.fhnw.shakethelakebackend.model.mapper.BoatMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.BookingMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.PersonMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.TimeSlotMapper;
@@ -34,7 +33,6 @@ public class BookingService {
     private final BookingMapper bookingMapper;
     private final Expander expander;
     private final PersonMapper personMapper;
-    private final BoatMapper boatMapper;
     private final TimeSlotMapper timeSlotMapper;
 
     // Check if there is a seat available for the booking otherwise throw an exception

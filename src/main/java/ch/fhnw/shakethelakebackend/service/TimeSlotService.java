@@ -3,6 +3,7 @@ package ch.fhnw.shakethelakebackend.service;
 import ch.fhnw.shakethelakebackend.model.dto.CreateTimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.dto.TimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
+import ch.fhnw.shakethelakebackend.model.entity.Booking;
 import ch.fhnw.shakethelakebackend.model.entity.TimeSlot;
 import ch.fhnw.shakethelakebackend.model.mapper.TimeSlotMapper;
 import ch.fhnw.shakethelakebackend.model.repository.TimeSlotRepository;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -43,11 +45,15 @@ public class TimeSlotService {
     }
 
     public TimeSlotDto updateTimeSlot(long id, CreateTimeSlotDto timeSlotDto) {
-        TimeSlot timeSlot = timeSlotMapper.toEntity(timeSlotDto);
-        Boat boat = boatService.getBoat(timeSlotDto.getBoatId());
         if (!timeSlotRepository.existsById(id)) {
             throw new EntityNotFoundException("TimeSlot not found");
         }
+
+        Set<Booking> bookings = getTimeSlot(id).getBookings();
+        TimeSlot timeSlot = timeSlotMapper.toEntity(timeSlotDto);
+        Boat boat = boatService.getBoat(timeSlotDto.getBoatId());
+
+        timeSlot.setBookings(bookings);
         timeSlot.setBoat(boat);
         timeSlot.setId(id);
         timeSlotRepository.save(timeSlot);
