@@ -39,16 +39,21 @@ public class SpecificationBooking implements Specification<Booking> {
         }
 
         switch (criteria.operation) {
-            case "?":
-                return builder.like(path.as(String.class), "%" + criteria.value + "%");
-            case ":":
-                return builder.equal(path, criteria.value);
-            case ">":
-                return builder.greaterThan(path.as(LocalDateTime.class), (LocalDateTime) criteria.value);
-            case "<":
-                return builder.lessThan(path.as(LocalDateTime.class), (LocalDateTime) criteria.value);
-            default:
-                return null;
+        case "?":
+            String value = "%" + criteria.value + "%";
+            return builder.like(builder.lower(path.as(String.class)), value.toLowerCase());
+        case ":":
+            return builder.equal(path, criteria.value);
+        case ">":
+            return builder.greaterThan(path.as(LocalDateTime.class), (LocalDateTime) criteria.value);
+        case ">=":
+            return builder.greaterThanOrEqualTo(path.as(LocalDateTime.class), (LocalDateTime) criteria.value);
+        case "<":
+            return builder.lessThan(path.as(LocalDateTime.class), (LocalDateTime) criteria.value);
+        case "<=":
+            return builder.lessThanOrEqualTo(path.as(LocalDateTime.class), (LocalDateTime) criteria.value);
+        default:
+            return null;
         }
     }
 }

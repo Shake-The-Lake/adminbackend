@@ -9,7 +9,8 @@ import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING, uses = {PersonMapper.class, TimeSlotMapper.class})
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING,
+    uses = {PersonMapper.class, TimeSlotMapper.class})
 public interface BookingMapper {
 
     PersonMapper INSTANCE_PERSON = Mappers.getMapper(PersonMapper.class);
