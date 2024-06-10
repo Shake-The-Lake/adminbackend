@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class CreateBoatDto implements Serializable {
-    private Long boatDriverId;
     @NotNull
     private String name;
     @NotNull

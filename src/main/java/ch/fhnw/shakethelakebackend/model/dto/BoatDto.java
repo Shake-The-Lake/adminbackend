@@ -1,6 +1,7 @@
 package ch.fhnw.shakethelakebackend.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,7 +20,6 @@ import java.util.Set;
 @AllArgsConstructor
 public class BoatDto {
     private long id;
-    private Long boatDriverId;
     @NotNull
     private String name;
     @NotNull
@@ -38,8 +38,10 @@ public class BoatDto {
     private Long eventId;
     //With parameter
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Schema(hidden = true)
     private Set<TimeSlotDto> timeSlots = null;
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Schema(hidden = true)
     private ActivityTypeDto activityType = null;
 
 }
