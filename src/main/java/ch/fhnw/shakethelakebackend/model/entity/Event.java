@@ -1,5 +1,6 @@
 package ch.fhnw.shakethelakebackend.model.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -40,10 +41,10 @@ public class Event {
     @Column(name = "date", columnDefinition = "TIMESTAMP")
     private LocalDateTime date;
 
-    @OneToMany(mappedBy = "event")
+    @OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<ActivityType> activityTypes;
 
-    @OneToMany(mappedBy = "event")
+    @OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Boat> boats;
 
     public Set<ActivityType> getActivityTypes() {

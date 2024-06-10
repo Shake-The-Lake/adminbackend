@@ -10,6 +10,7 @@ import ch.fhnw.shakethelakebackend.model.mapper.BoatMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.EventMapper;
 import ch.fhnw.shakethelakebackend.model.repository.EventRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -62,8 +63,8 @@ public class EventService {
         return eventMapper.toDto(newEvent);
     }
 
+    @Transactional
     public void deleteEvent(Long id) {
-        //TODO: discuss whether an event should remove everything=?
         Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(EVENT_NOT_FOUND));
         eventRepository.delete(event);
     }

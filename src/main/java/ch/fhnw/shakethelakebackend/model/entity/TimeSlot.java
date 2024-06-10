@@ -49,7 +49,7 @@ public class TimeSlot {
     private Boat boat;
 
     @JsonManagedReference(value = "timeSlot-bookings")
-    @OneToMany(mappedBy = "timeSlot")
+    @OneToMany(mappedBy = "timeSlot", orphanRemoval = true)
     private Set<Booking> bookings;
 
     @NotNull
