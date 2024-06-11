@@ -47,8 +47,7 @@ public class SearchService {
         from.ifPresent(date -> filterSpecification.add(new SpecificationBooking("timeSlot.fromTime", ">=", date)));
         to.ifPresent(date -> filterSpecification.add(new SpecificationBooking("timeSlot.untilTime", "<=", date)));
         activity.ifPresent(
-                act -> filterSpecification.add(new SpecificationBooking("timeSlot.boat.activityType.id", ":", act)));
-
+                act -> filterSpecification.add(new SpecificationBooking("timeSlot.activityType.id", ":", act)));
         bookingDtos = bookingRepository.findAll(
                         Specification.allOf(filterSpecification)
                                 .and(Specification.anyOf(searchSpecifications))).stream()

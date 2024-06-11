@@ -67,9 +67,6 @@ public class Boat {
     @ManyToOne
     private Event event;
 
-    @ManyToOne
-    private ActivityType activityType;
-
     public Set<TimeSlot> getTimeSlots() {
         return timeSlots == null ? Set.of() : Set.copyOf(timeSlots);
     }

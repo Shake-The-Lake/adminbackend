@@ -6,8 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.time.LocalDateTime;
 
+import java.time.ZonedDateTime;
 
 /**
  * DTO for {@link ch.fhnw.shakethelakebackend.model.entity.TimeSlot}
@@ -19,8 +19,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class CreateTimeSlotDto {
-    private LocalDateTime fromTime;
-    private LocalDateTime untilTime;
+    private ZonedDateTime fromTime;
+    private ZonedDateTime untilTime;
     private TimeSlotType status;
     private Long boatId;
+    private Long activityTypeId;
 }

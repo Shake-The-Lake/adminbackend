@@ -2,6 +2,7 @@ package ch.fhnw.shakethelakebackend.service;
 
 import ch.fhnw.shakethelakebackend.model.dto.CreateTimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.dto.TimeSlotDto;
+import ch.fhnw.shakethelakebackend.model.entity.ActivityType;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.Booking;
 import ch.fhnw.shakethelakebackend.model.entity.TimeSlot;
@@ -11,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.chrono.ChronoLocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,18 +27,21 @@ public class TimeSlotService {
     private final TimeSlotRepository timeSlotRepository;
     private final BoatService boatService;
     private final TimeSlotMapper timeSlotMapper;
+    private final ActivityTypeService activityTypeService;
 
     public TimeSlotDto createTimeSlot(CreateTimeSlotDto timeSlotDto) {
         TimeSlot timeSlot = timeSlotMapper.toEntity(timeSlotDto);
+        ActivityType activityType = activityTypeService.getActivityType(timeSlotDto.getActivityTypeId());
 
         //Time slot must be in boats time
         Boat boat = boatService.getBoat(timeSlotDto.getBoatId());
 
-        if (boat.getAvailableFrom().isAfter(timeSlot.getFromTime()) || boat.getAvailableUntil()
-                .isBefore(timeSlot.getUntilTime())) {
+        if (
+            boat.getAvailableFrom().isAfter(ChronoLocalDateTime.from(timeSlot.getFromTime()))
+                || boat.getAvailableUntil().isBefore(ChronoLocalDateTime.from(timeSlot.getUntilTime()))) {
             throw new IllegalArgumentException("Time slot must be in boats available time");
         }
-
+        timeSlot.setActivityType(activityType);
         timeSlot.setBoat(boat);
         timeSlot.setBookings(new HashSet<>());
         timeSlot = timeSlotRepository.save(timeSlot);
@@ -52,7 +57,9 @@ public class TimeSlotService {
         Set<Booking> bookings = getTimeSlot(id).getBookings();
         TimeSlot timeSlot = timeSlotMapper.toEntity(timeSlotDto);
         Boat boat = boatService.getBoat(timeSlotDto.getBoatId());
+        ActivityType activityType = activityTypeService.getActivityType(timeSlotDto.getActivityTypeId());
 
+        timeSlot.setActivityType(activityType);
         timeSlot.setBookings(bookings);
         timeSlot.setBoat(boat);
         timeSlot.setId(id);

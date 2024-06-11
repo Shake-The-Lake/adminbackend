@@ -18,7 +18,7 @@ public interface TimeSlotExtendedMapper {
     @ToDtoExtended
     @Mapping(target = "boatId", expression = "java(timeSlot.getBoat().getId())")
     @Mapping(target = "bookingIds", expression = "java(bookingsToBookingIds(timeSlot.getBookings()))")
-    @Mapping(target = "boat", qualifiedBy = ToDtoExtended.class)
+    @Mapping(target = "boat", qualifiedBy = ToDtoDefault.class)
     TimeSlotDto toDtoWithBoat(TimeSlot timeSlot);
 
     default Set<Long> bookingsToBookingIds(Set<Booking> bookings) {
