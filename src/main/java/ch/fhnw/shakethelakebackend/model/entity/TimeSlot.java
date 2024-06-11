@@ -55,7 +55,8 @@ public class TimeSlot {
     @NotNull
     private TimeSlotType status;
 
-
+    @ManyToOne
+    private ActivityType activityType;
 
     @Override
     public boolean equals(Object o) {

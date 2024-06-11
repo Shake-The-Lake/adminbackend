@@ -40,8 +40,5 @@ public class BoatDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Schema(hidden = true)
     private Set<TimeSlotDto> timeSlots = null;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Schema(hidden = true)
-    private ActivityTypeDto activityType = null;
 
 }

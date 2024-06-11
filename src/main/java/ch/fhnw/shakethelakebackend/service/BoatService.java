@@ -1,13 +1,10 @@
 package ch.fhnw.shakethelakebackend.service;
 
-import ch.fhnw.shakethelakebackend.model.dto.ActivityTypeDto;
 import ch.fhnw.shakethelakebackend.model.dto.BoatDto;
 import ch.fhnw.shakethelakebackend.model.dto.CreateBoatDto;
 import ch.fhnw.shakethelakebackend.model.dto.TimeSlotDto;
-import ch.fhnw.shakethelakebackend.model.entity.ActivityType;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.Event;
-import ch.fhnw.shakethelakebackend.model.mapper.ActivityTypeMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.BoatMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.TimeSlotMapper;
 import ch.fhnw.shakethelakebackend.model.repository.BoatRepository;
@@ -25,15 +22,12 @@ import java.util.stream.Collectors;
 public class BoatService {
 
     public static final String BOAT_NOT_FOUND = "Boat not found";
-    public static final String PERSON_IS_NOT_BOAT_DRIVER = "Person is not a boat driver";
     private final BoatMapper boatMapper;
     private final BoatRepository boatRepository;
 
-    private final ActivityTypeService activityTypeService;
     private final EventService eventService;
     private final Expander expander;
     private final TimeSlotMapper timeSlotMapper;
-    private final ActivityTypeMapper activityTypeMapper;
 
     public BoatDto getBoatDto(Long id) {
         Boat boat = boatRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(BOAT_NOT_FOUND));
@@ -46,10 +40,8 @@ public class BoatService {
     }
 
     public BoatDto createBoat(CreateBoatDto createBoatDto) {
-        ActivityType activityType = activityTypeService.getActivityType(createBoatDto.getActivityTypeId());
         Event event = eventService.getEvent(createBoatDto.getEventId());
         Boat boat = boatMapper.toEntity(createBoatDto);
-        boat.setActivityType(activityType);
         boat.setEvent(event);
         boatRepository.save(boat);
         return boatMapper.toDto(boat);
@@ -61,10 +53,8 @@ public class BoatService {
             throw new EntityNotFoundException(BOAT_NOT_FOUND);
         }
 
-        ActivityType activityType = activityTypeService.getActivityType(createBoatDto.getActivityTypeId());
         Event event = eventService.getEvent(createBoatDto.getEventId());
         Boat newBoat = getBoat(id);
-        newBoat.setActivityType(activityType);
         newBoat.setEvent(event);
         newBoat.setId(id);
         boatRepository.save(newBoat);
@@ -96,11 +86,6 @@ public class BoatService {
             Set<TimeSlotDto> timeSlotDto = boat.getTimeSlots().stream().map(timeSlotMapper::toDto)
                     .collect(Collectors.toSet());
             boatDto.setTimeSlots(timeSlotDto);
-        });
-
-        expander.applyExpansion(expand, "activityType", () -> {
-            ActivityTypeDto activityTypeDto = activityTypeMapper.toDto(boat.getActivityType());
-            boatDto.setActivityType(activityTypeDto);
         });
 
         return boatDto;

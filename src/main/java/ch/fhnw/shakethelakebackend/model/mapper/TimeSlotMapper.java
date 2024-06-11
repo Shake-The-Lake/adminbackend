@@ -16,15 +16,18 @@ import java.util.stream.Collectors;
 public interface TimeSlotMapper {
 
     @Mapping(target = "bookings", ignore = true)
+    @Mapping(target = "activityType.id", source = "activityTypeId")
     TimeSlot toEntity(CreateTimeSlotDto timeSlotDto);
 
     @ToDtoDefault
     @Mapping(target = "boatId", expression = "java(timeSlot.getBoat().getId())")
     @Mapping(target = "bookingIds", expression = "java(bookingsToBookingIds(timeSlot.getBookings()))")
+    @Mapping(target = "activityTypeId", source = "activityType.id")
     TimeSlotDto toDto(TimeSlot timeSlot);
 
     @Mapping(target = "boatId", expression = "java(timeSlot.getBoat().getId())")
     @Mapping(target = "bookingIds", expression = "java(bookingsToBookingIds(timeSlot.getBookings()))")
+    @Mapping(target = "activityTypeId", source = "activityType.id")
     @Mapping(target = "boatName", source = "boat.name")
     TimeSlotDto toDtoWithBoatName(TimeSlot timeSlot);
 

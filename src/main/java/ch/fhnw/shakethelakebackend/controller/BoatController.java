@@ -50,7 +50,7 @@ public class BoatController {
     @Operation(summary = "Get a boat by id", description = "Returns a boat as per the id", parameters = {
         @Parameter(name = "expand", description = "Expand the response with more details from related objects",
             required = false,
-            example = "timeSlots,activityType", schema = @Schema(type = "string")) })
+            example = "timeSlots", schema = @Schema(type = "string")) })
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully retrieved a boat by id"),
         @ApiResponse(responseCode = "404", description = BoatService.BOAT_NOT_FOUND, content = @Content(mediaType = "",
             schema = @Schema(implementation = String.class))) })
@@ -80,7 +80,7 @@ public class BoatController {
     @Operation(summary = "Get all boats", description = "Returns a list of all boats", parameters = {
         @Parameter(name = "expand", description = "Expand the response with more details from related objects",
             required = false,
-            example = "timeSlots, activityType", schema = @Schema(type = "string")) })
+            example = "timeSlots", schema = @Schema(type = "string")) })
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully retrieved all boats") })
     @GetMapping()
     public List<BoatDto> getAllBoats(@RequestParam(required = false) Optional<String> expand) {
