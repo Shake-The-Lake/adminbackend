@@ -7,9 +7,14 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
+import org.mapstruct.factory.Mappers;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING,
+    uses = {PersonMapper.class, TimeSlotExtendedMapper.class})
 public interface BookingMapper {
+
+    PersonMapper INSTANCE_PERSON = Mappers.getMapper(PersonMapper.class);
+    TimeSlotExtendedMapper INSTANCE_TIMESLOT = Mappers.getMapper(TimeSlotExtendedMapper.class);
 
     @Mapping(target = "timeSlot", ignore = true)
     @Mapping(target = "person", ignore = true)
@@ -20,4 +25,10 @@ public interface BookingMapper {
     @Mapping(target = "person", ignore = true)
     @Mapping(target = "timeSlot", ignore = true)
     BookingDto toDto(Booking booking);
+
+    @Mapping(target = "timeSlotId", expression = "java(booking.getTimeSlot().getId())")
+    @Mapping(target = "personId", expression = "java(booking.getPerson().getId())")
+    @Mapping(target = "person", qualifiedBy = ToDtoDefault.class)
+    @Mapping(target = "timeSlot", qualifiedBy = ToDtoExtended.class)
+    BookingDto toDtoExtended(Booking booking);
 }

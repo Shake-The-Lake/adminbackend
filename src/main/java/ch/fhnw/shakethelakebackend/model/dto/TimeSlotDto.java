@@ -38,5 +38,5 @@ public class TimeSlotDto {
     //With parameter
     @CsvBindByName(column = "Boat")
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String boatName;
+    private BoatDto boat;
 }

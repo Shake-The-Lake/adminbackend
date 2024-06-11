@@ -19,6 +19,7 @@ public interface PersonMapper {
     @Mapping(target = "bookings", ignore = true)
     Person toEntity(CreatePersonDto createPersonDto);
 
+    @ToDtoDefault
     @Mapping(target = "bookingIds", expression = "java(bookingsToBookingIds(person.getBookings()))")
     PersonDto toDto(Person person);
 
