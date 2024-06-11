@@ -32,14 +32,11 @@ public class TimeSlotDto {
     @CsvIgnore
     private Long boatId;
     @CsvIgnore
-    private Long activityTypeId;
-    @CsvIgnore
     private Set<Long> bookingIds;
     @CsvBindByName(column = "Type")
     private TimeSlotType status;
     //With parameter
     @CsvBindByName(column = "Boat")
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String boatName;
-
+    private BoatDto boat;
 }
