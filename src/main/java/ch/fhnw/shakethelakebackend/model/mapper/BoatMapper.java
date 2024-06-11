@@ -16,8 +16,8 @@ import org.mapstruct.factory.Mappers;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING, uses = {
-    TimeSlotMapper.class })
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING,
+    uses = { TimeSlotMapper.class })
 public interface BoatMapper {
 
     TimeSlotMapper INSTANCE = Mappers.getMapper(TimeSlotMapper.class);
@@ -46,6 +46,14 @@ public interface BoatMapper {
     @Mapping(target = "activityTypeId", source = "activityType.id")
     @Mapping(target = "eventId", source = "event.id")
     BoatDto toDtoWithTimeSlotsAndActivityType(Boat boat);
+
+    @ToDtoExtended
+    @Mapping(target = "timeSlotIds", expression = "java(timeSlotsToTimeSlotIds(boat.getTimeSlots()))")
+    @Mapping(target = "timeSlots", ignore = true)
+    @Mapping(target = "activityTypeId", source = "activityType.id")
+    @Mapping(target = "eventId", source = "event.id")
+    @Mapping(target = "activityType", source = "activityType")
+    BoatDto toDtoWithActivityType(Boat boat);
 
     CreateBoatDto toCreateDto(Boat boat);
 

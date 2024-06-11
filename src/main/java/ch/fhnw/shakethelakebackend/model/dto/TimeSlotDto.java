@@ -29,5 +29,5 @@ public class TimeSlotDto {
     private TimeSlotType status;
     //With parameter
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private String boatName;
+    private BoatDto boat;
 }

@@ -10,11 +10,11 @@ import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING,
-    uses = {PersonMapper.class, TimeSlotMapper.class})
+    uses = {PersonMapper.class, TimeSlotExtendedMapper.class})
 public interface BookingMapper {
 
     PersonMapper INSTANCE_PERSON = Mappers.getMapper(PersonMapper.class);
-    TimeSlotMapper INSTANCE_TIMESLOT = Mappers.getMapper(TimeSlotMapper.class);
+    TimeSlotExtendedMapper INSTANCE_TIMESLOT = Mappers.getMapper(TimeSlotExtendedMapper.class);
 
     @Mapping(target = "timeSlot", ignore = true)
     @Mapping(target = "person", ignore = true)

@@ -45,12 +45,13 @@ public class SearchService {
         personName.ifPresent(name -> searchSpecifications.add(new SpecificationBooking("person.firstName", "?", name)));
         boatName.ifPresent(name -> filterSpecification.add(new SpecificationBooking("timeSlot.boat.name", ":", name)));
         from.ifPresent(date -> filterSpecification.add(new SpecificationBooking("timeSlot.fromTime", ">=", date)));
-        to.ifPresent(date -> filterSpecification.add(new SpecificationBooking("timeSlot.toTime", "<=", date)));
-        activity.ifPresent(act -> filterSpecification.add(new SpecificationBooking("timeSlot.activity.id", ":", act)));
+        to.ifPresent(date -> filterSpecification.add(new SpecificationBooking("timeSlot.untilTime", "<=", date)));
+        activity.ifPresent(
+                act -> filterSpecification.add(new SpecificationBooking("timeSlot.boat.activityType.id", ":", act)));
 
         bookingDtos = bookingRepository.findAll(
                         Specification.allOf(filterSpecification)
-                            .and(Specification.anyOf(searchSpecifications))).stream()
+                                .and(Specification.anyOf(searchSpecifications))).stream()
                 .map(bookingMapper::toDtoExtended).toList();
         return bookingDtos;
     }

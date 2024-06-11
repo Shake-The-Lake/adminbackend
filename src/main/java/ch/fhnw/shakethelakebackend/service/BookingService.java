@@ -11,6 +11,7 @@ import ch.fhnw.shakethelakebackend.model.entity.TimeSlot;
 import ch.fhnw.shakethelakebackend.model.mapper.BoatMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.BookingMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.PersonMapper;
+import ch.fhnw.shakethelakebackend.model.mapper.TimeSlotExtendedMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.TimeSlotMapper;
 import ch.fhnw.shakethelakebackend.model.repository.BookingRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -36,6 +37,7 @@ public class BookingService {
     private final PersonMapper personMapper;
     private final BoatMapper boatMapper;
     private final TimeSlotMapper timeSlotMapper;
+    private final TimeSlotExtendedMapper timeSlotExtendedMapper;
 
     // Check if there is a seat available for the booking otherwise throw an exception
     private void checkSeatsBooking(Booking booking, TimeSlot timeSlot) {
@@ -129,7 +131,7 @@ public class BookingService {
         });
 
         expander.applyExpansion(expand, "timeSlot.boat", () -> {
-            TimeSlotDto timeSlotDto = timeSlotMapper.toDtoWithBoatName(booking.getTimeSlot());
+            TimeSlotDto timeSlotDto = timeSlotExtendedMapper.toDtoWithBoat(booking.getTimeSlot());
             bookingDto.setTimeSlot(timeSlotDto);
         });
 

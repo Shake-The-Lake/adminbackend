@@ -132,4 +132,10 @@ class BoatMapperTest {
         mapper.partialUpdate(null, newBoat);
         assertEquals(null, newBoat.getOperator());
     }
+
+    @Test
+    void testWithActivityType() {
+        BoatDto result = mapper.toDtoWithActivityType(boat);
+        assertEquals(boat.getOperator(), result.getOperator());
+    }
 }
