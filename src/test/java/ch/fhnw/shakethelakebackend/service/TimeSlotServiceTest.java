@@ -2,11 +2,11 @@ package ch.fhnw.shakethelakebackend.service;
 
 import ch.fhnw.shakethelakebackend.model.dto.CreateTimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.dto.TimeSlotDto;
+import ch.fhnw.shakethelakebackend.model.entity.ActivityType;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.Booking;
 import ch.fhnw.shakethelakebackend.model.entity.TimeSlot;
 import ch.fhnw.shakethelakebackend.model.mapper.TimeSlotMapper;
-import ch.fhnw.shakethelakebackend.model.repository.BoatRepository;
 import ch.fhnw.shakethelakebackend.model.repository.TimeSlotRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +32,7 @@ class TimeSlotServiceTest {
     private TimeSlotRepository timeSlotRepository;
 
     @Mock
-    private BoatRepository boatRepository;
+    private ActivityTypeService activityTypeService;
 
     @Mock
     private BoatService boatService;
@@ -53,18 +53,24 @@ class TimeSlotServiceTest {
 
     private Boat boat;
 
+    private ActivityType activityType;
+
     private LocalDateTime fromTime;
     private LocalDateTime untilTime;
 
     @BeforeEach
     void setup() {
+        activityType = ActivityType.builder().id(1L).build();
         fromTime = LocalDateTime.now();
         untilTime = LocalDateTime.now().plusHours(1);
         boat = Boat.builder().seatsRider(2).seatsViewer(2).id(1L).availableFrom(fromTime).availableUntil(untilTime)
-                .build();
-        timeSlot = TimeSlot.builder().fromTime(fromTime).untilTime(untilTime).boat(boat).id(1L).build();
-        timeSlotDto = TimeSlotDto.builder().fromTime(fromTime).untilTime(untilTime).boatId(1L).id(1L).build();
-        createTimeSlotDto = CreateTimeSlotDto.builder().fromTime(fromTime).untilTime(untilTime).boatId(1L).build();
+            .build();
+        timeSlot = TimeSlot.builder().fromTime(fromTime).untilTime(untilTime).boat(boat).id(1L)
+            .activityType(activityType).build();
+        timeSlotDto = TimeSlotDto.builder().fromTime(fromTime).untilTime(untilTime).boatId(1L).id(1L)
+            .activityTypeId(1L).build();
+        createTimeSlotDto = CreateTimeSlotDto.builder().fromTime(fromTime).untilTime(untilTime).boatId(1L)
+            .activityTypeId(1L).build();
 
         booking = Booking.builder().id(1L).build();
     }
@@ -73,6 +79,8 @@ class TimeSlotServiceTest {
     void testCreateTimeSlot() {
         when(timeSlotMapper.toEntity(any(CreateTimeSlotDto.class))).thenReturn(timeSlot);
         when(boatService.getBoat(1L)).thenReturn(boat);
+        when(activityTypeService.getActivityType(1L)).thenReturn(activityType);
+
         when(timeSlotRepository.save(any(TimeSlot.class))).thenReturn(timeSlot);
         when(timeSlotMapper.toDto(any(TimeSlot.class))).thenReturn(timeSlotDto);
 
@@ -88,6 +96,7 @@ class TimeSlotServiceTest {
         when(timeSlotMapper.toEntity(any(CreateTimeSlotDto.class))).thenReturn(timeSlot);
         when(timeSlotMapper.toDto(any(TimeSlot.class))).thenReturn(timeSlotDto);
         when(timeSlotRepository.findById(1L)).thenReturn(Optional.of(timeSlot));
+        when(activityTypeService.getActivityType(1L)).thenReturn(activityType);
         when(timeSlotService.updateTimeSlot(1L, createTimeSlotDto)).thenReturn(timeSlotDto);
 
         TimeSlotDto result = timeSlotService.updateTimeSlot(1L, createTimeSlotDto);

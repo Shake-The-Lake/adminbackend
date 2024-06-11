@@ -22,7 +22,6 @@ public interface BoatMapper {
 
     TimeSlotMapper INSTANCE = Mappers.getMapper(TimeSlotMapper.class);
 
-
     @Mapping(target = "event.id", source = "eventId")
     Boat toEntity(CreateBoatDto createBoatDto);
 
@@ -32,21 +31,11 @@ public interface BoatMapper {
     @Mapping(target = "timeSlots", ignore = true)
     BoatDto toDto(Boat boat);
 
+
     @Mapping(target = "timeSlotIds", expression = "java(timeSlotsToTimeSlotIds(boat.getTimeSlots()))")
     @Mapping(target = "timeSlots", qualifiedBy = ToDtoDefault.class)
     @Mapping(target = "eventId", source = "event.id")
     BoatDto toDtoWithTimeSlots(Boat boat);
-
-    @Mapping(target = "timeSlotIds", expression = "java(timeSlotsToTimeSlotIds(boat.getTimeSlots()))")
-    @Mapping(target = "timeSlots", qualifiedBy = ToDtoDefault.class)
-    @Mapping(target = "eventId", source = "event.id")
-    BoatDto toDtoWithTimeSlotsAndActivityType(Boat boat);
-
-    @ToDtoExtended
-    @Mapping(target = "timeSlotIds", expression = "java(timeSlotsToTimeSlotIds(boat.getTimeSlots()))")
-    @Mapping(target = "timeSlots", ignore = true)
-    @Mapping(target = "eventId", source = "event.id")
-    BoatDto toDtoWithActivityType(Boat boat);
 
     CreateBoatDto toCreateDto(Boat boat);
 

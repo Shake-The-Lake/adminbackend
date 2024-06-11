@@ -16,13 +16,13 @@ import java.util.stream.Collectors;
 public interface TimeSlotMapper {
 
     @Mapping(target = "bookings", ignore = true)
-    @Mapping(target="activityType.id", source = "activityTypeId")
+    @Mapping(target = "activityType.id", source = "activityTypeId")
     TimeSlot toEntity(CreateTimeSlotDto timeSlotDto);
 
     @ToDtoDefault
     @Mapping(target = "boatId", expression = "java(timeSlot.getBoat().getId())")
     @Mapping(target = "bookingIds", expression = "java(bookingsToBookingIds(timeSlot.getBookings()))")
-    @Mapping(target="activityTypeId", source="activityType.id")
+    @Mapping(target = "activityTypeId", source = "activityType.id")
     @Mapping(target = "boat", ignore = true)
     TimeSlotDto toDto(TimeSlot timeSlot);
 

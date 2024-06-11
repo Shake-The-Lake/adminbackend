@@ -121,9 +121,5 @@ class BoatMapperTest {
         assertEquals(null, newBoat.getOperator());
     }
 
-    @Test
-    void testWithActivityType() {
-        BoatDto result = mapper.toDtoWithActivityType(boat);
-        assertEquals(boat.getOperator(), result.getOperator());
-    }
+
 }
