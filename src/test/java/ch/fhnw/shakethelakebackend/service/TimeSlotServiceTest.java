@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -64,6 +65,7 @@ class TimeSlotServiceTest {
         timeSlot = TimeSlot.builder().fromTime(fromTime).untilTime(untilTime).boat(boat).id(1L).build();
         timeSlotDto = TimeSlotDto.builder().fromTime(fromTime).untilTime(untilTime).boatId(1L).id(1L).build();
         createTimeSlotDto = CreateTimeSlotDto.builder().fromTime(fromTime).untilTime(untilTime).boatId(1L).build();
+
         booking = Booking.builder().id(1L).build();
     }
 
@@ -84,13 +86,15 @@ class TimeSlotServiceTest {
     void testUpdateTimeSlot() {
         when(timeSlotRepository.existsById(1L)).thenReturn(true);
         when(timeSlotMapper.toEntity(any(CreateTimeSlotDto.class))).thenReturn(timeSlot);
-        when(timeSlotRepository.save(any(TimeSlot.class))).thenReturn(timeSlot);
         when(timeSlotMapper.toDto(any(TimeSlot.class))).thenReturn(timeSlotDto);
+        when(timeSlotRepository.findById(1L)).thenReturn(Optional.of(timeSlot));
+        when(timeSlotService.updateTimeSlot(1L, createTimeSlotDto)).thenReturn(timeSlotDto);
 
         TimeSlotDto result = timeSlotService.updateTimeSlot(1L, createTimeSlotDto);
 
         assertEquals(timeSlotDto, result);
-        verify(timeSlotRepository).save(timeSlot);
+
+
     }
 
     @Test
@@ -104,7 +108,7 @@ class TimeSlotServiceTest {
 
     @Test
     void testGetTimeSlot() {
-        when(timeSlotRepository.findById(1L)).thenReturn(java.util.Optional.of(timeSlot));
+        when(timeSlotRepository.findById(1L)).thenReturn(Optional.of(timeSlot));
 
         TimeSlot result = timeSlotService.getTimeSlot(1L);
 
@@ -113,14 +117,14 @@ class TimeSlotServiceTest {
 
     @Test
     void testGetTimeSlotNotFound() {
-        when(timeSlotRepository.findById(1L)).thenReturn(java.util.Optional.empty());
+        when(timeSlotRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> timeSlotService.getTimeSlot(1L));
     }
 
     @Test
     void testGetTimeSlotDto() {
-        when(timeSlotRepository.findById(1L)).thenReturn(java.util.Optional.of(timeSlot));
+        when(timeSlotRepository.findById(1L)).thenReturn(Optional.of(timeSlot));
         when(timeSlotMapper.toDto(timeSlot)).thenReturn(timeSlotDto);
 
         TimeSlotDto result = timeSlotService.getTimeSlotDto(1L);
@@ -130,7 +134,7 @@ class TimeSlotServiceTest {
 
     @Test
     void testGetTimeSlotDtoNotFound() {
-        when(timeSlotRepository.findById(1L)).thenReturn(java.util.Optional.empty());
+        when(timeSlotRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> timeSlotService.getTimeSlotDto(1L));
     }

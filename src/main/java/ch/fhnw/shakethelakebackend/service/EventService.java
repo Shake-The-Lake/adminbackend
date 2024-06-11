@@ -40,6 +40,10 @@ public class EventService {
         return eventRepository.findAll().stream().map(eventMapper::toDto).toList();
     }
 
+    public List<Event> getAllEventEntities() {
+        return eventRepository.findAll();
+    }
+
     public EventDto createEvent(CreateEventDto createEventDto) {
         //TODO; location not mvp
         // Location location = locationRepository.save(createEventDto.getLocationId());
@@ -53,7 +57,7 @@ public class EventService {
             throw new EntityNotFoundException(EVENT_NOT_FOUND);
         }
 
-        Event newEvent = eventMapper.toEntity(createEventDto);
+        Event newEvent = getEvent(id);
         newEvent.setId(id);
         eventRepository.save(newEvent);
         return eventMapper.toDto(newEvent);

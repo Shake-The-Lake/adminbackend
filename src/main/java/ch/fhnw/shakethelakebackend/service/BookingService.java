@@ -8,7 +8,6 @@ import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.Booking;
 import ch.fhnw.shakethelakebackend.model.entity.Person;
 import ch.fhnw.shakethelakebackend.model.entity.TimeSlot;
-import ch.fhnw.shakethelakebackend.model.mapper.BoatMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.BookingMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.PersonMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.TimeSlotExtendedMapper;
@@ -35,7 +34,6 @@ public class BookingService {
     private final BookingMapper bookingMapper;
     private final Expander expander;
     private final PersonMapper personMapper;
-    private final BoatMapper boatMapper;
     private final TimeSlotMapper timeSlotMapper;
     private final TimeSlotExtendedMapper timeSlotExtendedMapper;
 
@@ -93,8 +91,8 @@ public class BookingService {
 
         Booking oldBooking = bookingRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
-        TimeSlot timeSlot = timeSlotService.getTimeSlot(booking.getTimeSlot().getId());
-        Person person = personService.getPerson(booking.getPerson().getId());
+        TimeSlot timeSlot = timeSlotService.getTimeSlot(bookingDto.getTimeSlotId());
+        Person person = personService.getPerson(bookingDto.getPersonId());
 
         if (oldBooking.getTimeSlot().equals(timeSlot)) {
             timeSlot.getBookings().remove(oldBooking);

@@ -30,17 +30,15 @@ class BoatMapperTest {
         boat.setOperator("operator");
 
         Set<TimeSlot> timeSlots = new HashSet<>();
-        timeSlots.add(new TimeSlot().builder().id(1L).boat(boat).bookings(Set.of()).build());
-        timeSlots.add(new TimeSlot().builder().id(2L).boat(boat).bookings(Set.of()).build());
+        timeSlots.add(TimeSlot.builder().id(1L).boat(boat).bookings(Set.of()).build());
+        timeSlots.add(TimeSlot.builder().id(2L).boat(boat).bookings(Set.of()).build());
         boat.setTimeSlots(timeSlots);
 
         boatDto = new BoatDto();
-        boatDto.setBoatDriverId(1L);
         boatDto.setTimeSlotIds(Set.of(1L, 2L));
         boatDto.setOperator("operator");
 
         createBoatDto = new CreateBoatDto();
-        createBoatDto.setBoatDriverId(1L);
     }
 
     @Test

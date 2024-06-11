@@ -2,6 +2,7 @@ package ch.fhnw.shakethelakebackend.model.dto;
 
 import ch.fhnw.shakethelakebackend.model.entity.Event;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,7 +37,9 @@ public class EventDto implements Serializable {
     private Set<Long> activityTypeIds;
     private Set<Long> boatIds;
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Schema(hidden = true)
     private List<BoatDto> boats = null;
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Schema(hidden = true)
     private List<ActivityTypeDto> activityTypes = null;
 }

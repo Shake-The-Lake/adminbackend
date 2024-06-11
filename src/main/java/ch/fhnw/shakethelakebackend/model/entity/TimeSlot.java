@@ -55,6 +55,8 @@ public class TimeSlot {
     @NotNull
     private TimeSlotType status;
 
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
