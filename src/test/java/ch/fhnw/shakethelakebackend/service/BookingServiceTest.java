@@ -74,8 +74,8 @@ public class BookingServiceTest {
         boat = Boat.builder().seatsRider(2).seatsViewer(2).id(1L).name("boat").build();
         person = Person.builder().id(1L).firstName("John").lastName("Doe").emailAddress("john.doe@example.com")
                 .phoneNumber("123456789").personType(PersonType.CUSTOMER).build();
-        timeSlot = TimeSlot.builder().boat(boat).id(1L).fromTime(fromTimeZoned).untilTime(untilTimeZoned)
-                .bookings(new HashSet<>()).build();
+        timeSlot = TimeSlot.builder().boat(boat).id(1L).fromTime(fromTimeZoned.toLocalTime())
+            .untilTime(untilTimeZoned.toLocalTime()).bookings(new HashSet<>()).build();
         booking = Booking.builder().isRider(true).isManual(false).timeSlot(timeSlot).id(1L).person(person).build();
 
         bookingDto = BookingDto.builder().id(1L).isRider(true).isManual(false).timeSlotId(1L).personId(1L).build();
