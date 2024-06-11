@@ -34,14 +34,10 @@ public class BoatDto {
     @NotNull
     private LocalDateTime availableUntil;
     private Set<Long> timeSlotIds;
-    private Long activityTypeId;
     private Long eventId;
     //With parameter
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Schema(hidden = true)
     private Set<TimeSlotDto> timeSlots = null;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @Schema(hidden = true)
-    private ActivityTypeDto activityType = null;
 
 }

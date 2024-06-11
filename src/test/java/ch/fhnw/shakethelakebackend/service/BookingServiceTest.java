@@ -19,7 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -69,12 +69,12 @@ public class BookingServiceTest {
 
     @BeforeEach
     void setUp() {
-        LocalDateTime fromTime = LocalDateTime.now();
-        LocalDateTime untilTime = LocalDateTime.now().plusHours(1);
+        ZonedDateTime fromTimeZoned = ZonedDateTime.now();
+        ZonedDateTime untilTimeZoned = ZonedDateTime.now().plusHours(1);
         boat = Boat.builder().seatsRider(2).seatsViewer(2).id(1L).name("boat").build();
         person = Person.builder().id(1L).firstName("John").lastName("Doe").emailAddress("john.doe@example.com")
                 .phoneNumber("123456789").personType(PersonType.CUSTOMER).build();
-        timeSlot = TimeSlot.builder().boat(boat).id(1L).fromTime(fromTime).untilTime(untilTime)
+        timeSlot = TimeSlot.builder().boat(boat).id(1L).fromTime(fromTimeZoned).untilTime(untilTimeZoned)
                 .bookings(new HashSet<>()).build();
         booking = Booking.builder().isRider(true).isManual(false).timeSlot(timeSlot).id(1L).person(person).build();
 

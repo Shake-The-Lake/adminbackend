@@ -80,12 +80,7 @@ class BoatMapperTest {
         assertEquals(0, ids.size());
     }
 
-    @Test
-    void testToDtoWithTimeSlotsAndActivityType() {
-        BoatDto result = mapper.toDtoWithTimeSlotsAndActivityType(boat);
-        assertEquals(boat.getOperator(), result.getOperator());
-        assertEquals(2, result.getTimeSlotIds().size());
-    }
+
 
     @Test
     void testToDtoWithTimeSlots() {
@@ -100,11 +95,6 @@ class BoatMapperTest {
         assertEquals(null, result);
     }
 
-    @Test
-    void testToDtoWithTimeSlotsAndActivityTypeNull() {
-        BoatDto result = mapper.toDtoWithTimeSlotsAndActivityType(null);
-        assertEquals(null, result);
-    }
 
     @Test
     void testToEntityNull() {
@@ -131,9 +121,5 @@ class BoatMapperTest {
         assertEquals(null, newBoat.getOperator());
     }
 
-    @Test
-    void testWithActivityType() {
-        BoatDto result = mapper.toDtoWithActivityType(boat);
-        assertEquals(boat.getOperator(), result.getOperator());
-    }
+
 }

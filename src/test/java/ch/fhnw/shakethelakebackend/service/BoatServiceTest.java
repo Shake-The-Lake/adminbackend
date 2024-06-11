@@ -75,7 +75,6 @@ class BoatServiceTest {
     @Test
     void testCreateBoatSuccess() {
         //when
-        when(activityTypeService.getActivityType(any())).thenReturn(activityType);
         when(boatMapper.toEntity(createBoatDto)).thenReturn(boat);
         when(boatMapper.toDto(boat)).thenReturn(boatDto);
         // Act
