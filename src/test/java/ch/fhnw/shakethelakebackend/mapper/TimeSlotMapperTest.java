@@ -130,14 +130,4 @@ class TimeSlotMapperTest {
         assertTrue(bookings.stream().anyMatch(booking -> booking.getId().equals(1L)));
         assertTrue(bookings.stream().anyMatch(booking -> booking.getId().equals(2L)));
     }
-
-    @Test
-    void testTimeSlotMapperWithBoatName() {
-        Boat boat = Boat.builder().name("Boat").build();
-        TimeSlot timeSlot = TimeSlot.builder().boat(boat).bookings(Set.of()).build();
-
-        TimeSlotDto timeSlotDto = timeSlotMapper.toDtoWithBoatName(timeSlot);
-
-        assertEquals("Boat", timeSlotDto.getBoatName());
-    }
 }

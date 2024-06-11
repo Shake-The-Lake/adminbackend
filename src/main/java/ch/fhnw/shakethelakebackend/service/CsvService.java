@@ -2,7 +2,7 @@ package ch.fhnw.shakethelakebackend.service;
 
 import ch.fhnw.shakethelakebackend.model.dto.TimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
-import ch.fhnw.shakethelakebackend.model.mapper.TimeSlotMapper;
+import ch.fhnw.shakethelakebackend.model.mapper.TimeSlotExtendedMapper;
 import com.opencsv.ICSVWriter;
 import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import lombok.AllArgsConstructor;
@@ -19,12 +19,12 @@ import java.util.List;
 @Service
 public class CsvService {
 
-    private final TimeSlotMapper timeSlotMapper;
+    private final TimeSlotExtendedMapper timeSlotExtendedMapper;
     private final BoatService boatService;
 
     public ResponseEntity<String> exportTimeSlotsFromBoat(Long boatId, String filename) {
         Boat boat = boatService.getBoat(boatId);
-        List<TimeSlotDto> timeSlotDtos = boat.getTimeSlots().stream().map(timeSlotMapper::toDtoWithBoatName)
+        List<TimeSlotDto> timeSlotDtos = boat.getTimeSlots().stream().map(timeSlotExtendedMapper::toDtoWithBoat)
             .toList();
         return buildCsv(timeSlotDtos, filename);
 
