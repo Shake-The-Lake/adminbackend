@@ -3,7 +3,7 @@ package ch.fhnw.shakethelakebackend.service;
 import ch.fhnw.shakethelakebackend.model.dto.TimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.TimeSlot;
-import ch.fhnw.shakethelakebackend.model.mapper.TimeSlotMapper;
+import ch.fhnw.shakethelakebackend.model.mapper.TimeSlotExtendedMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 class CsvServiceTest {
 
     @Mock
-    private TimeSlotMapper timeSlotMapper;
+    private TimeSlotExtendedMapper timeSlotMapper;
 
     @Mock
     private BoatService boatService;
@@ -47,7 +47,7 @@ class CsvServiceTest {
         when(boatService.getBoat(boatId)).thenReturn(boat);
         when(boat.getTimeSlots()).thenReturn(timeSlots);
         when(boatService.getBoat(boatId)).thenReturn(boat);
-        when(timeSlotMapper.toDtoWithBoatName(any())).thenReturn(dto);
+        when(timeSlotMapper.toDtoWithBoat(any())).thenReturn(dto);
 
         // Execution
         ResponseEntity<String> response = csvService.exportTimeSlotsFromBoat(boatId, filename);
