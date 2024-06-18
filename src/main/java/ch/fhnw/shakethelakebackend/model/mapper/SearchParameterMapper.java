@@ -12,5 +12,5 @@ import java.util.List;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface SearchParameterMapper {
 
-    SearchParameterDto toDto(List<BoatDto> boats, List<ActivityTypeDto> activities);
+    SearchParameterDto toDto(List<BoatDto> boats, List<ActivityTypeDto> activityTypes);
 }

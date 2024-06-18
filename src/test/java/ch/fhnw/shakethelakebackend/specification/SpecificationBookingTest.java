@@ -14,7 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -46,18 +46,18 @@ public class SpecificationBookingTest {
 
     @BeforeEach
     void setUp() {
-        specificationBooking = new SpecificationBooking("timeSlot.fromTime", ">", LocalDateTime.now());
+        specificationBooking = new SpecificationBooking("timeSlot.fromTime", ">", ZonedDateTime.now());
     }
 
     @Test
     void testToPredicateWithGreaterThanOperation() {
         // Given
-        LocalDateTime now = LocalDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now();
         specificationBooking = new SpecificationBooking("timeSlot.fromTime", ">", now);
         when(root.get(anyString())).thenReturn(path);
         when(path.get(anyString())).thenReturn(path);
         Predicate predicate = mock(Predicate.class);
-        when(builder.greaterThan(any(), any(LocalDateTime.class))).thenReturn(predicate);
+        when(builder.greaterThan(any(), any(ZonedDateTime.class))).thenReturn(predicate);
 
         // When
         Predicate result = specificationBooking.toPredicate(root, query, builder);
@@ -70,12 +70,12 @@ public class SpecificationBookingTest {
     @Test
     void testToPredicateWithGreaterThanOrEqualToOperation() {
         // Given
-        LocalDateTime now = LocalDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now();
         specificationBooking = new SpecificationBooking("timeSlot.fromTime", ">=", now);
         when(root.get(anyString())).thenReturn(path);
         when(path.get(anyString())).thenReturn(path);
         Predicate predicate = mock(Predicate.class);
-        when(builder.greaterThanOrEqualTo(any(), any(LocalDateTime.class))).thenReturn(predicate);
+        when(builder.greaterThanOrEqualTo(any(), any(ZonedDateTime.class))).thenReturn(predicate);
 
         // When
         Predicate result = specificationBooking.toPredicate(root, query, builder);
@@ -88,12 +88,12 @@ public class SpecificationBookingTest {
     @Test
     void testToPredicateWithLessThanOperation() {
         // Given
-        LocalDateTime now = LocalDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now();
         specificationBooking = new SpecificationBooking("timeSlot.toTime", "<", now);
         when(root.get(anyString())).thenReturn(path);
         when(path.get(anyString())).thenReturn(path);
         Predicate predicate = mock(Predicate.class);
-        when(builder.lessThan(any(), any(LocalDateTime.class))).thenReturn(predicate);
+        when(builder.lessThan(any(), any(ZonedDateTime.class))).thenReturn(predicate);
 
         // When
         Predicate result = specificationBooking.toPredicate(root, query, builder);
@@ -106,12 +106,12 @@ public class SpecificationBookingTest {
     @Test
     void testToPredicateWithLessThanOrEqualToOperation() {
         // Given
-        LocalDateTime now = LocalDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now();
         specificationBooking = new SpecificationBooking("timeSlot.toTime", "<=", now);
         when(root.get(anyString())).thenReturn(path);
         when(path.get(anyString())).thenReturn(path);
         Predicate predicate = mock(Predicate.class);
-        when(builder.lessThanOrEqualTo(any(), any(LocalDateTime.class))).thenReturn(predicate);
+        when(builder.lessThanOrEqualTo(any(), any(ZonedDateTime.class))).thenReturn(predicate);
 
         // When
         Predicate result = specificationBooking.toPredicate(root, query, builder);
@@ -125,7 +125,7 @@ public class SpecificationBookingTest {
     @Test
     void testToPredicateWithUnknownOperation() {
         // Given
-        specificationBooking = new SpecificationBooking("timeSlot.fromTime", "unknown", LocalDateTime.now());
+        specificationBooking = new SpecificationBooking("timeSlot.fromTime", "unknown", ZonedDateTime.now());
         when(root.get(anyString())).thenReturn(path);
         when(path.get(anyString())).thenReturn(path);
 

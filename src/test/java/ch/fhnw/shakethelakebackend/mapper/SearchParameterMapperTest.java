@@ -30,7 +30,7 @@ public class SearchParameterMapperTest {
         // Then
         assertNotNull(result);
         assertEquals(boats, result.getBoats());
-        assertEquals(activities, result.getActivities());
+        assertEquals(activities, result.getActivityTypes());
     }
 
     @Test
@@ -53,11 +53,11 @@ public class SearchParameterMapperTest {
         // Then
         assertNotNull(result);
         assertEquals(boats, result.getBoats());
-        assertEquals(activities, result.getActivities());
+        assertEquals(activities, result.getActivityTypes());
         assertEquals(1, result.getBoats().size());
-        assertEquals(1, result.getActivities().size());
+        assertEquals(1, result.getActivityTypes().size());
         assertEquals("Boat1", result.getBoats().get(0).getName());
-        assertEquals("Activity1", result.getActivities().get(0).getName().getEn());
+        assertEquals("Activity1", result.getActivityTypes().get(0).getName().getEn());
     }
 
     @Test
@@ -88,7 +88,7 @@ public class SearchParameterMapperTest {
         // Then
         assertNotNull(result);
         assertEquals(boats, result.getBoats());
-        assertEquals(activities, result.getActivities());
+        assertEquals(activities, result.getActivityTypes());
     }
 
     @Test
@@ -116,7 +116,7 @@ public class SearchParameterMapperTest {
         // Then
         assertNotNull(result);
         assertNull(result.getBoats());
-        assertEquals(0, result.getActivities().size());
+        assertEquals(0, result.getActivityTypes().size());
     }
 
     @Test
@@ -131,6 +131,6 @@ public class SearchParameterMapperTest {
         // Then
         assertNotNull(result);
         assertEquals(0, result.getBoats().size());
-        assertNull(result.getActivities());
+        assertNull(result.getActivityTypes());
     }
 }
