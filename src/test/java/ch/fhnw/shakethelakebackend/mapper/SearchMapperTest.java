@@ -2,6 +2,7 @@ package ch.fhnw.shakethelakebackend.mapper;
 
 import ch.fhnw.shakethelakebackend.model.dto.ActivityTypeDto;
 import ch.fhnw.shakethelakebackend.model.dto.BoatDto;
+import ch.fhnw.shakethelakebackend.model.dto.BookingDto;
 import ch.fhnw.shakethelakebackend.model.dto.PersonDto;
 import ch.fhnw.shakethelakebackend.model.dto.SearchDto;
 import ch.fhnw.shakethelakebackend.model.dto.TimeSlotDto;
@@ -34,9 +35,10 @@ public class SearchMapperTest {
                 .build();
         BoatDto boat = BoatDto.builder().id(1L).name("Boat").timeSlots(Set.of(timeSlot)).build();
         PersonDto person = PersonDto.builder().id(1L).firstName("John").lastName("Doe").build();
+        BookingDto booking = BookingDto.builder().id(1L).build();
         // When
 
-        SearchDto searchDto = searchMapper.toDto(boat, person, timeSlot, activityType);
+        SearchDto searchDto = searchMapper.toDto(boat, person, timeSlot, activityType, booking);
         // Then
         assertEquals(boat.getId(), searchDto.getBoat().getId());
         assertEquals(boat.getName(), searchDto.getBoat().getName());
@@ -57,8 +59,9 @@ public class SearchMapperTest {
         ActivityTypeDto activityType = ActivityTypeDto.builder().build();
         TimeSlotDto timeSlot = TimeSlotDto.builder().build();
         PersonDto person = PersonDto.builder().build();
+        BookingDto booking = BookingDto.builder().build();
         // When
-        SearchDto searchDto = searchMapper.toDto(boat, person, timeSlot, activityType);
+        SearchDto searchDto = searchMapper.toDto(boat, person, timeSlot, activityType, booking);
         // Then
         assertEquals(boat.getId(), searchDto.getBoat().getId());
         assertEquals(boat.getName(), searchDto.getBoat().getName());
@@ -78,8 +81,9 @@ public class SearchMapperTest {
         ActivityTypeDto activityType = ActivityTypeDto.builder().id(1L).build();
         TimeSlotDto timeSlot = TimeSlotDto.builder().id(1L).build();
         PersonDto person = PersonDto.builder().id(1L).build();
+        BookingDto booking = BookingDto.builder().id(1L).build();
         // When
-        SearchDto searchDto = searchMapper.toDto(boat, person, timeSlot, activityType);
+        SearchDto searchDto = searchMapper.toDto(boat, person, timeSlot, activityType, booking);
         // Then
         assertEquals(boat.getId(), searchDto.getBoat().getId());
         assertEquals(boat.getName(), searchDto.getBoat().getName());
@@ -99,8 +103,9 @@ public class SearchMapperTest {
         ActivityTypeDto activityType = null;
         TimeSlotDto timeSlot = null;
         PersonDto person = null;
+        BookingDto booking = null;
         // When
-        SearchDto searchDto = searchMapper.toDto(boat, person, timeSlot, activityType);
+        SearchDto searchDto = searchMapper.toDto(boat, person, timeSlot, activityType, booking);
         // Then
         assertNull(searchDto);
     }

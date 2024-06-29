@@ -16,4 +16,5 @@ public class SearchDto {
     private BoatDto boat;
     private TimeSlotDto timeSlot;
     private ActivityTypeDto activityType;
+    private BookingDto booking;
 }

@@ -8,6 +8,7 @@ import ch.fhnw.shakethelakebackend.model.entity.Booking;
 import ch.fhnw.shakethelakebackend.model.entity.Event;
 import ch.fhnw.shakethelakebackend.model.mapper.ActivityTypeMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.BoatMapper;
+import ch.fhnw.shakethelakebackend.model.mapper.BookingMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.PersonMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.SearchMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.SearchParameterMapper;
@@ -34,6 +35,7 @@ public class SearchService {
     private final TimeSlotMapper timeSlotMapper;
     private final PersonMapper personMapper;
     private final BoatMapper boatMapper;
+    private final BookingMapper bookingMapper;
 
     private final EventService eventService;
 
@@ -70,7 +72,8 @@ public class SearchService {
                             .and(Specification.anyOf(searchSpecifications))).stream()
                 .map(booking -> searchMapper.toDto(boatMapper.toDto(booking.getTimeSlot().getBoat()),
                         personMapper.toDto(booking.getPerson()), timeSlotMapper.toDto(booking.getTimeSlot()),
-                        activityTypeMapper.toDto(booking.getTimeSlot().getActivityType()))).toList();
+                        activityTypeMapper.toDto(booking.getTimeSlot().getActivityType()),
+                        bookingMapper.toDto(booking))).toList();
         return searchDtos;
     }
 }
