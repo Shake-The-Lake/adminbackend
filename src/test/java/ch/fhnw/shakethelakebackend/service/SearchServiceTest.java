@@ -14,6 +14,7 @@ import ch.fhnw.shakethelakebackend.model.entity.Person;
 import ch.fhnw.shakethelakebackend.model.entity.TimeSlot;
 import ch.fhnw.shakethelakebackend.model.mapper.ActivityTypeMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.BoatMapper;
+import ch.fhnw.shakethelakebackend.model.mapper.BookingMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.PersonMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.SearchMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.SearchParameterMapper;
@@ -61,6 +62,9 @@ public class SearchServiceTest {
     private TimeSlotMapper timeSlotMapper;
 
     @Mock
+    private BookingMapper bookingMapper;
+
+    @Mock
     private SearchParameterMapper searchParameterMapper;
 
     @Mock
@@ -101,7 +105,7 @@ public class SearchServiceTest {
 
         List<SearchDto> bookingDtoList = List.of(new SearchDto());
         when(bookingRepository.findAll(any(Specification.class))).thenReturn(List.of(booking));
-        when(searchMapper.toDto(any(), any(), any(), any())).thenReturn(new SearchDto());
+        when(searchMapper.toDto(any(), any(), any(), any(), any())).thenReturn(new SearchDto());
 
         // When
         List<SearchDto> result = searchService.getSearch(1L, Optional.of("John"), Optional.of("Boat1"),
@@ -140,7 +144,7 @@ public class SearchServiceTest {
         List<Booking> bookings = List.of(booking);
         List<BookingDto> bookingDtos = List.of(new BookingDto());
         when(bookingRepository.findAll(any(Specification.class))).thenReturn(bookings);
-        when(searchMapper.toDto(any(), any(), any(), any())).thenReturn(new SearchDto());
+        when(searchMapper.toDto(any(), any(), any(), any(), any())).thenReturn(new SearchDto());
 
         // When
         List<SearchDto> result = searchService.getSearch(1L, Optional.of("John"), Optional.empty(), Optional.empty(),
