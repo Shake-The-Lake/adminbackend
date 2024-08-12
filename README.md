@@ -11,6 +11,7 @@
 ## Settings
 
 * Editor -> Code Style -> Java set scheme to Project
+* Editor -> Code Style -> Java -> Tabs and Indents -> Continuation Indentation: 4: because cant be changed in the formatter xml
 * Tools -> Save Actions -> Enable Save Actions on save
 
 ## Connecting to the database
@@ -20,6 +21,7 @@
 * Add a new data source
 * Select PostgreSQL
 * Host: localhost:5432
+* Database: shakethelake
 * User: shakethelake
 * Password: shakethelake
 * Test connection
