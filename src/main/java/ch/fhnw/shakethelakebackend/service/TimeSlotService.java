@@ -12,7 +12,6 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.chrono.ChronoLocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,9 +35,8 @@ public class TimeSlotService {
         //Time slot must be in boats time
         Boat boat = boatService.getBoat(timeSlotDto.getBoatId());
 
-        if (
-            boat.getAvailableFrom().isAfter(ChronoLocalDateTime.from(timeSlot.getFromTime()))
-                || boat.getAvailableUntil().isBefore(ChronoLocalDateTime.from(timeSlot.getUntilTime()))) {
+        if (boat.getAvailableFrom().isAfter(timeSlot.getFromTime()) || boat.getAvailableUntil()
+                .isBefore(timeSlot.getUntilTime())) {
             throw new IllegalArgumentException("Time slot must be in boats available time");
         }
         timeSlot.setActivityType(activityType);

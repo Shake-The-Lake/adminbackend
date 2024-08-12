@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 /**
  * DTO for {@link ch.fhnw.shakethelakebackend.model.entity.Boat}
@@ -32,9 +32,11 @@ public class CreateBoatDto implements Serializable {
     @NotNull
     private int slotDurationInMins;
     @NotNull
-    private LocalDateTime availableFrom;
+    private ZonedDateTime availableFrom;
     @NotNull
-    private LocalDateTime availableUntil;
+    private ZonedDateTime availableUntil;
+    @NotNull
+    private Long activityTypeId;
     @NotNull
     private Long eventId;
 }
