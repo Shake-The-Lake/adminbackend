@@ -64,7 +64,7 @@ class TimeSlotServiceTest {
         fromTime = ZonedDateTime.now();
         untilTime = ZonedDateTime.now().plusHours(1);
         boat = Boat.builder().seatsRider(2).seatsViewer(2).id(1L).availableFrom(
-                fromTime.toLocalDateTime()).availableUntil(untilTime.toLocalDateTime())
+                fromTime).availableUntil(untilTime)
             .build();
         timeSlot = TimeSlot.builder().fromTime(fromTime).untilTime(untilTime).boat(boat).id(1L)
             .activityType(activityType).build();
