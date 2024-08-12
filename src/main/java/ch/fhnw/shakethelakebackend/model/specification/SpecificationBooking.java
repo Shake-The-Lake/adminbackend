@@ -38,21 +38,22 @@ public class SpecificationBooking implements Specification<Booking> {
             path = path.get(part);
         }
 
-        return switch (criteria.operation) {
-            case "?" -> {
-                String value = "%" + criteria.value + "%";
-                yield builder.like(builder.lower(path.as(String.class)), value.toLowerCase());
-            }
-            case ":" -> builder.equal(path, criteria.value);
-            case ">" ->
-                builder.greaterThan(path.as(ZonedDateTime.class), (ZonedDateTime) criteria.value);
-            case ">=" -> builder.greaterThanOrEqualTo(path.as(ZonedDateTime.class),
-                (ZonedDateTime) criteria.value);
-            case "<" ->
-                builder.lessThan(path.as(ZonedDateTime.class), (ZonedDateTime) criteria.value);
-            case "<=" -> builder.lessThanOrEqualTo(path.as(ZonedDateTime.class),
-                (ZonedDateTime) criteria.value);
-            default -> null;
-        };
+        switch (criteria.operation) {
+        case "?":
+            String value = "%" + criteria.value + "%";
+            return builder.like(builder.lower(path.as(String.class)), value.toLowerCase());
+        case ":":
+            return builder.equal(path, criteria.value);
+        case ">":
+            return builder.greaterThan(path.as(ZonedDateTime.class), (ZonedDateTime) criteria.value);
+        case ">=":
+            return builder.greaterThanOrEqualTo(path.as(ZonedDateTime.class), (ZonedDateTime) criteria.value);
+        case "<":
+            return builder.lessThan(path.as(ZonedDateTime.class), (ZonedDateTime) criteria.value);
+        case "<=":
+            return builder.lessThanOrEqualTo(path.as(ZonedDateTime.class), (ZonedDateTime) criteria.value);
+        default:
+            return null;
+        }
     }
 }
