@@ -1,6 +1,6 @@
 package ch.fhnw.shakethelakebackend.controller;
 
-import ch.fhnw.shakethelakebackend.model.dto.BookingDto;
+import ch.fhnw.shakethelakebackend.model.dto.SearchDto;
 import ch.fhnw.shakethelakebackend.model.dto.SearchParameterDto;
 import ch.fhnw.shakethelakebackend.service.BookingService;
 import ch.fhnw.shakethelakebackend.service.SearchService;
@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,14 +31,14 @@ public class SearchController {
     @Operation(summary = "Get search filter parameters", description = "Returns all search filter parameters")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successfully retrieved all search filter parameters") })
-    @GetMapping("/parameters")
-    public SearchParameterDto getSearchParameters() {
-        return searchService.getSearchParameters();
+    @GetMapping("{eventId}/parameters")
+    public SearchParameterDto getSearchParameters(@PathVariable Long eventId) {
+        return searchService.getSearchParameters(eventId);
     }
 
     @Operation(summary = "Search bookings", description = "Returns find bookings", parameters = {
         @Parameter(name = "personName", description = "Search by person name", required = false,
-            example = "John Doe", schema = @Schema(type = "string")),
+            example = "John", schema = @Schema(type = "string")),
         @Parameter(name = "boatName", description = "filters by boat name", required = false,
             example = "Boat 1", schema = @Schema(type = "string")),
         @Parameter(name = "from", description = "filters by date from", required = false,
@@ -49,12 +50,13 @@ public class SearchController {
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully retrieved a booking by id"),
         @ApiResponse(responseCode = "404", description = BookingService.BOOKING_NOT_FOUND, content = @Content(
             schema = @Schema(implementation = String.class))) })
-    @GetMapping()
-    public List<BookingDto> getBookingSearch(@RequestParam(required = false) Optional<String> personName,
+    @GetMapping("/{eventId}")
+    public List<SearchDto> getBookingSearch(@PathVariable Long eventId,
+        @RequestParam(required = false) Optional<String> personName,
         @RequestParam(required = false) Optional<String> boatName,
         @RequestParam(required = false) Optional<ZonedDateTime> from,
         @RequestParam(required = false) Optional<ZonedDateTime> to,
         @RequestParam(required = false) Optional<Long> activity) {
-        return searchService.getSearch(personName, boatName, from, to, activity);
+        return searchService.getSearch(eventId, personName, boatName, from, to, activity);
     }
 }

@@ -58,19 +58,13 @@ class TimeSlotServiceTest {
     private ZonedDateTime fromTime;
     private ZonedDateTime untilTime;
 
-    private ZonedDateTime fromDateTime;
-    private ZonedDateTime untilDateTime;
-
-
     @BeforeEach
     void setup() {
         activityType = ActivityType.builder().id(1L).build();
         fromTime = ZonedDateTime.now();
         untilTime = ZonedDateTime.now().plusHours(1);
-        fromDateTime = ZonedDateTime.now().minusHours(1);
-        untilDateTime = ZonedDateTime.now().plusHours(1);
         boat = Boat.builder().seatsRider(2).seatsViewer(2).id(1L).availableFrom(
-                fromDateTime).availableUntil(untilDateTime)
+                fromTime.toLocalDateTime()).availableUntil(untilTime.toLocalDateTime())
             .build();
         timeSlot = TimeSlot.builder().fromTime(fromTime).untilTime(untilTime).boat(boat).id(1L)
             .activityType(activityType).build();
