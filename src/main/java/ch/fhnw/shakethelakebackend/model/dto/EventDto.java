@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -32,7 +32,7 @@ public class EventDto implements Serializable {
     // TODO: not in mvp.
     // private Long locationId;
     @NotNull
-    private LocalDateTime date;
+    private ZonedDateTime date;
 
     private Set<Long> activityTypeIds;
     private Set<Long> boatIds;

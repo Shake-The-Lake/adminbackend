@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,7 +32,7 @@ public class SearchService {
     }
 
     public List<BookingDto> getSearch(Optional<String> personName, Optional<String> boatName,
-            Optional<LocalDateTime> from, Optional<LocalDateTime> to, Optional<Long> activity) {
+            Optional<ZonedDateTime> from, Optional<ZonedDateTime> to, Optional<Long> activity) {
         List<BookingDto> bookingDtos = List.of();
         List<Specification<Booking>> filterSpecification = new ArrayList<>();
         List<Specification<Booking>> searchSpecifications = new ArrayList<>();

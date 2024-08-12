@@ -18,7 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 import java.util.Set;
 
@@ -36,11 +36,11 @@ public class TimeSlot {
 
     @NotNull
     @Column(name = "from_time", columnDefinition = "TIMESTAMP")
-    private LocalTime fromTime;
+    private ZonedDateTime fromTime;
 
     @NotNull
     @Column(name = "until_time", columnDefinition = "TIMESTAMP")
-    private LocalTime untilTime;
+    private ZonedDateTime untilTime;
 
     // Must ignore timeSlots in Boat to avoid infinite recursion
     @JsonBackReference(value = "boat-timeSlots")

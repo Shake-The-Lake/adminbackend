@@ -11,7 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.Set;
 
 /**
@@ -27,9 +27,9 @@ public class TimeSlotDto {
     @CsvIgnore
     private Long id;
     @CsvBindByName(column = "From")
-    private LocalTime fromTime;
+    private ZonedDateTime fromTime;
     @CsvBindByName(column = "To")
-    private LocalTime untilTime;
+    private ZonedDateTime untilTime;
     @CsvIgnore
     private Long boatId;
     @CsvIgnore

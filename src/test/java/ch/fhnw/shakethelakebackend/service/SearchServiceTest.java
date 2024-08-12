@@ -16,7 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,8 +78,8 @@ public class SearchServiceTest {
         List<BookingDto> result = searchService.getSearch(
                 Optional.of("John"),
                 Optional.of("Boat1"),
-                Optional.of(LocalDateTime.now().minusDays(1)),
-                Optional.of(LocalDateTime.now().plusDays(1)),
+                Optional.of(ZonedDateTime.now().minusDays(1)),
+                Optional.of(ZonedDateTime.now().plusDays(1)),
                 Optional.of(1L)
         );
 

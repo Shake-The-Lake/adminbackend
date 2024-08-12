@@ -36,8 +36,8 @@ public class TimeSlotService {
         Boat boat = boatService.getBoat(timeSlotDto.getBoatId());
 
         if (
-            boat.getAvailableFrom().toLocalTime().isAfter((timeSlot.getFromTime()))
-                || boat.getAvailableUntil().toLocalTime().isBefore(timeSlot.getUntilTime())) {
+            boat.getAvailableFrom().isAfter((timeSlot.getFromTime()))
+                || boat.getAvailableUntil().isBefore(timeSlot.getUntilTime())) {
             throw new IllegalArgumentException("Time slot must be in boats available time");
         }
         timeSlot.setActivityType(activityType);
