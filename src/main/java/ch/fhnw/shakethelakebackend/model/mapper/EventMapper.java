@@ -16,7 +16,9 @@ import java.util.stream.Collectors;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface EventMapper {
 
+
     @Mapping(target = "activityTypes", ignore = true)
+    @Mapping(target = "boats", ignore = true)
     Event toEntity(CreateEventDto createEventDto);
 
     @Mapping(target = "activityTypeIds", expression = "java(mapActivityTypesToIds(event.getActivityTypes()))")

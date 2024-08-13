@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 public class EventMapperTest {
-    private EventMapper mapper = Mappers.getMapper(EventMapper.class);
+    private final EventMapper mapper = Mappers.getMapper(EventMapper.class);
 
     @Test
     void testCreateEventDtoToEventMapping() {
