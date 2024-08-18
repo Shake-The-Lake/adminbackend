@@ -36,7 +36,5 @@ public class CreateBoatDto implements Serializable {
     @NotNull
     private ZonedDateTime availableUntil;
     @NotNull
-    private Long activityTypeId;
-    @NotNull
     private Long eventId;
 }
