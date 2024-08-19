@@ -13,7 +13,7 @@ import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.ZonedDateTime;
+import java.time.LocalTime;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,7 +31,7 @@ public class SearchMapperTest {
 
         ActivityTypeDto activityType = ActivityTypeDto.builder().id(1L).name(new LocalizedString("en", "de", "ch"))
                 .build();
-        TimeSlotDto timeSlot = TimeSlotDto.builder().id(1L).fromTime(ZonedDateTime.now()).untilTime(ZonedDateTime.now())
+        TimeSlotDto timeSlot = TimeSlotDto.builder().id(1L).fromTime(LocalTime.now()).untilTime(LocalTime.now())
                 .build();
         BoatDto boat = BoatDto.builder().id(1L).name("Boat").timeSlots(Set.of(timeSlot)).build();
         PersonDto person = PersonDto.builder().id(1L).firstName("John").lastName("Doe").build();

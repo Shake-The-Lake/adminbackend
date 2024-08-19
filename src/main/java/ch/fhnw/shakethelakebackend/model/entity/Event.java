@@ -14,7 +14,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
@@ -39,7 +39,7 @@ public class Event {
 
     @NotNull
     @Column(name = "date", columnDefinition = "TIMESTAMP")
-    private ZonedDateTime date;
+    private LocalDate date;
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<ActivityType> activityTypes;

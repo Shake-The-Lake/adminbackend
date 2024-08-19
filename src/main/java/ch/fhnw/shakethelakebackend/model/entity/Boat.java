@@ -17,7 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.ZonedDateTime;
+import java.time.LocalTime;
 import java.util.Set;
 
 @Entity
@@ -55,11 +55,11 @@ public class Boat {
     @Column(name = "slot_duration_in_mins")
     private int slotDurationInMins;
 
-    @Column(name = "available_from", columnDefinition = "TIMESTAMP")
-    private ZonedDateTime availableFrom;
+    @Column(name = "available_from", columnDefinition = "TIME")
+    private LocalTime availableFrom;
 
-    @Column(name = "available_until", columnDefinition = "TIMESTAMP")
-    private ZonedDateTime availableUntil;
+    @Column(name = "available_until", columnDefinition = "TIME")
+    private LocalTime availableUntil;
 
     @OneToMany(mappedBy = "boat", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<TimeSlot> timeSlots;

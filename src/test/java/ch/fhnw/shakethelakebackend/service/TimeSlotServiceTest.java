@@ -16,7 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.ZonedDateTime;
+import java.time.LocalTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -55,14 +55,14 @@ class TimeSlotServiceTest {
 
     private ActivityType activityType;
 
-    private ZonedDateTime fromTime;
-    private ZonedDateTime untilTime;
+    private LocalTime fromTime;
+    private LocalTime untilTime;
 
     @BeforeEach
     void setup() {
         activityType = ActivityType.builder().id(1L).build();
-        fromTime = ZonedDateTime.now();
-        untilTime = ZonedDateTime.now().plusHours(1);
+        fromTime = LocalTime.now();
+        untilTime = LocalTime.now().plusHours(1);
         boat = Boat.builder().seatsRider(2).seatsViewer(2).id(1L).availableFrom(
                 fromTime).availableUntil(untilTime)
             .build();

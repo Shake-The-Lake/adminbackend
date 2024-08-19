@@ -28,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -98,7 +99,7 @@ public class SearchServiceTest {
         Event event = Event.builder().id(1L).build();
         Boat boat = Boat.builder().id(1L).name("Boat1").event(event).build();
         ActivityType activityType = ActivityType.builder().id(1L).name(new LocalizedString("en", "de", "ch")).build();
-        TimeSlot timeSlot = TimeSlot.builder().id(1L).fromTime(ZonedDateTime.now()).untilTime(ZonedDateTime.now())
+        TimeSlot timeSlot = TimeSlot.builder().id(1L).fromTime(LocalTime.now()).untilTime(LocalTime.now())
                 .activityType(activityType).boat(boat).build();
         Person person = Person.builder().id(1L).firstName("John").lastName("Doe").build();
         Booking booking = Booking.builder().id(1L).timeSlot(timeSlot).person(person).build();
@@ -136,7 +137,7 @@ public class SearchServiceTest {
         Event event = Event.builder().id(1L).build();
         Boat boat = Boat.builder().id(1L).name("Boat1").event(event).build();
         ActivityType activityType = ActivityType.builder().id(1L).name(new LocalizedString("en", "de", "ch")).build();
-        TimeSlot timeSlot = TimeSlot.builder().id(1L).fromTime(ZonedDateTime.now()).untilTime(ZonedDateTime.now())
+        TimeSlot timeSlot = TimeSlot.builder().id(1L).fromTime(LocalTime.now()).untilTime(LocalTime.now())
                 .activityType(activityType).boat(boat).build();
         Person person = Person.builder().id(1L).firstName("John").lastName("Doe").build();
         Booking booking = Booking.builder().id(1L).timeSlot(timeSlot).person(person).build();
