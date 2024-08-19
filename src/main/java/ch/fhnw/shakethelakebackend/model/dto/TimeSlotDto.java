@@ -38,6 +38,9 @@ public class TimeSlotDto {
     private Set<Long> bookingIds;
     @CsvIgnore
     private Long activityTypeId;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Schema(hidden = true)
+    private ActivityTypeDto activityType;
     @CsvBindByName(column = "Type")
     private TimeSlotType status;
     //With parameter
