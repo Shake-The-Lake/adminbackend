@@ -39,7 +39,5 @@ public class CreateBoatDto implements Serializable {
     @Schema(type = "string", format = "time", example = "09:00:00")
     private LocalTime availableUntil;
     @NotNull
-    private Long activityTypeId;
-    @NotNull
     private Long eventId;
 }
