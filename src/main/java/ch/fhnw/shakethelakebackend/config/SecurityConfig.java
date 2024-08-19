@@ -61,19 +61,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(
                         authorizeHttpRequests -> authorizeHttpRequests
-                            .requestMatchers(HttpMethod.GET, "/api/**").hasAnyRole(ADMIN, CUSTOMER, EMPLOYEE)
-                            .requestMatchers(HttpMethod.POST, "/api/booking").hasAnyRole(ADMIN, CUSTOMER, EMPLOYEE)
-                            .requestMatchers("/api/**").hasRole(ADMIN)
-
-                                .requestMatchers("/public/**", "/auth/**").permitAll()
-
-                                .requestMatchers("/",
-                                                 "/error",
-                                                 "/csrf",
-                                                 "api/swagger-ui.html",
-                                                 "api/swagger-ui/**",
-                                                 "api/v3/api-docs",
-                                                 "api/v3/api-docs/**").permitAll().anyRequest().authenticated())
+                            .requestMatchers(HttpMethod.GET, "/**").hasAnyRole(ADMIN, CUSTOMER, EMPLOYEE)
+                            .requestMatchers(HttpMethod.POST, "/booking").hasAnyRole(ADMIN, CUSTOMER, EMPLOYEE)
+                            .requestMatchers("/**").hasRole(ADMIN)
+                            .requestMatchers("/public/**", "/auth/**").permitAll())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(
                         sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
