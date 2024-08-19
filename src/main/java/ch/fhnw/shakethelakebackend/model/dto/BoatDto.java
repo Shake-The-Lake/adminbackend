@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.ZonedDateTime;
+import java.time.LocalTime;
 import java.util.Set;
 
 /**
@@ -32,9 +32,11 @@ public class BoatDto {
     private int seatsViewer;
     private int slotDurationInMins;
     @NotNull
-    private ZonedDateTime availableFrom;
+    @Schema(type = "string", format = "time", example = "08:00:00")
+    private LocalTime availableFrom;
     @NotNull
-    private ZonedDateTime availableUntil;
+    @Schema(type = "string", format = "time", example = "09:00:00")
+    private LocalTime availableUntil;
     private Set<Long> timeSlotIds;
     private Long eventId;
     //With parameter

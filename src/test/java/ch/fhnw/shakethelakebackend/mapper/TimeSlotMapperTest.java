@@ -11,7 +11,7 @@ import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.ZonedDateTime;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,8 +29,8 @@ class TimeSlotMapperTest {
         // Given
         CreateTimeSlotDto timeSlotDto = new CreateTimeSlotDto();
         // set properties of createTimeSlotDto
-        ZonedDateTime fromTime = ZonedDateTime.now();
-        ZonedDateTime untilTime = ZonedDateTime.now().plusHours(1);
+        LocalTime fromTime = LocalTime.now();
+        LocalTime untilTime = LocalTime.now().plusHours(1);
         timeSlotDto.setFromTime(fromTime);
         timeSlotDto.setUntilTime(untilTime);
 
@@ -45,8 +45,8 @@ class TimeSlotMapperTest {
     @Test
     void testToDto() {
         // Given
-        ZonedDateTime fromTime = ZonedDateTime.now();
-        ZonedDateTime untilTime = ZonedDateTime.now().plusHours(1);
+        LocalTime fromTime = LocalTime.now();
+        LocalTime untilTime = LocalTime.now().plusHours(1);
         Boat boat = new Boat();
         TimeSlot timeSlot = new TimeSlot();
         // set properties of timeSlot

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
 
 /**
  * DTO for {@link Event}
@@ -26,6 +26,7 @@ public class CreateEventDto implements Serializable {
     private String description;
     //Long locationId;
     @NotNull
-    private ZonedDateTime date;
+    private LocalDate date;
+
 
 }
