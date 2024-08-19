@@ -1,12 +1,12 @@
 package ch.fhnw.shakethelakebackend.model.entity;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -17,7 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Set;
 
 @Entity
@@ -35,9 +35,7 @@ public class Boat {
     private Long id;
 
     @NotNull
-    @ManyToOne
-    @JoinColumn(name = "driver_id", referencedColumnName = "id")
-    private Person boatDriver;
+    private String operator;
 
     @NotNull
     private String name;
@@ -57,20 +55,17 @@ public class Boat {
     @Column(name = "slot_duration_in_mins")
     private int slotDurationInMins;
 
-    @Column(name = "available_from", columnDefinition = "TIMESTAMP")
-    private LocalDateTime availableFrom;
+    @Column(name = "available_from", columnDefinition = "TIME")
+    private LocalTime availableFrom;
 
-    @Column(name = "available_until", columnDefinition = "TIMESTAMP")
-    private LocalDateTime availableUntil;
+    @Column(name = "available_until", columnDefinition = "TIME")
+    private LocalTime availableUntil;
 
-    @OneToMany(mappedBy = "boat")
+    @OneToMany(mappedBy = "boat", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<TimeSlot> timeSlots;
 
     @ManyToOne
     private Event event;
-
-    @ManyToOne
-    private ActivityType activityType;
 
     public Set<TimeSlot> getTimeSlots() {
         return timeSlots == null ? Set.of() : Set.copyOf(timeSlots);

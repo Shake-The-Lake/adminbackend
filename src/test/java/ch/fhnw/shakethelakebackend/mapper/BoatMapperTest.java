@@ -3,13 +3,11 @@ package ch.fhnw.shakethelakebackend.mapper;
 import ch.fhnw.shakethelakebackend.model.dto.BoatDto;
 import ch.fhnw.shakethelakebackend.model.dto.CreateBoatDto;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
-import ch.fhnw.shakethelakebackend.model.entity.Person;
 import ch.fhnw.shakethelakebackend.model.entity.TimeSlot;
 import ch.fhnw.shakethelakebackend.model.mapper.BoatMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
-import org.mockito.InjectMocks;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.HashSet;
@@ -19,9 +17,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 class BoatMapperTest {
-
-    @InjectMocks
-    private BoatMapper mapper = Mappers.getMapper(BoatMapper.class);
+    @Autowired
+    private BoatMapper mapper;
 
     private Boat boat;
     private BoatDto boatDto;
@@ -30,46 +27,45 @@ class BoatMapperTest {
     @BeforeEach
     void setUp() {
         boat = new Boat();
-        boat.setBoatDriver(new Person());
+        boat.setOperator("operator");
 
         Set<TimeSlot> timeSlots = new HashSet<>();
-        timeSlots.add(new TimeSlot().builder().id(1L).build());
-        timeSlots.add(new TimeSlot().builder().id(2L).build());
+        timeSlots.add(TimeSlot.builder().id(1L).boat(boat).bookings(Set.of()).build());
+        timeSlots.add(TimeSlot.builder().id(2L).boat(boat).bookings(Set.of()).build());
         boat.setTimeSlots(timeSlots);
 
         boatDto = new BoatDto();
-        boatDto.setBoatDriverId(1L);
         boatDto.setTimeSlotIds(Set.of(1L, 2L));
+        boatDto.setOperator("operator");
 
         createBoatDto = new CreateBoatDto();
-        createBoatDto.setBoatDriverId(1L);
     }
 
     @Test
     void testToEntity() {
         Boat result = mapper.toEntity(createBoatDto);
-        assertEquals(createBoatDto.getBoatDriverId(), result.getBoatDriver().getId());
+        assertEquals(createBoatDto.getOperator(), result.getOperator());
     }
 
     @Test
     void testToDto() {
         BoatDto result = mapper.toDto(boat);
-        assertEquals(boat.getBoatDriver().getId(), result.getBoatDriverId());
+        assertEquals(boat.getOperator(), result.getOperator());
         assertEquals(2, result.getTimeSlotIds().size());
     }
 
     @Test
     void testToCreateDto() {
         CreateBoatDto result = mapper.toCreateDto(boat);
-        assertEquals(boat.getBoatDriver().getId(), result.getBoatDriverId());
+        assertEquals(boat.getOperator(), result.getOperator());
     }
 
     @Test
     void testPartialUpdate() {
         Boat newBoat = new Boat();
-        newBoat.setBoatDriver(new Person());
+        newBoat.setOperator("newOperator");
         mapper.partialUpdate(boatDto, newBoat);
-        assertEquals(boatDto.getBoatDriverId(), newBoat.getBoatDriver().getId());
+        assertEquals(boatDto.getOperator(), newBoat.getOperator());
     }
 
     @Test
@@ -77,4 +73,53 @@ class BoatMapperTest {
         Set<Long> ids = mapper.timeSlotsToTimeSlotIds(boat.getTimeSlots());
         assertEquals(2, ids.size());
     }
+
+    @Test
+    void testTimeSlotsToTimeSlotIdsEmpty() {
+        Set<Long> ids = mapper.timeSlotsToTimeSlotIds(new HashSet<>());
+        assertEquals(0, ids.size());
+    }
+
+
+
+    @Test
+    void testToDtoWithTimeSlots() {
+        BoatDto result = mapper.toDtoWithTimeSlots(boat);
+        assertEquals(boat.getOperator(), result.getOperator());
+        assertEquals(2, result.getTimeSlotIds().size());
+    }
+
+    @Test
+    void testToDtoWithTimeSlotsNull() {
+        BoatDto result = mapper.toDtoWithTimeSlots(null);
+        assertEquals(null, result);
+    }
+
+
+    @Test
+    void testToEntityNull() {
+        Boat result = mapper.toEntity(null);
+        assertEquals(null, result);
+    }
+
+    @Test
+    void testToDtoNull() {
+        BoatDto result = mapper.toDto(null);
+        assertEquals(null, result);
+    }
+
+    @Test
+    void testToCreateDtoNull() {
+        CreateBoatDto result = mapper.toCreateDto(null);
+        assertEquals(null, result);
+    }
+    
+    @Test
+    void testPartialUpdateNull() {
+        Boat newBoat = new Boat();
+        mapper.partialUpdate(null, newBoat);
+        assertEquals(null, newBoat.getOperator());
+    }
+
+
 }

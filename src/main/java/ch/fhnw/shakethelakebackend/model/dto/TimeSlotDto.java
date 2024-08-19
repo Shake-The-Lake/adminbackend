@@ -1,12 +1,17 @@
 package ch.fhnw.shakethelakebackend.model.dto;
 
+import ch.fhnw.shakethelakebackend.model.entity.enums.TimeSlotType;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvIgnore;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Set;
 
 /**
@@ -19,9 +24,25 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class TimeSlotDto {
+    @CsvIgnore
     private Long id;
-    private LocalDateTime fromTime;
-    private LocalDateTime untilTime;
+    @CsvBindByName(column = "From")
+    @Schema(type = "string", format = "time", example = "08:00:00")
+    private LocalTime fromTime;
+    @Schema(type = "string", format = "time", example = "09:00:00")
+    @CsvBindByName(column = "To")
+    private LocalTime untilTime;
+    @CsvIgnore
     private Long boatId;
+    @CsvIgnore
     private Set<Long> bookingIds;
+    @CsvIgnore
+    private Long activityTypeId;
+    @CsvBindByName(column = "Type")
+    private TimeSlotType status;
+    //With parameter
+    @CsvBindByName(column = "Boat")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Schema(hidden = true)
+    private BoatDto boat;
 }

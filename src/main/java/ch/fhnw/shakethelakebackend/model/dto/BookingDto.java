@@ -1,5 +1,7 @@
 package ch.fhnw.shakethelakebackend.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,4 +23,12 @@ public class BookingDto {
     private Integer pagerNumber;
     private Long personId;
     private Long timeSlotId;
+    //With parameter
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Schema(hidden = true)
+    private PersonDto person = null;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Schema(hidden = true)
+    private TimeSlotDto timeSlot = null;
+
 }

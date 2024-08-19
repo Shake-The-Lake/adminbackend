@@ -1,5 +1,6 @@
 package ch.fhnw.shakethelakebackend.model.entity;
 
+import ch.fhnw.shakethelakebackend.model.entity.enums.TimeSlotType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
@@ -17,7 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Objects;
 import java.util.Set;
 
@@ -34,12 +35,12 @@ public class TimeSlot {
     private Long id;
 
     @NotNull
-    @Column(name = "from_time", columnDefinition = "TIMESTAMP")
-    private LocalDateTime fromTime;
+    @Column(name = "from_time", columnDefinition = "TIME")
+    private LocalTime fromTime;
 
     @NotNull
-    @Column(name = "until_time", columnDefinition = "TIMESTAMP")
-    private LocalDateTime untilTime;
+    @Column(name = "until_time", columnDefinition = "TIME")
+    private LocalTime untilTime;
 
     // Must ignore timeSlots in Boat to avoid infinite recursion
     @JsonBackReference(value = "boat-timeSlots")
@@ -48,8 +49,14 @@ public class TimeSlot {
     private Boat boat;
 
     @JsonManagedReference(value = "timeSlot-bookings")
-    @OneToMany(mappedBy = "timeSlot")
+    @OneToMany(mappedBy = "timeSlot", orphanRemoval = true)
     private Set<Booking> bookings;
+
+    @NotNull
+    private TimeSlotType status;
+
+    @ManyToOne
+    private ActivityType activityType;
 
     @Override
     public boolean equals(Object o) {

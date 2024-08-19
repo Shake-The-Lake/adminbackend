@@ -4,6 +4,8 @@ import ch.fhnw.shakethelakebackend.model.dto.CreateTimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.dto.TimeSlotDto;
 import ch.fhnw.shakethelakebackend.service.TimeSlotService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
@@ -28,7 +30,8 @@ public class TimeSlotController {
 
     @Operation(summary = "Create a time slot", description = "Creates a time slot")
     @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Successfully created a timeslot"),
-        @ApiResponse(responseCode = "404", description = "Related entity not found") })
+        @ApiResponse(responseCode = "404", description = "Related entity not found",
+            content = @Content(schema = @Schema(implementation = String.class))) })
     @PostMapping
     public TimeSlotDto createTimeSlot(@RequestBody @Valid CreateTimeSlotDto timeSlot) {
         return timeSlotService.createTimeSlot(timeSlot);
@@ -36,7 +39,8 @@ public class TimeSlotController {
 
     @Operation(summary = "Get a time slot by id", description = "Returns a time slot as per the id")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully retrieved a timeslot by id"),
-        @ApiResponse(responseCode = "404", description = TimeSlotService.TIMESLOT_NOT_FOUND) })
+        @ApiResponse(responseCode = "404", description = TimeSlotService.TIMESLOT_NOT_FOUND,
+            content = @Content(schema = @Schema(implementation = String.class))) })
     @GetMapping("/{id}")
     public TimeSlotDto getTimeSlot(@PathVariable Long id) {
         return timeSlotService.getTimeSlotDto(id);
@@ -44,7 +48,8 @@ public class TimeSlotController {
 
     @Operation(summary = "Update a time slot by id", description = "Updates a time slot as per the id")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully updated a timeslot by id"),
-        @ApiResponse(responseCode = "404", description = "Related entity not found") })
+        @ApiResponse(responseCode = "404", description = "Related entity not found",
+            content = @Content(schema = @Schema(implementation = String.class))) })
     @PutMapping("/{id}")
     public TimeSlotDto updateTimeSlot(@PathVariable Long id, @RequestBody @Valid CreateTimeSlotDto timeSlot) {
         return timeSlotService.updateTimeSlot(id, timeSlot);
@@ -52,7 +57,9 @@ public class TimeSlotController {
 
     @Operation(summary = "Delete a time slot by id", description = "Deletes a time slot as per the id")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully deleted a timeslot by id"),
-        @ApiResponse(responseCode = "404", description = "Related entity not found") })
+        @ApiResponse(responseCode = "404", description = "Related entity not found",
+            content = @Content(schema = @Schema(implementation = String.class))),
+        @ApiResponse(responseCode = "409", description = "This is still related to other entites") })
     @DeleteMapping("/{id}")
     public void deleteTimeSlot(@PathVariable Long id) {
         timeSlotService.deleteTimeSlot(id);

@@ -11,28 +11,35 @@ import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
+import org.mapstruct.factory.Mappers;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING,
+    uses = { TimeSlotMapper.class })
 public interface BoatMapper {
-    @Mapping(source = "boatDriverId", target = "boatDriver.id")
-    @Mapping(target = "activityType.id", source = "activityTypeId")
+
+    TimeSlotMapper INSTANCE = Mappers.getMapper(TimeSlotMapper.class);
+
     @Mapping(target = "event.id", source = "eventId")
     Boat toEntity(CreateBoatDto createBoatDto);
 
+    @ToDtoDefault
     @Mapping(target = "timeSlotIds", expression = "java(timeSlotsToTimeSlotIds(boat.getTimeSlots()))")
-    @Mapping(source = "boatDriver.id", target = "boatDriverId")
-    @Mapping(target = "activityTypeId", source = "activityType.id")
     @Mapping(target = "eventId", source = "event.id")
+    @Mapping(target = "timeSlots", ignore = true)
     BoatDto toDto(Boat boat);
 
-    @Mapping(source = "boatDriver.id", target = "boatDriverId")
+
+    @Mapping(target = "timeSlotIds", expression = "java(timeSlotsToTimeSlotIds(boat.getTimeSlots()))")
+    @Mapping(target = "timeSlots", qualifiedBy = ToDtoDefault.class)
+    @Mapping(target = "eventId", source = "event.id")
+    BoatDto toDtoWithTimeSlots(Boat boat);
+
     CreateBoatDto toCreateDto(Boat boat);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(source = "boatDriverId", target = "boatDriver.id")
     Boat partialUpdate(BoatDto boatDto, @MappingTarget Boat boat);
 
     default Set<Long> timeSlotsToTimeSlotIds(Set<TimeSlot> timeSlots) {

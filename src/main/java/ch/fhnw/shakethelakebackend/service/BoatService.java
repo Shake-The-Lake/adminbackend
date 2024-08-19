@@ -2,32 +2,32 @@ package ch.fhnw.shakethelakebackend.service;
 
 import ch.fhnw.shakethelakebackend.model.dto.BoatDto;
 import ch.fhnw.shakethelakebackend.model.dto.CreateBoatDto;
-import ch.fhnw.shakethelakebackend.model.entity.ActivityType;
+import ch.fhnw.shakethelakebackend.model.dto.TimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.Event;
-import ch.fhnw.shakethelakebackend.model.entity.Person;
-import ch.fhnw.shakethelakebackend.model.entity.enums.PersonType;
 import ch.fhnw.shakethelakebackend.model.mapper.BoatMapper;
+import ch.fhnw.shakethelakebackend.model.mapper.TimeSlotMapper;
 import ch.fhnw.shakethelakebackend.model.repository.BoatRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
 @Service
+@AllArgsConstructor
 public class BoatService {
 
     public static final String BOAT_NOT_FOUND = "Boat not found";
-    public static final String PERSON_NOT_FOUND = "Person not found";
-    public static final String PERSON_IS_NOT_BOAT_DRIVER = "Person is not a boat driver";
     private final BoatMapper boatMapper;
     private final BoatRepository boatRepository;
-    private final PersonService personService;
-    private final ActivityTypeService activityTypeService;
+
     private final EventService eventService;
+    private final Expander expander;
+    private final TimeSlotMapper timeSlotMapper;
 
     public BoatDto getBoatDto(Long id) {
         Boat boat = boatRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(BOAT_NOT_FOUND));
@@ -40,33 +40,21 @@ public class BoatService {
     }
 
     public BoatDto createBoat(CreateBoatDto createBoatDto) {
-        Person driver = personService.getPerson(createBoatDto.getBoatDriverId());
-        if (driver.getPersonType() != PersonType.BOAT_DRIVER) {
-            throw new IllegalArgumentException(PERSON_IS_NOT_BOAT_DRIVER);
-        }
-        ActivityType activityType = activityTypeService.getActivityType(createBoatDto.getActivityTypeId());
         Event event = eventService.getEvent(createBoatDto.getEventId());
         Boat boat = boatMapper.toEntity(createBoatDto);
-        boat.setBoatDriver(driver);
-        boat.setActivityType(activityType);
         boat.setEvent(event);
         boatRepository.save(boat);
         return boatMapper.toDto(boat);
     }
 
+
     public BoatDto updateBoat(Long id, CreateBoatDto createBoatDto) {
         if (!boatRepository.existsById(id)) {
             throw new EntityNotFoundException(BOAT_NOT_FOUND);
         }
-        Person driver = personService.getPerson(createBoatDto.getBoatDriverId());
-        if (driver.getPersonType() != PersonType.BOAT_DRIVER) {
-            throw new IllegalArgumentException(PERSON_IS_NOT_BOAT_DRIVER);
-        }
-        ActivityType activityType = activityTypeService.getActivityType(createBoatDto.getActivityTypeId());
+
         Event event = eventService.getEvent(createBoatDto.getEventId());
-        Boat newBoat = boatMapper.toEntity(createBoatDto);
-        newBoat.setBoatDriver(driver);
-        newBoat.setActivityType(activityType);
+        Boat newBoat = getBoat(id);
         newBoat.setEvent(event);
         newBoat.setId(id);
         boatRepository.save(newBoat);
@@ -79,6 +67,27 @@ public class BoatService {
     }
 
     public List<BoatDto> getAllBoats() {
-        return boatRepository.findAll().stream().map(boatMapper::toDto).collect(Collectors.toList());
+        return boatRepository.findAll().stream().map(boatMapper::toDto).toList();
+    }
+
+    public List<BoatDto> getBoatsWithDetails(Optional<String> expand) {
+        List<BoatDto> boatDtos = getAllBoats();
+
+        boatDtos = boatDtos.stream().map(boat -> getBoatWithDetails(boat.getId(), expand)).toList();
+
+        return boatDtos;
+    }
+
+    public BoatDto getBoatWithDetails(Long id, Optional<String> expand) {
+        Boat boat = getBoat(id);
+        BoatDto boatDto = getBoatDto(id);
+
+        expander.applyExpansion(expand, "timeSlots", () -> {
+            Set<TimeSlotDto> timeSlotDto = boat.getTimeSlots().stream().map(timeSlotMapper::toDto)
+                    .collect(Collectors.toSet());
+            boatDto.setTimeSlots(timeSlotDto);
+        });
+
+        return boatDto;
     }
 }

@@ -2,8 +2,12 @@ package ch.fhnw.shakethelakebackend.controller;
 
 import ch.fhnw.shakethelakebackend.model.dto.CreateEventDto;
 import ch.fhnw.shakethelakebackend.model.dto.EventDto;
+import ch.fhnw.shakethelakebackend.service.CsvService;
 import ch.fhnw.shakethelakebackend.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
@@ -16,33 +20,41 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
 @RequestMapping("/event")
 public class EventController {
 
+    private final CsvService csvService;
     private final EventService eventService;
 
     @Operation(summary = "Create an event", description = "Creates an event")
-    @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Successfully created an Event"),
-        @ApiResponse(responseCode = "404", description = EventService.EVENT_NOT_FOUND) })
+    @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Successfully created an Event") })
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
     public EventDto createEvent(@RequestBody @Valid CreateEventDto createEventDto) {
         return eventService.createEvent(createEventDto);
     }
 
-    @Operation(summary = "Get an event by id", description = "Returns an event as per the id")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully retrieved an event by id"),
-        @ApiResponse(responseCode = "404", description = EventService.EVENT_NOT_FOUND) })
+    @Operation(summary = "Get an event by id", description = "Returns an event as per the id", parameters = {
+        @Parameter(name = "expand", description = "Expand the response with more details from related objects",
+            required = false,
+            example = "boats,boats.timeSlots,activityTypes", schema = @Schema(type = "string")) })
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully retrieved an event by id",
+            content = @Content(schema = @Schema(implementation = EventDto.class))),
+        @ApiResponse(responseCode = "404", description = EventService.EVENT_NOT_FOUND,
+            content = @Content(schema = @Schema(implementation = String.class, example = "Event not found"))) })
     @GetMapping("/{id}")
-    public EventDto getEvent(@PathVariable Long id) {
-        return eventService.getEventDto(id);
+    public EventDto getEvent(@PathVariable Long id, @RequestParam(required = false) Optional<String> expand) {
+        return eventService.getEventWithDetails(id, expand);
     }
 
     @Operation(summary = "Get all events", description = "Returns all events")
@@ -54,7 +66,7 @@ public class EventController {
 
     @Operation(summary = "Delete an event by id", description = "Deletes an event as per the id")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully deleted an event by id"),
-        @ApiResponse(responseCode = "404", description = EventService.EVENT_NOT_FOUND) })
+        @ApiResponse(responseCode = "409", description = "This is still related to other entites") })
     @DeleteMapping("/{id}")
     public void deleteEvent(@PathVariable Long id) {
         eventService.deleteEvent(id);
@@ -62,9 +74,12 @@ public class EventController {
 
     @Operation(summary = "Update an event by id", description = "Updates an event as per the id")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully updated an event by id"),
-        @ApiResponse(responseCode = "404", description = EventService.EVENT_NOT_FOUND) })
+        @ApiResponse(responseCode = "404", description = EventService.EVENT_NOT_FOUND,
+            content = @Content(schema = @Schema(implementation = String.class, example = "Event not found"))), })
     @PutMapping("/{id}")
     public EventDto updateEvent(@PathVariable Long id, @RequestBody @Valid CreateEventDto createEventDto) {
         return eventService.updateEvent(id, createEventDto);
     }
+
+
 }

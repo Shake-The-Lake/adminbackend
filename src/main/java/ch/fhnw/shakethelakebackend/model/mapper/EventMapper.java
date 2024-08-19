@@ -16,11 +16,15 @@ import java.util.stream.Collectors;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface EventMapper {
 
+
     @Mapping(target = "activityTypes", ignore = true)
+    @Mapping(target = "boats", ignore = true)
     Event toEntity(CreateEventDto createEventDto);
 
     @Mapping(target = "activityTypeIds", expression = "java(mapActivityTypesToIds(event.getActivityTypes()))")
     @Mapping(target = "boatIds", expression = "java(mapBoatsToIds(event.getBoats()))")
+    @Mapping(target = "boats", ignore = true)
+    @Mapping(target = "activityTypes", ignore = true)
     EventDto toDto(Event event);
 
     default Set<Long> mapActivityTypesToIds(Set<ActivityType> activityTypes) {

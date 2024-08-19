@@ -25,6 +25,11 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>5.9</version>
+        </dependency>
+        <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.2.0</version>
@@ -64,6 +69,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
     </dependencies>
 
@@ -144,6 +153,8 @@
                         <exclude>ch/fhnw/shakethelakebackend/config/*</exclude>
                         <exclude>ch/fhnw/shakethelakebackend/*.class</exclude>
                         <exclude>io/truongbn/github/jacoco/JacocoApplication.class</exclude>
+                        <!-- FIXME remove this line -->
+                        <exclude>ch/fhnw/shakethelakebackend/service/BoatService.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

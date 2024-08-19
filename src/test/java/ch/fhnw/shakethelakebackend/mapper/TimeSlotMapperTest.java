@@ -11,7 +11,7 @@ import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,8 +29,8 @@ class TimeSlotMapperTest {
         // Given
         CreateTimeSlotDto timeSlotDto = new CreateTimeSlotDto();
         // set properties of createTimeSlotDto
-        LocalDateTime fromTime = LocalDateTime.now();
-        LocalDateTime untilTime = LocalDateTime.now().plusHours(1);
+        LocalTime fromTime = LocalTime.now();
+        LocalTime untilTime = LocalTime.now().plusHours(1);
         timeSlotDto.setFromTime(fromTime);
         timeSlotDto.setUntilTime(untilTime);
 
@@ -45,8 +45,8 @@ class TimeSlotMapperTest {
     @Test
     void testToDto() {
         // Given
-        LocalDateTime fromTime = LocalDateTime.now();
-        LocalDateTime untilTime = LocalDateTime.now().plusHours(1);
+        LocalTime fromTime = LocalTime.now();
+        LocalTime untilTime = LocalTime.now().plusHours(1);
         Boat boat = new Boat();
         TimeSlot timeSlot = new TimeSlot();
         // set properties of timeSlot
@@ -102,4 +102,32 @@ class TimeSlotMapperTest {
         assertTrue(bookingIds.isEmpty());
     }
 
+    @Test
+    void bookingsToBookingIdsShouldHandleNonNullElements() {
+        Set<Booking> bookings = new HashSet<>();
+        Booking booking1 = new Booking();
+        booking1.setId(1L);
+        bookings.add(booking1);
+        Booking booking2 = new Booking();
+        booking2.setId(2L);
+        bookings.add(booking2);
+
+        Set<Long> bookingIds = timeSlotMapper.bookingsToBookingIds(bookings);
+
+        assertTrue(bookingIds.contains(1L));
+        assertTrue(bookingIds.contains(2L));
+    }
+
+    @Test
+    void bookingIdsToBookingsShouldMapCorrectly() {
+        Set<Booking> bookings = new HashSet<>();
+        bookings.add(Booking.builder().id(1L).build());
+        bookings.add(Booking.builder().id(2L).build());
+
+        Set<Long> bookingIds = timeSlotMapper.bookingsToBookingIds(bookings);
+
+        assertEquals(2, bookings.size());
+        assertTrue(bookings.stream().anyMatch(booking -> booking.getId().equals(1L)));
+        assertTrue(bookings.stream().anyMatch(booking -> booking.getId().equals(2L)));
+    }
 }

@@ -16,11 +16,10 @@ import java.util.stream.Collectors;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface PersonMapper {
-    @Mapping(target = "boats", ignore = true)
     @Mapping(target = "bookings", ignore = true)
     Person toEntity(CreatePersonDto createPersonDto);
 
-    @Mapping(target = "boatIds", expression = "java(boatsToBoatIds(person.getBoats()))")
+    @ToDtoDefault
     @Mapping(target = "bookingIds", expression = "java(bookingsToBookingIds(person.getBookings()))")
     PersonDto toDto(Person person);
 

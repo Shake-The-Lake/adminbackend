@@ -1,6 +1,8 @@
 package ch.fhnw.shakethelakebackend.model.dto;
 
 import ch.fhnw.shakethelakebackend.model.entity.Event;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +11,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -29,18 +32,14 @@ public class EventDto implements Serializable {
     // TODO: not in mvp.
     // private Long locationId;
     @NotNull
-    private LocalDateTime date;
-    @NotNull
-    private String customerCode;
-    @NotNull
-    private String employeeCode;
-    @NotNull
-    private LocalDateTime customerOnlyTime;
-    private boolean isStarted;
-    @NotNull
-    private LocalDateTime startedAt;
-    @NotNull
-    private LocalDateTime endedAt;
+    private LocalDate date;
+
     private Set<Long> activityTypeIds;
     private Set<Long> boatIds;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Schema(hidden = true)
+    private List<BoatDto> boats = null;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Schema(hidden = true)
+    private List<ActivityTypeDto> activityTypes = null;
 }

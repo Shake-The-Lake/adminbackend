@@ -12,17 +12,19 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Objects;
 
 @Entity
-@Data
 @Table(name = "booking")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

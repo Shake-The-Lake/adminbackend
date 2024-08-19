@@ -3,9 +3,9 @@ package ch.fhnw.shakethelakebackend.service;
 import ch.fhnw.shakethelakebackend.model.dto.CreateEventDto;
 import ch.fhnw.shakethelakebackend.model.dto.EventDto;
 import ch.fhnw.shakethelakebackend.model.entity.Event;
+import ch.fhnw.shakethelakebackend.model.mapper.BoatMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.EventMapper;
 import ch.fhnw.shakethelakebackend.model.repository.EventRepository;
-import ch.fhnw.shakethelakebackend.model.repository.LocationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,24 +23,25 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class EventServiceTest {
+class EventServiceTest {
 
     @Mock
     private EventRepository eventRepository;
 
     @Mock
-    private LocationRepository locationRepository;
-
-    @Mock
     private EventMapper eventMapper;
 
     @Mock
-    private ActivityTypeService activityTypeService;
+    private Expander expander;
+
+    @Mock
+    private BoatMapper boatMapper;
 
     @InjectMocks
     private EventService eventService;
@@ -54,6 +55,7 @@ public class EventServiceTest {
         event.setId(1L);
         eventDto = new EventDto();
         eventDto.setId(1L);
+
     }
 
     @Test
@@ -99,13 +101,17 @@ public class EventServiceTest {
     @Test
     void updateEventUpdatesAndReturnsEvent() {
         when(eventRepository.existsById(1L)).thenReturn(true);
-        when(eventMapper.toEntity(any())).thenReturn(event);
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
         when(eventRepository.save(event)).thenReturn(event);
         when(eventMapper.toDto(event)).thenReturn(eventDto);
+        when(eventMapper.toEntity(any())).thenReturn(event);
 
         EventDto result = eventService.updateEvent(1L, CreateEventDto.builder().build());
 
         assertNotNull(result);
+        assertEquals(1L, result.getId());
+        assertEquals(eventDto.getBoats(), result.getBoats());
+        assertEquals(eventDto.getActivityTypes(), result.getActivityTypes());
         verify(eventRepository).existsById(1L);
         verify(eventRepository).save(event);
         verify(eventMapper).toDto(event);
@@ -121,4 +127,32 @@ public class EventServiceTest {
         verify(eventRepository).findById(1L);
         verify(eventRepository).delete(event);
     }
+
+    @Test
+    void testGetEventWithDetailsExpandActivityTypes() {
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
+
+        eventService.getEventWithDetails(1L, Optional.of("activityTypes"));
+
+        verify(boatMapper, never()).toDtoWithTimeSlots(any());
+    }
+
+    @Test
+    void testGetEventWithDetailsExpandBoats() {
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
+
+        eventService.getEventWithDetails(1L, Optional.of("boats"));
+
+        verify(boatMapper, never()).toDtoWithTimeSlots(any());
+    }
+
+    @Test
+    void testGetEventWithDetailsExpandBoatsAndActivityTypes() {
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
+
+        eventService.getEventWithDetails(1L, Optional.of("boats,activityTypes"));
+
+        verify(boatMapper, never()).toDtoWithTimeSlots(any());
+    }
+
 }
