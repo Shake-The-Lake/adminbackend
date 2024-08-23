@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.ZonedDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,13 +39,13 @@ public class SearchController {
     @Operation(summary = "Search bookings", description = "Returns find bookings", parameters = {
         @Parameter(name = "personName", description = "Search by person name", required = false,
             example = "John", schema = @Schema(type = "string")),
-        @Parameter(name = "boatName", description = "filters by boat name", required = false,
-            example = "Boat 1", schema = @Schema(type = "string")),
+        @Parameter(name = "boatId", description = "filters by boat id", required = false,
+            example = "1", schema = @Schema(type = "long")),
         @Parameter(name = "from", description = "filters by date from", required = false,
-            example = "2024-06-09T15:13:32.297Z", schema = @Schema(type = "ZonedDateTime")),
+            example = "08:00:00", schema = @Schema(type = "LocalTime")),
         @Parameter(name = "to", description = "filters by date to", required = false,
-            example = "2024-06-09T16:13:32.297Z", schema = @Schema(type = "ZonedDateTime")),
-        @Parameter(name = "activity", description = "filters by activity it", required = false,
+            example = "09:00:00", schema = @Schema(type = "LocalTime")),
+        @Parameter(name = "activityId", description = "filters by activity id", required = false,
             example = "1", schema = @Schema(type = "long")) })
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully retrieved a booking by id"),
         @ApiResponse(responseCode = "404", description = BookingService.BOOKING_NOT_FOUND, content = @Content(
@@ -53,10 +53,10 @@ public class SearchController {
     @GetMapping("/{eventId}")
     public List<SearchDto> getBookingSearch(@PathVariable Long eventId,
         @RequestParam(required = false) Optional<String> personName,
-        @RequestParam(required = false) Optional<String> boatName,
-        @RequestParam(required = false) Optional<ZonedDateTime> from,
-        @RequestParam(required = false) Optional<ZonedDateTime> to,
-        @RequestParam(required = false) Optional<Long> activity) {
-        return searchService.getSearch(eventId, personName, boatName, from, to, activity);
+        @RequestParam(required = false) Optional<Long> boatId,
+        @RequestParam(required = false) Optional<LocalTime> from,
+        @RequestParam(required = false) Optional<LocalTime> to,
+        @RequestParam(required = false) Optional<Long> activityId) {
+        return searchService.getSearch(eventId, personName, boatId, from, to, activityId);
     }
 }
