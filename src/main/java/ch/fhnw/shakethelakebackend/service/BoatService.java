@@ -54,9 +54,11 @@ public class BoatService {
         }
 
         Event event = eventService.getEvent(createBoatDto.getEventId());
-        Boat newBoat = getBoat(id);
+        Boat newBoat = boatMapper.toEntity(createBoatDto);
+        Boat oldBoat = getBoat(id);
         newBoat.setEvent(event);
         newBoat.setId(id);
+        newBoat.setTimeSlots(oldBoat.getTimeSlots());
         boatRepository.save(newBoat);
         return boatMapper.toDto(newBoat);
     }

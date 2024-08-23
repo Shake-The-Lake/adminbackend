@@ -9,7 +9,7 @@ import jakarta.persistence.criteria.Root;
 import lombok.AllArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.time.ZonedDateTime;
+import java.time.LocalTime;
 
 @AllArgsConstructor
 public class SpecificationBooking implements Specification<Booking> {
@@ -45,13 +45,13 @@ public class SpecificationBooking implements Specification<Booking> {
         case ":":
             return builder.equal(path, criteria.value);
         case ">":
-            return builder.greaterThan(path.as(ZonedDateTime.class), (ZonedDateTime) criteria.value);
+            return builder.greaterThan(path.as(LocalTime.class), (LocalTime) criteria.value);
         case ">=":
-            return builder.greaterThanOrEqualTo(path.as(ZonedDateTime.class), (ZonedDateTime) criteria.value);
+            return builder.greaterThanOrEqualTo(path.as(LocalTime.class), (LocalTime) criteria.value);
         case "<":
-            return builder.lessThan(path.as(ZonedDateTime.class), (ZonedDateTime) criteria.value);
+            return builder.lessThan(path.as(LocalTime.class), (LocalTime) criteria.value);
         case "<=":
-            return builder.lessThanOrEqualTo(path.as(ZonedDateTime.class), (ZonedDateTime) criteria.value);
+            return builder.lessThanOrEqualTo(path.as(LocalTime.class), (LocalTime) criteria.value);
         default:
             return null;
         }

@@ -19,7 +19,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.time.ZonedDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -49,19 +49,24 @@ public class SearchService {
         return searchParameterMapper.toDto(boatDtos, activityTypeDtos);
     }
 
-    public List<SearchDto> getSearch(Long eventId, Optional<String> personName, Optional<String> boatName,
-            Optional<ZonedDateTime> from, Optional<ZonedDateTime> to, Optional<Long> activity) {
+    public List<SearchDto> getSearch(Long eventId, Optional<String> personName, Optional<Long> boatId,
+            Optional<LocalTime> from, Optional<LocalTime> to, Optional<Long> activity) {
         List<SearchDto> searchDtos = List.of();
         List<Specification<Booking>> filterSpecification = new ArrayList<>();
         List<Specification<Booking>> searchSpecifications = new ArrayList<>();
 
         // Make search Specification for personName
-        personName.ifPresent(name -> searchSpecifications.add(new SpecificationBooking("person.firstName", "?", name)));
-        personName.ifPresent(name -> searchSpecifications.add(new SpecificationBooking("person.lastName", "?", name)));
+        personName.ifPresent(name -> {
+            for (String n :name.split(" ")) {
+                searchSpecifications.add(new SpecificationBooking("person.firstName", ":", n));
+                searchSpecifications.add(new SpecificationBooking("person.lastName", ":", n));
+            }
+        });
+
 
         // Make filter Specification for boatName, from, to, activity
         filterSpecification.add(new SpecificationBooking("timeSlot.boat.event.id", ":", eventId));
-        boatName.ifPresent(name -> filterSpecification.add(new SpecificationBooking("timeSlot.boat.name", ":", name)));
+        boatId.ifPresent(name -> filterSpecification.add(new SpecificationBooking("timeSlot.boat.id", ":", name)));
         from.ifPresent(date -> filterSpecification.add(new SpecificationBooking("timeSlot.fromTime", ">=", date)));
         to.ifPresent(date -> filterSpecification.add(new SpecificationBooking("timeSlot.untilTime", "<=", date)));
         activity.ifPresent(
