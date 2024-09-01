@@ -58,8 +58,8 @@ public class SearchService {
         // Make search Specification for personName
         personName.ifPresent(name -> {
             for (String n :name.split(" ")) {
-                searchSpecifications.add(new SpecificationBooking("person.firstName", ":", n));
-                searchSpecifications.add(new SpecificationBooking("person.lastName", ":", n));
+                searchSpecifications.add(new SpecificationBooking("person.firstName", "?", n));
+                searchSpecifications.add(new SpecificationBooking("person.lastName", "?", n));
             }
         });
 
