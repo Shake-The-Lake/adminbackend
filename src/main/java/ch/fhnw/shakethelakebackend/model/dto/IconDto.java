@@ -18,7 +18,7 @@ import java.io.Serializable;
 @Builder
 public class IconDto implements Serializable {
     private Long id;
-    String name;
-    String description;
-    byte[] icon;
+    private String name;
+    private String description;
+    private byte[] icon;
 }

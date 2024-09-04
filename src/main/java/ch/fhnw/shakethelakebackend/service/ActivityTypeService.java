@@ -23,13 +23,13 @@ public class ActivityTypeService {
     private final IconService iconService;
 
     public List<ActivityTypeDto> getAllActivityTypes() {
-        return activityTypeRepository.findAll().stream().map(activityTypeMapper::toDtoWithIcon).toList();
+        return activityTypeRepository.findAll().stream().map(activityTypeMapper::toDto).toList();
     }
 
     public ActivityTypeDto getActivityTypeDto(Long id) {
         ActivityType activityType = activityTypeRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException(ACTIVITY_TYPE_NOT_FOUND));
-        return activityTypeMapper.toDtoWithIcon(activityType);
+        return activityTypeMapper.toDto(activityType);
     }
 
     public ActivityType getActivityType(Long id) {

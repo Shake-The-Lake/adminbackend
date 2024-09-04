@@ -30,9 +30,10 @@ public class IconService {
     private final IconRepository iconRepository;
     private final IconMapper iconMapper;
 
-    public byte[] getIcon(String iconName) throws IOException {
-        Icon icon = iconRepository.findByName(iconName).orElseThrow(() -> new EntityNotFoundException("Icon not found"));
-        return icon.getIcon();
+    public byte[] getIcon(String iconName) {
+        Icon icon = iconRepository.findByName(iconName).orElseThrow(() ->
+            new EntityNotFoundException("Icon not found"));
+        return icon.getPng();
     }
     public Icon getIcon(Long id) {
         return iconRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Icon not found"));
@@ -56,7 +57,7 @@ public class IconService {
                         Icon icon = Icon.builder()
                             .name(path.getFileName().toString())
                             .description(path.getName(path.getNameCount() - 2).toString())
-                            .icon(Files.readAllBytes(path))
+                            .png(Files.readAllBytes(path))
                             .build();
                         iconRepository.save(icon);
                     } catch (IOException e) {
@@ -65,6 +66,5 @@ public class IconService {
                 });
         }
     }
-
 
 }

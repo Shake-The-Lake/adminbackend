@@ -4,6 +4,7 @@ import ch.fhnw.shakethelakebackend.model.dto.ActivityTypeDto;
 import ch.fhnw.shakethelakebackend.model.dto.CreateActivityTypeDto;
 import ch.fhnw.shakethelakebackend.model.entity.ActivityType;
 import ch.fhnw.shakethelakebackend.model.entity.Event;
+import ch.fhnw.shakethelakebackend.model.entity.Icon;
 import ch.fhnw.shakethelakebackend.model.mapper.ActivityTypeMapper;
 import ch.fhnw.shakethelakebackend.model.repository.ActivityTypeRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -39,12 +40,16 @@ class ActivityTypeServiceTest {
     @Mock
     private EventService eventService;
 
+    @Mock
+    private IconService iconService;
+
     @InjectMocks
     private ActivityTypeService activityTypeService;
 
     private ActivityType activityType;
     private CreateActivityTypeDto createActivityTypeDto;
     private Event event;
+    private Icon icon;
 
     @BeforeEach
     void setUp() {
@@ -54,6 +59,8 @@ class ActivityTypeServiceTest {
         createActivityTypeDto = new CreateActivityTypeDto();
         event = new Event();
         event.setId(1L);
+
+        icon = Icon.builder().id(1L).build();
 
     }
 
@@ -76,6 +83,7 @@ class ActivityTypeServiceTest {
     void getActivityTypeDtoWithValidIdReturnsDto() {
         when(activityTypeRepository.findById(1L)).thenReturn(Optional.of(activityType));
         when(activityTypeMapper.toDto(activityType)).thenReturn(new ActivityTypeDto());
+
 
         ActivityTypeDto result = activityTypeService.getActivityTypeDto(1L);
 
@@ -101,7 +109,6 @@ class ActivityTypeServiceTest {
         createActivityTypeDto.setEventId(1L);
 
         when(activityTypeMapper.toEntity(createActivityTypeDto)).thenReturn(activityType);
-        when(eventService.getEvent(1L)).thenReturn(event);
         when(activityTypeRepository.save(activityType)).thenReturn(activityType);
         when(activityTypeMapper.toDto(activityType)).thenReturn(new ActivityTypeDto());
 
