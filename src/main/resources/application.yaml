@@ -13,6 +13,9 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: create
+  web:
+    resources:
+      static-locations: classpath:/icons/, classpath:/icons/activitytypes
 
 springdoc:
   swagger-ui:

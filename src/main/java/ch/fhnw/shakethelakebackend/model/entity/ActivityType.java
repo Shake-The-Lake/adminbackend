@@ -42,7 +42,9 @@ public class ActivityType {
         @AttributeOverride(name = "swissGerman", column = @Column(name = "checklist_swiss_german")) })
     private LocalizedString checklist;
 
-    private String icon;
+    @ManyToOne
+    @JoinColumn(name = "icon_id")
+    private Icon icon;
 
     @ManyToOne
     @JoinColumn(name = "event_id")

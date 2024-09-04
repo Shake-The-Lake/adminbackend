@@ -26,7 +26,7 @@ public class CreateActivityTypeDto implements Serializable {
     @NotNull
     private LocalizedString checklist;
     @NotNull
-    private String icon;
+    private Long iconId;
     @NotNull
     private Long eventId;
 }

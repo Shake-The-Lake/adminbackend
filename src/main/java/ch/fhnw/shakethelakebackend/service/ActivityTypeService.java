@@ -4,6 +4,7 @@ import ch.fhnw.shakethelakebackend.model.dto.ActivityTypeDto;
 import ch.fhnw.shakethelakebackend.model.dto.CreateActivityTypeDto;
 import ch.fhnw.shakethelakebackend.model.entity.ActivityType;
 import ch.fhnw.shakethelakebackend.model.entity.Event;
+import ch.fhnw.shakethelakebackend.model.entity.Icon;
 import ch.fhnw.shakethelakebackend.model.mapper.ActivityTypeMapper;
 import ch.fhnw.shakethelakebackend.model.repository.ActivityTypeRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,15 +20,16 @@ public class ActivityTypeService {
     private final ActivityTypeRepository activityTypeRepository;
     private final ActivityTypeMapper activityTypeMapper;
     private final EventService eventService;
+    private final IconService iconService;
 
     public List<ActivityTypeDto> getAllActivityTypes() {
-        return activityTypeRepository.findAll().stream().map(activityTypeMapper::toDto).toList();
+        return activityTypeRepository.findAll().stream().map(activityTypeMapper::toDtoWithIcon).toList();
     }
 
     public ActivityTypeDto getActivityTypeDto(Long id) {
         ActivityType activityType = activityTypeRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException(ACTIVITY_TYPE_NOT_FOUND));
-        return activityTypeMapper.toDto(activityType);
+        return activityTypeMapper.toDtoWithIcon(activityType);
     }
 
     public ActivityType getActivityType(Long id) {
@@ -38,7 +40,9 @@ public class ActivityTypeService {
     public ActivityTypeDto createActivityType(CreateActivityTypeDto createActivityTypeDto) {
         ActivityType activityType = activityTypeMapper.toEntity(createActivityTypeDto);
         Event event = eventService.getEvent(createActivityTypeDto.getEventId());
+        Icon icon = iconService.getIcon(createActivityTypeDto.getIconId());
         activityType.setEvent(event);
+        activityType.setIcon(icon);
         activityTypeRepository.save(activityType);
         return activityTypeMapper.toDto(activityType);
     }
@@ -56,7 +60,9 @@ public class ActivityTypeService {
         }
         ActivityType updateActivityType = activityTypeMapper.toEntity(createActivityTypeDto);
         Event event = eventService.getEvent(createActivityTypeDto.getEventId());
+        Icon icon = iconService.getIcon(createActivityTypeDto.getIconId());
         updateActivityType.setEvent(event);
+        updateActivityType.setIcon(icon);
         updateActivityType.setId(id);
         activityTypeRepository.save(updateActivityType);
         return activityTypeMapper.toDto(updateActivityType);
