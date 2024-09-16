@@ -154,6 +154,7 @@ class TimeSlotServiceTest {
         when(timeSlotRepository.findById(1L)).thenReturn(Optional.of(timeSlot));
         when(timeSlotMapper.toDto(timeSlot)).thenReturn(timeSlotDto);
 
+
         TimeSlotDto result = timeSlotService.getTimeSlotDto(1L);
 
         assertEquals(timeSlotDto, result);

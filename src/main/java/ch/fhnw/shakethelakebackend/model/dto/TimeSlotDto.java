@@ -60,4 +60,14 @@ public class TimeSlotDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Schema(hidden = true)
     private BoatDto boat;
+
+    private long seatsRider;
+    private long seatsViewer;
+
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    private long availableSeats = -1;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    private long availableRiderSeats = -1;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    private long availableViewerSeats = -1;
 }

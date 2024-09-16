@@ -23,6 +23,8 @@ public interface TimeSlotMapper {
     @Mapping(target = "boatId", expression = "java(timeSlot.getBoat().getId())")
     @Mapping(target = "bookingIds", expression = "java(bookingsToBookingIds(timeSlot.getBookings()))")
     @Mapping(target = "activityTypeId", source = "activityType.id")
+    @Mapping(target = "seatsRider", source = "boat.seatsRider")
+    @Mapping(target = "seatsViewer", source = "boat.seatsViewer")
     @Mapping(target = "boat", ignore = true)
     @Mapping(target = "activityType", ignore = true)
     @Mapping(target = "bookings", ignore = true)
