@@ -26,24 +26,36 @@ import java.util.Set;
 public class TimeSlotDto {
     @CsvIgnore
     private Long id;
+
     @CsvBindByName(column = "From")
     @Schema(type = "string", format = "time", example = "08:00:00")
     private LocalTime fromTime;
+
     @Schema(type = "string", format = "time", example = "09:00:00")
     @CsvBindByName(column = "To")
     private LocalTime untilTime;
+
     @CsvIgnore
     private Long boatId;
+
     @CsvIgnore
     private Set<Long> bookingIds;
+
     @CsvIgnore
     private Long activityTypeId;
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Schema(hidden = true)
     private ActivityTypeDto activityType;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Schema(hidden = true)
+    private Set<BookingDto> bookings;
+
     @CsvBindByName(column = "Type")
     private TimeSlotType status;
     //With parameter
+
     @CsvBindByName(column = "Boat")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Schema(hidden = true)

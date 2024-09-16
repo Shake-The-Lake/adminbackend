@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-public class BookingMapperTest {
+class BookingMapperTest {
 
     @Mock
     private PersonMapper personMapper;
@@ -70,8 +70,10 @@ public class BookingMapperTest {
         Booking booking = Booking.builder().id(1L).timeSlot(timeSlot).person(person).build();
 
         when(timeSlotMapper.toDtoWithBoat(timeSlot)).thenReturn(
-                new TimeSlotDto(2L, null, null, 1L, new HashSet<>(), 1L, null, null, new BoatDto()));
-        when(personMapper.toDto(person)).thenReturn(new PersonDto(3L, null, "", "", "", "", new HashSet<>()));
+                new TimeSlotDto(2L, null, null, 1L, new HashSet<>(), 1L,
+                    null, null, null, new BoatDto()));
+        when(personMapper.toDto(person)).thenReturn(new PersonDto(3L, null,
+            "", "", "", "", new HashSet<>()));
 
         BookingDto bookingDto = bookingMapper.toDtoExtended(booking);
 

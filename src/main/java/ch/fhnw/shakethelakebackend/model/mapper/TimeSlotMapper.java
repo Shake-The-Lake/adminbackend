@@ -25,6 +25,7 @@ public interface TimeSlotMapper {
     @Mapping(target = "activityTypeId", source = "activityType.id")
     @Mapping(target = "boat", ignore = true)
     @Mapping(target = "activityType", ignore = true)
+    @Mapping(target = "bookings", ignore = true)
     TimeSlotDto toDto(TimeSlot timeSlot);
 
     default Set<Long> bookingsToBookingIds(Set<Booking> bookings) {

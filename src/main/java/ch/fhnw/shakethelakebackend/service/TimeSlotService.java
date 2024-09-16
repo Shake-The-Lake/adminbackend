@@ -2,6 +2,7 @@ package ch.fhnw.shakethelakebackend.service;
 
 import ch.fhnw.shakethelakebackend.model.dto.ActivityTypeDto;
 import ch.fhnw.shakethelakebackend.model.dto.BoatDto;
+import ch.fhnw.shakethelakebackend.model.dto.BookingDto;
 import ch.fhnw.shakethelakebackend.model.dto.CreateTimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.dto.TimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.entity.ActivityType;
@@ -10,6 +11,7 @@ import ch.fhnw.shakethelakebackend.model.entity.Booking;
 import ch.fhnw.shakethelakebackend.model.entity.TimeSlot;
 import ch.fhnw.shakethelakebackend.model.mapper.ActivityTypeMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.BoatMapper;
+import ch.fhnw.shakethelakebackend.model.mapper.BookingMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.TimeSlotMapper;
 import ch.fhnw.shakethelakebackend.model.repository.TimeSlotRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -32,6 +34,7 @@ public class TimeSlotService {
     private final TimeSlotRepository timeSlotRepository;
     private final BoatService boatService;
     private final TimeSlotMapper timeSlotMapper;
+    private final BookingMapper bookingMapper;
     private final BoatMapper boatMapper;
     private final ActivityTypeMapper activityTypeMapper;
     private final ActivityTypeService activityTypeService;
@@ -57,7 +60,7 @@ public class TimeSlotService {
 
     public TimeSlotDto updateTimeSlot(long id, CreateTimeSlotDto timeSlotDto) {
         if (!timeSlotRepository.existsById(id)) {
-            throw new EntityNotFoundException("TimeSlot not found");
+            throw new EntityNotFoundException(TIMESLOT_NOT_FOUND);
         }
 
         Set<Booking> bookings = getTimeSlot(id).getBookings();
@@ -99,9 +102,15 @@ public class TimeSlotService {
         TimeSlot timeSlot = getTimeSlot(id);
         TimeSlotDto timeSlotDto = getTimeSlotDto(id);
 
-        expander.applyExpansion(expand, "activitytype", () -> {
+        expander.applyExpansion(expand, "activityType", () -> {
             ActivityTypeDto activityTypeDto = activityTypeMapper.toDto(timeSlot.getActivityType());
             timeSlotDto.setActivityType(activityTypeDto);
+        });
+
+        expander.applyExpansion(expand, "bookings", () -> {
+            Set<BookingDto> bookingDtos = timeSlot.getBookings().stream().map(bookingMapper::toDto).collect(
+                Collectors.toSet());
+            timeSlotDto.setBookings(bookingDtos);
         });
 
         expander.applyExpansion(expand, "boat", () -> {
