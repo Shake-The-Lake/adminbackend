@@ -34,6 +34,9 @@ public class EventDto implements Serializable {
     @NotNull
     private LocalDate date;
 
+    private String employeeBarcode;
+    private String customerBarcode;
+
     private Set<Long> activityTypeIds;
     private Set<Long> boatIds;
     @JsonInclude(JsonInclude.Include.NON_NULL)

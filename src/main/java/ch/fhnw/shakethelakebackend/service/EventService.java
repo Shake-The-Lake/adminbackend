@@ -9,11 +9,18 @@ import ch.fhnw.shakethelakebackend.model.mapper.ActivityTypeMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.BoatMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.EventMapper;
 import ch.fhnw.shakethelakebackend.model.repository.EventRepository;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,6 +55,23 @@ public class EventService {
         //TODO; location not mvp
         // Location location = locationRepository.save(createEventDto.getLocationId());
         Event event = eventMapper.toEntity(createEventDto);
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        eventRepository.save(event);
+        try {
+            event.setEmployeeCode(event.getId() + RandomStringUtils.random(16, true, true));
+            BitMatrix bitMatrix = qrCodeWriter.encode(event.getEmployeeCode(), BarcodeFormat.QR_CODE, 200, 200);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            MatrixToImageWriter.writeToStream(bitMatrix, "PNG", bos);
+            event.setEmployeeBarcode(Base64.getEncoder().encodeToString(bos.toByteArray()));
+
+            event.setCustomerCode(event.getId() + RandomStringUtils.random(16, true, true));
+            bitMatrix = qrCodeWriter.encode(event.getCustomerCode(), BarcodeFormat.QR_CODE, 200, 200);
+            bos = new ByteArrayOutputStream();
+            MatrixToImageWriter.writeToStream(bitMatrix, "PNG", bos);
+            event.setCustomerBarcode(Base64.getEncoder().encodeToString(bos.toByteArray()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         eventRepository.save(event);
         return eventMapper.toDto(event);
     }
