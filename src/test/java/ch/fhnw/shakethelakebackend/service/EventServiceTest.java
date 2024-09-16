@@ -88,13 +88,13 @@ class EventServiceTest {
     @Test
     void createEventSavesAndReturnsEventDto() {
         when(eventMapper.toEntity(any())).thenReturn(event);
-        when(eventRepository.save(event)).thenReturn(event);
+        when(eventRepository.save(event)).thenReturn(event).thenReturn(event);
         when(eventMapper.toDto(event)).thenReturn(eventDto);
 
         EventDto result = eventService.createEvent(CreateEventDto.builder().build());
 
         assertNotNull(result);
-        verify(eventRepository).save(event);
+        verify(eventRepository, times(2)).save(event);
         verify(eventMapper).toDto(event);
     }
 

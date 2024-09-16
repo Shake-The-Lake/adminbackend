@@ -47,6 +47,14 @@ public class Event {
     @OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Boat> boats;
 
+    private String employeeCode;
+    @Column(columnDefinition = "TEXT")
+    private String employeeBarcode;
+
+    private String customerCode;
+    @Column(columnDefinition = "TEXT")
+    private String customerBarcode;
+
     public Set<ActivityType> getActivityTypes() {
         return activityTypes == null ? Set.of() : activityTypes;
     }
