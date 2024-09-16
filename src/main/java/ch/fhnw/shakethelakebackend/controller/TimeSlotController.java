@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -35,6 +37,7 @@ public class TimeSlotController {
         @ApiResponse(responseCode = "404", description = "Related entity not found",
             content = @Content(schema = @Schema(implementation = String.class))) })
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public TimeSlotDto createTimeSlot(@RequestBody @Valid CreateTimeSlotDto timeSlot) {
         return timeSlotService.createTimeSlot(timeSlot);
     }
@@ -42,7 +45,7 @@ public class TimeSlotController {
     @Operation(summary = "Get a time slot by id", description = "Returns a time slot as per the id", parameters = {
         @Parameter(name = "expand", description = "Expand the response with more details from related objects",
             required = false,
-            example = "activitytype", schema = @Schema(type = "string")) })
+            example = "activityType,boat,bookings", schema = @Schema(type = "string")) })
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully retrieved a timeslot by id"),
         @ApiResponse(responseCode = "404", description = TimeSlotService.TIMESLOT_NOT_FOUND,
             content = @Content(schema = @Schema(implementation = String.class))) })
