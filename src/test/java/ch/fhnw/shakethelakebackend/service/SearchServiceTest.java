@@ -29,7 +29,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalTime;
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -109,8 +108,8 @@ public class SearchServiceTest {
         when(searchMapper.toDto(any(), any(), any(), any(), any())).thenReturn(new SearchDto());
 
         // When
-        List<SearchDto> result = searchService.getSearch(1L, Optional.of("John"), Optional.of("Boat1"),
-                Optional.of(ZonedDateTime.now().minusDays(1)), Optional.of(ZonedDateTime.now().plusDays(1)),
+        List<SearchDto> result = searchService.getSearch(1L, Optional.of("John"), Optional.of(1L),
+                Optional.of(LocalTime.now().minusHours(1)), Optional.of(LocalTime.now().plusHours(1)),
                 Optional.of(1L));
 
         // Then

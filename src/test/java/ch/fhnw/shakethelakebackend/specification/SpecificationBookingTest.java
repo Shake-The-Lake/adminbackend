@@ -14,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -52,12 +53,12 @@ public class SpecificationBookingTest {
     @Test
     void testToPredicateWithGreaterThanOperation() {
         // Given
-        ZonedDateTime now = ZonedDateTime.now();
+        LocalTime now = LocalTime.now();
         specificationBooking = new SpecificationBooking("timeSlot.fromTime", ">", now);
         when(root.get(anyString())).thenReturn(path);
         when(path.get(anyString())).thenReturn(path);
         Predicate predicate = mock(Predicate.class);
-        when(builder.greaterThan(any(), any(ZonedDateTime.class))).thenReturn(predicate);
+        when(builder.greaterThan(any(), any(LocalTime.class))).thenReturn(predicate);
 
         // When
         Predicate result = specificationBooking.toPredicate(root, query, builder);
@@ -70,12 +71,12 @@ public class SpecificationBookingTest {
     @Test
     void testToPredicateWithGreaterThanOrEqualToOperation() {
         // Given
-        ZonedDateTime now = ZonedDateTime.now();
+        LocalTime now = LocalTime.now();
         specificationBooking = new SpecificationBooking("timeSlot.fromTime", ">=", now);
         when(root.get(anyString())).thenReturn(path);
         when(path.get(anyString())).thenReturn(path);
         Predicate predicate = mock(Predicate.class);
-        when(builder.greaterThanOrEqualTo(any(), any(ZonedDateTime.class))).thenReturn(predicate);
+        when(builder.greaterThanOrEqualTo(any(), any(LocalTime.class))).thenReturn(predicate);
 
         // When
         Predicate result = specificationBooking.toPredicate(root, query, builder);
@@ -88,12 +89,12 @@ public class SpecificationBookingTest {
     @Test
     void testToPredicateWithLessThanOperation() {
         // Given
-        ZonedDateTime now = ZonedDateTime.now();
+        LocalTime now = LocalTime.now();
         specificationBooking = new SpecificationBooking("timeSlot.toTime", "<", now);
         when(root.get(anyString())).thenReturn(path);
         when(path.get(anyString())).thenReturn(path);
         Predicate predicate = mock(Predicate.class);
-        when(builder.lessThan(any(), any(ZonedDateTime.class))).thenReturn(predicate);
+        when(builder.lessThan(any(), any(LocalTime.class))).thenReturn(predicate);
 
         // When
         Predicate result = specificationBooking.toPredicate(root, query, builder);
@@ -106,12 +107,12 @@ public class SpecificationBookingTest {
     @Test
     void testToPredicateWithLessThanOrEqualToOperation() {
         // Given
-        ZonedDateTime now = ZonedDateTime.now();
+        LocalTime now = LocalTime.now();
         specificationBooking = new SpecificationBooking("timeSlot.toTime", "<=", now);
         when(root.get(anyString())).thenReturn(path);
         when(path.get(anyString())).thenReturn(path);
         Predicate predicate = mock(Predicate.class);
-        when(builder.lessThanOrEqualTo(any(), any(ZonedDateTime.class))).thenReturn(predicate);
+        when(builder.lessThanOrEqualTo(any(), any(LocalTime.class))).thenReturn(predicate);
 
         // When
         Predicate result = specificationBooking.toPredicate(root, query, builder);
@@ -125,7 +126,7 @@ public class SpecificationBookingTest {
     @Test
     void testToPredicateWithUnknownOperation() {
         // Given
-        specificationBooking = new SpecificationBooking("timeSlot.fromTime", "unknown", ZonedDateTime.now());
+        specificationBooking = new SpecificationBooking("timeSlot.fromTime", "unknown", LocalTime.now());
         when(root.get(anyString())).thenReturn(path);
         when(path.get(anyString())).thenReturn(path);
 
