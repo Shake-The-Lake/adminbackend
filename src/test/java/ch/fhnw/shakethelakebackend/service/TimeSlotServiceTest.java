@@ -109,12 +109,28 @@ class TimeSlotServiceTest {
     }
 
     @Test
+    void testUpdateTimeSlotNotFound() {
+        when(timeSlotRepository.existsById(1L)).thenReturn(false);
+
+        assertThrows(EntityNotFoundException.class, () -> timeSlotService.updateTimeSlot(1L, createTimeSlotDto));
+    }
+
+
+
+    @Test
     void testDeleteTimeSlot() {
         when(timeSlotRepository.existsById(1L)).thenReturn(true);
 
         timeSlotService.deleteTimeSlot(1L);
 
         verify(timeSlotRepository).deleteById(1L);
+    }
+
+    @Test
+    void testDeleteTimeSlotNotFound() {
+        when(timeSlotRepository.existsById(1L)).thenReturn(false);
+
+        assertThrows(EntityNotFoundException.class, () -> timeSlotService.deleteTimeSlot(1L));
     }
 
     @Test
@@ -158,5 +174,11 @@ class TimeSlotServiceTest {
         List<TimeSlotDto> result = timeSlotService.getAllTimeSlots();
 
         assertEquals(List.of(timeSlotDto), result);
+    }
+    @Test
+    void testGetTimeSlotDtoWithExpandNotFound() {
+        when(timeSlotRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> timeSlotService.getTimeSlotDto(1L, Optional.of("expand")));
     }
 }

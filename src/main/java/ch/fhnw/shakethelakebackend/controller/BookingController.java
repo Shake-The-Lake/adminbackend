@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -35,6 +37,7 @@ public class BookingController {
     @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Successfully created a booking"),
         @ApiResponse(responseCode = "404", description = "Related Entity not found", content = @Content(
             schema = @Schema(implementation = String.class))) })
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
     public BookingDto createBooking(@RequestBody @Valid CreateBookingDto booking) {
         return bookingService.createBooking(booking);
