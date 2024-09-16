@@ -71,7 +71,7 @@ class BookingMapperTest {
 
         when(timeSlotMapper.toDtoWithBoat(timeSlot)).thenReturn(
                 new TimeSlotDto(2L, null, null, 1L, new HashSet<>(), 1L,
-                    null, null, null, new BoatDto()));
+                    null, null, null, new BoatDto(), 0, 0, 0, 0, 0));
         when(personMapper.toDto(person)).thenReturn(new PersonDto(3L, null,
             "", "", "", "", new HashSet<>()));
 
