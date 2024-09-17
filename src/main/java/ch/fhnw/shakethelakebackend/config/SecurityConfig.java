@@ -67,7 +67,7 @@ public class SecurityConfig {
                             .requestMatchers("/public/**", "/auth/**").permitAll())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(
-                        sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .cors(Customizer.withDefaults()).csrf(AbstractHttpConfigurer::disable).build();
     }
 
