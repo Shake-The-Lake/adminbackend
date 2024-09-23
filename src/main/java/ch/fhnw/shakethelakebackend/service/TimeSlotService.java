@@ -152,6 +152,6 @@ public class TimeSlotService {
                 .filter(timeSlot -> eventId.map(aLong -> timeSlot.getBoat().getEvent().getId().equals(aLong))
                         .orElse(true))
                 .map(timeSlot -> getTimeSlotDto(timeSlot.getId(), expand))
-                .collect(Collectors.toList());
+                .toList();
     }
 }

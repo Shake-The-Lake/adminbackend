@@ -76,7 +76,7 @@ public class TimeSlotController {
     @Operation(summary = "Get all time slots", description = "Returns all time slots", parameters = {
         @Parameter(name = "expand", description = "Expand the response with more details from related objects",
             required = false,
-            example = "activitytype", schema = @Schema(type = "string")),
+            example = "activiyType", schema = @Schema(type = "string")),
         @Parameter(name = "eventId", description = "Filter the response with eventId",
             required = false,
             example = "1", schema = @Schema(type = "long")) })
