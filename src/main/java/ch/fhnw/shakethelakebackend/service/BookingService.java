@@ -73,12 +73,12 @@ public class BookingService {
     }
 
     public Booking getBooking(Long id) {
-        return bookingRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Booking not found"));
+        return bookingRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(BOOKING_NOT_FOUND));
     }
 
     public BookingDto getBookingDto(Long id) {
         Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
+                .orElseThrow(() -> new EntityNotFoundException(BOOKING_NOT_FOUND));
         return bookingMapper.toDto(booking);
     }
 
@@ -90,7 +90,7 @@ public class BookingService {
         Booking booking = bookingMapper.toEntity(bookingDto);
 
         Booking oldBooking = bookingRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
+                .orElseThrow(() -> new EntityNotFoundException(BOOKING_NOT_FOUND));
         TimeSlot timeSlot = timeSlotService.getTimeSlot(bookingDto.getTimeSlotId());
         Person person = personService.getPerson(bookingDto.getPersonId());
 
@@ -98,19 +98,19 @@ public class BookingService {
             timeSlot.getBookings().remove(oldBooking);
         }
 
-        timeSlot.getBookings().add(booking);
-        checkSeatsBooking(booking, timeSlot);
 
         booking.setTimeSlot(timeSlot);
         booking.setPerson(person);
         booking.setId(id);
+        timeSlot.getBookings().add(booking);
+        checkSeatsBooking(booking, timeSlot);
         booking = bookingRepository.save(booking);
         return bookingMapper.toDto(booking);
     }
 
     public void deleteBooking(Long id) {
         Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
+                .orElseThrow(() -> new EntityNotFoundException(BOOKING_NOT_FOUND));
         bookingRepository.delete(booking);
     }
 
