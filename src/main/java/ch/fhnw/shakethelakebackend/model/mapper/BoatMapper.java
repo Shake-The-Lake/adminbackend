@@ -4,12 +4,9 @@ import ch.fhnw.shakethelakebackend.model.dto.BoatDto;
 import ch.fhnw.shakethelakebackend.model.dto.CreateBoatDto;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.TimeSlot;
-import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
@@ -36,11 +33,6 @@ public interface BoatMapper {
     @Mapping(target = "timeSlots", qualifiedBy = ToDtoDefault.class)
     @Mapping(target = "eventId", source = "event.id")
     BoatDto toDtoWithTimeSlots(Boat boat);
-
-    CreateBoatDto toCreateDto(Boat boat);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Boat partialUpdate(BoatDto boatDto, @MappingTarget Boat boat);
 
     default Set<Long> timeSlotsToTimeSlotIds(Set<TimeSlot> timeSlots) {
         return timeSlots.stream().map(TimeSlot::getId).collect(Collectors.toSet());

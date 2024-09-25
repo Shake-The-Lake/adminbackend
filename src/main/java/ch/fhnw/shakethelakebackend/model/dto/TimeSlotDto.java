@@ -64,10 +64,7 @@ public class TimeSlotDto {
     private long seatsRider;
     private long seatsViewer;
 
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    private long availableSeats = -1;
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    private long availableRiderSeats = -1;
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    private long availableViewerSeats = -1;
+    private long availableSeats;
+    private long availableRiderSeats;
+    private long availableViewerSeats;
 }
