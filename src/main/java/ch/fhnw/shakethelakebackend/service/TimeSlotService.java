@@ -92,23 +92,8 @@ public class TimeSlotService {
         TimeSlot timeSlot = timeSlotRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(TIMESLOT_NOT_FOUND));
 
-        TimeSlotDto dto = timeSlotMapper.toDto(timeSlot);
-        Set<Booking> bookings = timeSlot.getBookings();
-        Boat boat = timeSlot.getBoat();
+        return timeSlotMapper.toDto(timeSlot);
 
-        if (bookings == null || bookings.isEmpty()) {
-            return dto;
-        }
-
-        int totalSeats = boat.getSeatsViewer() + boat.getSeatsRider();
-        long bookedRiders = bookings.stream().filter(Booking::getIsRider).count();
-        long bookedViewers = bookings.size() - bookedRiders;
-        long totalBookedSeats = bookings.size();
-
-        dto.setAvailableSeats(totalSeats - totalBookedSeats);
-        dto.setAvailableViewerSeats(boat.getSeatsViewer() - bookedViewers);
-        dto.setAvailableRiderSeats(boat.getSeatsRider() - bookedRiders);
-        return dto;
     }
 
     public List<TimeSlotDto> getAllTimeSlots() {
