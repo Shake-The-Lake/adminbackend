@@ -26,9 +26,12 @@ public interface TimeSlotMapper {
     @Mapping(target = "activityTypeId", source = "activityType.id")
     @Mapping(target = "seatsRider", source = "boat.seatsRider")
     @Mapping(target = "seatsViewer", source = "boat.seatsViewer")
-    @Mapping(target = "availableSeats", expression = "java(getAvailableSeats(timeSlot, timeSlot.getBoat()))")
-    @Mapping(target = "availableRiderSeats", expression = "java(getAvailableRiderSeats(timeSlot, timeSlot.getBoat()))")
-    @Mapping(target = "availableViewerSeats", expression = "java(getAvailableViewerSeats(timeSlot, timeSlot.getBoat()))")
+    @Mapping(target = "availableSeats", expression =
+        "java(getAvailableSeats(timeSlot, timeSlot.getBoat()))")
+    @Mapping(target = "availableRiderSeats", expression =
+        "java(getAvailableRiderSeats(timeSlot, timeSlot.getBoat()))")
+    @Mapping(target = "availableViewerSeats", expression =
+        "java(getAvailableViewerSeats(timeSlot, timeSlot.getBoat()))")
     @Mapping(target = "boat", ignore = true)
     @Mapping(target = "activityType", ignore = true)
     @Mapping(target = "bookings", ignore = true)

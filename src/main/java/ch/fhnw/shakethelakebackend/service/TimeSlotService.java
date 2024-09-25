@@ -123,14 +123,6 @@ public class TimeSlotService {
         return timeSlotDto;
     }
 
-    public List<TimeSlotDto> getAllTimeSlots(Optional<String> expand) {
-        List<TimeSlotDto> timeSlotDtos = getAllTimeSlots();
-
-        timeSlotDtos = timeSlotDtos.stream().map(timeSlot -> getTimeSlotDto(timeSlot.getId(), expand)).toList();
-
-        return timeSlotDtos;
-    }
-
     public List<TimeSlotDto> getAllTimeSlots(Optional<String> expand, Optional<Long> eventId) {
         return timeSlotRepository.findAll()
                 .stream()
