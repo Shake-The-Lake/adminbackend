@@ -26,9 +26,4 @@ public interface BookingMapper {
     @Mapping(target = "timeSlot", ignore = true)
     BookingDto toDto(Booking booking);
 
-    @Mapping(target = "timeSlotId", expression = "java(booking.getTimeSlot().getId())")
-    @Mapping(target = "personId", expression = "java(booking.getPerson().getId())")
-    @Mapping(target = "person", qualifiedBy = ToDtoDefault.class)
-    @Mapping(target = "timeSlot", qualifiedBy = ToDtoExtended.class)
-    BookingDto toDtoExtended(Booking booking);
 }

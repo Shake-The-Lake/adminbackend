@@ -2,7 +2,6 @@ package ch.fhnw.shakethelakebackend.controller;
 
 import ch.fhnw.shakethelakebackend.model.dto.CreateEventDto;
 import ch.fhnw.shakethelakebackend.model.dto.EventDto;
-import ch.fhnw.shakethelakebackend.service.CsvService;
 import ch.fhnw.shakethelakebackend.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -32,7 +31,6 @@ import java.util.Optional;
 @RequestMapping("/event")
 public class EventController {
 
-    private final CsvService csvService;
     private final EventService eventService;
 
     @Operation(summary = "Create an event", description = "Creates an event")
