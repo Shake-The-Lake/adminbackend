@@ -33,6 +33,12 @@ public class BookingController {
 
     private final BookingService bookingService;
 
+    /**
+     * Create a booking
+     *
+     * @param booking the booking to create
+     * @return the created booking
+     */
     @Operation(summary = "Create a booking", description = "Creates a booking")
     @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Successfully created a booking"),
         @ApiResponse(responseCode = "404", description = "Related Entity not found", content = @Content(
@@ -43,6 +49,13 @@ public class BookingController {
         return bookingService.createBooking(booking);
     }
 
+    /**
+     * Get a booking by id
+     *
+     * @param id the id of the booking
+     * @param expand expand the response with more details from related objects
+     * @return the booking
+     */
     @Operation(summary = "Get a booking by id", description = "Returns a booking as per the id", parameters = {
         @Parameter(name = "expand", description = "Expand the response with more details from related objects",
             required = false, example = "person,timeSlot,timeSlot.boat", schema = @Schema(type = "string")) })
@@ -54,6 +67,13 @@ public class BookingController {
         return bookingService.getBookingWithDetails(id, expand);
     }
 
+    /**
+     * Update a booking by id
+     *
+     * @param id the id of the booking
+     * @param booking the booking to update
+     * @return the updated booking
+     */
     @Operation(summary = "Update a booking by id", description = "Updates a booking as per the id")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully updated a booking by id"),
         @ApiResponse(responseCode = "404", description = "Related entity not found", content = @Content(
@@ -63,6 +83,11 @@ public class BookingController {
         return bookingService.updateBooking(id, booking);
     }
 
+    /**
+     * Delete a booking by id
+     *
+     * @param id the id of the booking
+     */
     @Operation(summary = "Delete a booking by id", description = "Deletes a booking as per the id")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully deleted a booking by id"),
         @ApiResponse(responseCode = "404", description = "Related entity not found", content = @Content(
@@ -73,6 +98,11 @@ public class BookingController {
         bookingService.deleteBooking(id);
     }
 
+    /**
+     * Get all bookings
+     *
+     * @return all bookings
+     */
     @Operation(summary = "Get all bookings", description = "Returns all bookings")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully retrieved all bookings") })
     @GetMapping()

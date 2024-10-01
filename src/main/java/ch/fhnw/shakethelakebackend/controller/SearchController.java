@@ -28,6 +28,12 @@ public class SearchController {
 
     private final SearchService searchService;
 
+    /**
+     * Get search filter parameters
+     *
+     * @param eventId the id of the event
+     * @return the search filter parameters
+     */
     @Operation(summary = "Get search filter parameters", description = "Returns all search filter parameters")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successfully retrieved all search filter parameters") })
@@ -36,6 +42,17 @@ public class SearchController {
         return searchService.getSearchParameters(eventId);
     }
 
+    /**
+     * Get bookings by search
+     *
+     * @param eventId the id of the event
+     * @param personName the person name
+     * @param boatId the boat id
+     * @param from the date from
+     * @param to the date to
+     * @param activityId the activity id
+     * @return the bookings
+     */
     @Operation(summary = "Search bookings", description = "Returns find bookings", parameters = {
         @Parameter(name = "personName", description = "Search by person name", required = false,
             example = "John", schema = @Schema(type = "string")),

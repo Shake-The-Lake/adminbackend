@@ -24,6 +24,11 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ *
+ * Service for events
+ *
+ */
 @Service
 @AllArgsConstructor
 public class EventService {
@@ -34,23 +39,51 @@ public class EventService {
     private final ActivityTypeMapper activityTypeMapper;
     private final Expander expander;
 
+    /**
+     * Get an event by id
+     *
+     * @param id of the event
+     * @return EventDto with the given id
+     */
     public EventDto getEventDto(Long id) {
         Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(EVENT_NOT_FOUND));
         return eventMapper.toDto(event);
     }
 
+    /**
+     * Get an event by id
+     *
+     * @param id of the event
+     * @return Event with the given id
+     */
     public Event getEvent(Long id) {
         return eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(EVENT_NOT_FOUND));
     }
 
+    /**
+     * Get all events
+     *
+     * @return List of all events
+     */
     public List<EventDto> getAllEvents() {
         return eventRepository.findAll().stream().map(eventMapper::toDto).toList();
     }
 
+    /**
+     * Get all event entities
+     *
+     * @return List of all event entities
+     */
     public List<Event> getAllEventEntities() {
         return eventRepository.findAll();
     }
 
+    /**
+     * Create a new event
+     *
+     * @param createEventDto to create a new event
+     * @return EventDto created from the given CreateEventDto
+     */
     public EventDto createEvent(CreateEventDto createEventDto) {
         //TODO; location not mvp
         // Location location = locationRepository.save(createEventDto.getLocationId());
@@ -76,6 +109,13 @@ public class EventService {
         return eventMapper.toDto(event);
     }
 
+    /**
+     * Update an event
+     *
+     * @param id of the event
+     * @param createEventDto to update the event
+     * @return EventDto updated from the given CreateEventDto
+     */
     public EventDto updateEvent(Long id, CreateEventDto createEventDto) {
         if (!eventRepository.existsById(id)) {
             throw new EntityNotFoundException(EVENT_NOT_FOUND);
@@ -91,12 +131,24 @@ public class EventService {
 
     }
 
+    /**
+     * Delete an event
+     *
+     * @param id of the event to delete
+     */
     @Transactional
     public void deleteEvent(Long id) {
         Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(EVENT_NOT_FOUND));
         eventRepository.delete(event);
     }
 
+    /**
+     * Get an event with details
+     *
+     * @param id of the event
+     * @param expand optional parameter to expand the event
+     * @return EventDto with the given id and expanded
+     */
     public EventDto getEventWithDetails(Long id, Optional<String> expand) {
         Event event = getEvent(id);
         EventDto eventDto = eventMapper.toDto(event);

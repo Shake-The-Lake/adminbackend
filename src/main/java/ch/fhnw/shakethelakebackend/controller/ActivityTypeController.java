@@ -31,6 +31,11 @@ public class ActivityTypeController {
 
     private final ActivityTypeService activityTypeService;
 
+    /**
+     * Get all activity types
+     *
+     * @return all activity types
+     */
     @Operation(summary = "Get all activity types", description = "Returns all activity types")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successfully retrieved all activity types") })
@@ -39,6 +44,12 @@ public class ActivityTypeController {
         return activityTypeService.getAllActivityTypes();
     }
 
+    /**
+     * Get an activity type by id
+     *
+     * @param id the id of the activity type
+     * @return the activity type
+     */
     @Operation(summary = "Get an activity type by id", description = "Returns an activity type as per the id")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successfully retrieved an activity type by id"),
@@ -51,6 +62,12 @@ public class ActivityTypeController {
             id);
     }
 
+    /**
+     * Create an activity type
+     *
+     * @param createActivityTypeDto the activity type to create
+     * @return the created activity type
+     */
     @Operation(summary = "Create an activity type", description = "Creates an activity type")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Successfully created an activity type"),
@@ -64,6 +81,13 @@ public class ActivityTypeController {
             createActivityTypeDto);
     }
 
+    /**
+     * Update an activity type
+     *
+     * @param id the id of the activity type
+     * @param createActivityTypeDto the activity type to update
+     * @return the updated activity type
+     */
     @Operation(summary = "Update an activity type", description = "Updates an activity type")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successfully updated an activity type"),
@@ -76,6 +100,11 @@ public class ActivityTypeController {
             id, createActivityTypeDto);
     }
 
+    /**
+     * Delete an activity type
+     *
+     * @param id the id of the activity type
+     */
     @Operation(summary = "Delete an activity type", description = "Deletes an activity type")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successfully deleted an activity type"),

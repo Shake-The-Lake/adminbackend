@@ -15,9 +15,20 @@ import org.mapstruct.ReportingPolicy;
 
 public interface SearchMapper {
 
-    // Must be mapped otherwise mapper is trying to get the boat from timeSlot
+    /**
+     *
+     * Maps the Search entity to the SearchDto
+     *
+     * @param boat to be mapped
+     * @param person to be mapped
+     * @param timeSlot to be mapped
+     * @param activityType to be mapped
+     * @param booking to be mapped
+     * @return the mapped SearchDto
+     */
     @Mapping(target = "boat", source = "boat")
     @Mapping(target = "person", source = "person")
+    // Must be mapped otherwise mapper is trying to get the boat from timeSlot
     @Mapping(target = "timeSlot", source = "timeSlot")
     @Mapping(target = "activityType", source = "activityType")
     @Mapping(target = "booking", source = "booking")

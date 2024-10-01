@@ -15,12 +15,26 @@ import java.util.stream.Collectors;
     uses = { BoatMapper.class })
 public interface TimeSlotExtendedMapper {
 
+    /**
+     *
+     * Maps the TimeSlot entity to the TimeSlotDto
+     *
+     * @param timeSlot to be mapped
+     * @return the mapped TimeSlotDto
+     */
     @ToDtoExtended
     @Mapping(target = "boatId", expression = "java(timeSlot.getBoat().getId())")
     @Mapping(target = "bookingIds", expression = "java(bookingsToBookingIds(timeSlot.getBookings()))")
     @Mapping(target = "boat", qualifiedBy = ToDtoDefault.class)
     TimeSlotDto toDtoWithBoat(TimeSlot timeSlot);
 
+    /**
+     *
+     * Maps Bookings to Booking ids
+     *
+     * @param bookings to be mapped
+     * @return the mapped booking ids
+     */
     default Set<Long> bookingsToBookingIds(Set<Booking> bookings) {
         return bookings.stream().map(Booking::getId).collect(Collectors.toSet());
     }
