@@ -5,9 +5,12 @@ import ch.fhnw.shakethelakebackend.model.dto.TimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.Booking;
 import ch.fhnw.shakethelakebackend.model.entity.TimeSlot;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.Set;
@@ -36,6 +39,9 @@ public interface TimeSlotMapper {
     @Mapping(target = "activityType", ignore = true)
     @Mapping(target = "bookings", ignore = true)
     TimeSlotDto toDto(TimeSlot timeSlot);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
+    void update(CreateTimeSlotDto createTimeSlotDto, @MappingTarget TimeSlot timeSlot);
 
     default long getAvailableSeats(TimeSlot timeSlot, Boat boat) {
         int totalSeats = boat.getSeatsViewer() + boat.getSeatsRider();
