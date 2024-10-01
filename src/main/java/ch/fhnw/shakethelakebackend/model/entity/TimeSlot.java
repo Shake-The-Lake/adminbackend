@@ -22,6 +22,11 @@ import java.time.LocalTime;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ *
+ * Entity for time slots
+ *
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity

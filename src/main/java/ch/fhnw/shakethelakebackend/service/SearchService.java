@@ -24,6 +24,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ *
+ * Service for search
+ *
+ */
 @Service
 @AllArgsConstructor
 public class SearchService {
@@ -39,6 +44,12 @@ public class SearchService {
 
     private final EventService eventService;
 
+    /**
+     * Get search parameters for the given event
+     *
+     * @param eventId of the event
+     * @return SearchParameterDto for the given event
+     */
     public SearchParameterDto getSearchParameters(Long eventId) {
         Event event = eventService.getEvent(eventId);
 
@@ -49,6 +60,17 @@ public class SearchService {
         return searchParameterMapper.toDto(boatDtos, activityTypeDtos);
     }
 
+    /**
+     * Get search results for the given parameters
+     *
+     * @param eventId of the event
+     * @param personName to search for
+     * @param boatId to search for
+     * @param from time to search for
+     * @param to time to search for
+     * @param activity to search for
+     * @return List of SearchDto for the given parameters
+     */
     public List<SearchDto> getSearch(Long eventId, Optional<String> personName, Optional<Long> boatId,
             Optional<LocalTime> from, Optional<LocalTime> to, Optional<Long> activity) {
         List<SearchDto> searchDtos = List.of();

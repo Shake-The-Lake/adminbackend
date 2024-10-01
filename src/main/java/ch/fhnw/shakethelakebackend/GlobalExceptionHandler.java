@@ -14,8 +14,17 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class handles exceptions that are thrown by the application.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    /**
+     * Handles the MethodArgumentNotValidException and returns a response entity with the errors.
+     * @param ex the exception that is thrown
+     * @return a response entity with the errors
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
@@ -26,23 +35,43 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Handles the HttpMessageNotReadableException and returns a response entity with the error message.
+     * @param e the exception that is thrown
+     * @return a response entity with the error message
+     */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ResponseEntity<String> handleHttpMessageNotReadable(HttpMessageNotReadableException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Handles the EntityNotFoundException and returns a response entity with the error message.
+     * @param e the exception that is thrown
+     * @return a response entity with the error message
+     */
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<String> handleEntityNotFound(EntityNotFoundException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    /**
+     * Handles the IllegalArgumentException and returns a response entity with the error message.
+     * @param e the exception that is thrown
+     * @return a response entity with the error message
+     */
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Handles the DataIntegrityViolationException and returns a response entity with the error message.
+     * @param ex the exception that is thrown
+     * @return a response entity with the error message
+     */
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Object> handleConstraintViolation(DataIntegrityViolationException ex) {
         if (ex.getCause() instanceof ConstraintViolationException) {
@@ -51,6 +80,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMostSpecificCause().getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
+    /**
+     * Handles the Exception and returns a response entity with the error message.
+     * @param ex the exception that is thrown
+     * @return a response entity with the error message
+     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleInternalErrors(Exception ex) {
         System.out.println(ex.getMessage()); //TODO: replace with logging

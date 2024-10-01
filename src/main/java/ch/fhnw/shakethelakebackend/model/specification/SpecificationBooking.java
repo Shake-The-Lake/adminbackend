@@ -11,9 +11,19 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalTime;
 
+/**
+ *
+ * Specification for booking
+ *
+ */
 @AllArgsConstructor
 public class SpecificationBooking implements Specification<Booking> {
 
+    /**
+     *
+     * Search criteria
+     *
+     */
     public static class SearchCriteria {
         private final String key;
         private final String operation;
@@ -28,10 +38,28 @@ public class SpecificationBooking implements Specification<Booking> {
 
     private SearchCriteria criteria;
 
+    /**
+     *
+     * Create a new specification booking
+     *
+     * @param key of the search criteria
+     * @param operation of the search criteria
+     * @param value of the search criteria
+     */
     public SpecificationBooking(String key, String operation, Object value) {
         criteria = new SearchCriteria(key, operation, value);
     }
 
+    /**
+     *
+     * Create a new specification booking
+     *
+     * @param root of the booking
+     * @param query of the booking
+     * @param builder of the booking
+     * @return Predicate for the booking
+     */
+    @Override
     public Predicate toPredicate(Root<Booking> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
         Path<?> path = root;
         for (String part : criteria.key.split("\\.")) {

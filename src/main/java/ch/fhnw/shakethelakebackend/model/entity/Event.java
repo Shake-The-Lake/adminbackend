@@ -17,6 +17,11 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.Set;
 
+/**
+ *
+ * Entity for events
+ *
+ */
 @Entity
 @Table(name = "event")
 @AllArgsConstructor

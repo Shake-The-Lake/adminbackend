@@ -16,6 +16,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ *
+ * Entity for activity types
+ *
+ */
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
