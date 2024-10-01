@@ -22,6 +22,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ *
+ * Service for bookings
+ *
+ */
 @AllArgsConstructor
 @Service
 public class BookingService {
@@ -37,7 +42,13 @@ public class BookingService {
     private final TimeSlotMapper timeSlotMapper;
     private final TimeSlotExtendedMapper timeSlotExtendedMapper;
 
-    // Check if there is a seat available for the booking otherwise throw an exception
+    /**
+     *
+     * Check if there is a seat available for the booking otherwise throw an exception
+     *
+     * @param booking to be added
+     * @param timeSlot to check the seats
+     */
     private void checkSeatsBooking(Booking booking, TimeSlot timeSlot) {
         Set<Booking> bookings = timeSlot.getBookings();
         Boat boat = timeSlot.getBoat();
@@ -52,6 +63,13 @@ public class BookingService {
         }
     }
 
+    /**
+     *
+     * Create a new booking
+     *
+     * @param bookingDto to create a new booking
+     * @return BookingDto created from the given CreateBookingDto
+     */
     public BookingDto createBooking(CreateBookingDto bookingDto) {
         Booking booking = bookingMapper.toEntity(bookingDto);
 
@@ -72,20 +90,48 @@ public class BookingService {
         return bookingMapper.toDto(booking);
     }
 
+    /**
+     *
+     * Get a booking by id
+     *
+     * @param id of the booking
+     * @return Booking with the given id
+     */
     public Booking getBooking(Long id) {
         return bookingRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(BOOKING_NOT_FOUND));
     }
 
+    /**
+     *
+     * Get a booking by id
+     *
+     * @param id of the booking
+     * @return BookingDto with the given id
+     */
     public BookingDto getBookingDto(Long id) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(BOOKING_NOT_FOUND));
         return bookingMapper.toDto(booking);
     }
 
+    /**
+     *
+     * Get all bookings
+     *
+     * @return List of all bookings
+     */
     public List<BookingDto> getAllBookings() {
         return bookingRepository.findAll().stream().map(bookingMapper::toDto).collect(Collectors.toList());
     }
 
+    /**
+     *
+     * Update a booking
+     *
+     * @param id of the booking
+     * @param bookingDto to update the booking
+     * @return BookingDto updated from the given CreateBookingDto
+     */
     public BookingDto updateBooking(Long id, CreateBookingDto bookingDto) {
         Booking booking = bookingMapper.toEntity(bookingDto);
 
@@ -108,12 +154,26 @@ public class BookingService {
         return bookingMapper.toDto(booking);
     }
 
+    /**
+     *
+     * Delete a booking
+     *
+     * @param id of the booking to delete
+     */
     public void deleteBooking(Long id) {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(BOOKING_NOT_FOUND));
         bookingRepository.delete(booking);
     }
 
+    /**
+     *
+     * Get a booking by id with details
+     *
+     * @param id of the booking
+     * @param expand to expand the details
+     * @return BookingDto with the given id and details
+     */
     public BookingDto getBookingWithDetails(Long id, Optional<String> expand) {
         Booking booking = getBooking(id);
         BookingDto bookingDto = bookingMapper.toDto(booking);

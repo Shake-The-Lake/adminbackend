@@ -17,6 +17,11 @@ import lombok.Setter;
 
 import java.util.Set;
 
+/**
+ *
+ * Entity for persons
+ *
+ */
 @Entity
 @Table(name = "person")
 @AllArgsConstructor

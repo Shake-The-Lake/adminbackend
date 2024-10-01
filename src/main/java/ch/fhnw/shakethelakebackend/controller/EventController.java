@@ -33,6 +33,12 @@ public class EventController {
 
     private final EventService eventService;
 
+    /**
+     * Create an event
+     *
+     * @param createEventDto the event to create
+     * @return the created event
+     */
     @Operation(summary = "Create an event", description = "Creates an event")
     @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Successfully created an Event") })
     @ResponseStatus(HttpStatus.CREATED)
@@ -41,6 +47,13 @@ public class EventController {
         return eventService.createEvent(createEventDto);
     }
 
+    /**
+     * Get an event by id
+     *
+     * @param id the id of the event
+     * @param expand expand the response with more details from related objects
+     * @return the event
+     */
     @Operation(summary = "Get an event by id", description = "Returns an event as per the id", parameters = {
         @Parameter(name = "expand", description = "Expand the response with more details from related objects",
             required = false,
@@ -55,6 +68,11 @@ public class EventController {
         return eventService.getEventWithDetails(id, expand);
     }
 
+    /**
+     * Get all events
+     *
+     * @return all events
+     */
     @Operation(summary = "Get all events", description = "Returns all events")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully retrieved all events") })
     @GetMapping()
@@ -62,6 +80,11 @@ public class EventController {
         return eventService.getAllEvents();
     }
 
+    /**
+     * Delete an event by id
+     *
+     * @param id the id of the event
+     */
     @Operation(summary = "Delete an event by id", description = "Deletes an event as per the id")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully deleted an event by id"),
         @ApiResponse(responseCode = "409", description = "This is still related to other entites") })
@@ -70,6 +93,13 @@ public class EventController {
         eventService.deleteEvent(id);
     }
 
+    /**
+     * Update an event by id
+     *
+     * @param id the id of the event
+     * @param createEventDto the event to update
+     * @return the updated event
+     */
     @Operation(summary = "Update an event by id", description = "Updates an event as per the id")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully updated an event by id"),
         @ApiResponse(responseCode = "404", description = EventService.EVENT_NOT_FOUND,

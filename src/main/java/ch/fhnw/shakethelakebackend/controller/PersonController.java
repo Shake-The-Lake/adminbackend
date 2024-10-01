@@ -31,6 +31,12 @@ import java.util.List;
 public class PersonController {
     private final PersonService personService;
 
+    /**
+     * Get a person by id
+     *
+     * @param id the id of the person
+     * @return the person
+     */
     @Operation(summary = "Get a person by id", description = "Returns a person as per the id")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successfully retrieved a person by id"),
@@ -41,6 +47,12 @@ public class PersonController {
         return personService.getPersonDto(id);
     }
 
+    /**
+     * Create a person
+     *
+     * @param createPersonDto the person to create
+     * @return the created person
+     */
     @Operation(summary = "Create a person", description = "Creates a person")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "201", description = "Successfully created a person") })
@@ -50,6 +62,13 @@ public class PersonController {
         return personService.createPerson(createPersonDto);
     }
 
+    /**
+     * Update a person by id
+     *
+     * @param id the id of the person
+     * @param createPersonDto the person to update
+     * @return the updated person
+     */
     @Operation(summary = "Update a person by id", description = "Updates a person as per the id")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successfully updated a person by id"),
@@ -61,6 +80,11 @@ public class PersonController {
         return personService.updatePerson(id, createPersonDto);
     }
 
+    /**
+     * Delete a person by id
+     *
+     * @param id the id of the person
+     */
     @Operation(summary = "Delete a person by id", description = "Deletes a person as per the id")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successfully deleted a person by id"),
@@ -72,6 +96,11 @@ public class PersonController {
         personService.deletePerson(id);
     }
 
+    /**
+     * Get all persons
+     *
+     * @return all persons
+     */
     @Operation(summary = "Get all persons", description = "Returns all persons")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Successfully retrieved all persons") })
