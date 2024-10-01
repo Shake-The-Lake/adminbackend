@@ -40,9 +40,6 @@ public interface TimeSlotMapper {
     @Mapping(target = "bookings", ignore = true)
     TimeSlotDto toDto(TimeSlot timeSlot);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
-    void update(CreateTimeSlotDto createTimeSlotDto, @MappingTarget TimeSlot timeSlot);
-
     default long getAvailableSeats(TimeSlot timeSlot, Boat boat) {
         int totalSeats = boat.getSeatsViewer() + boat.getSeatsRider();
         Set<Booking> bookings = timeSlot.getBookings();

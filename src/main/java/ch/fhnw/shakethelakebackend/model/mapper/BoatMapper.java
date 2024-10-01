@@ -25,9 +25,6 @@ public interface BoatMapper {
     @Mapping(target = "event.id", source = "eventId")
     Boat toEntity(CreateBoatDto createBoatDto);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
-    void update(CreateBoatDto createBoatDto, @MappingTarget Boat boat);
-
     @ToDtoDefault
     @Mapping(target = "timeSlotIds", expression = "java(timeSlotsToTimeSlotIds(boat.getTimeSlots()))")
     @Mapping(target = "eventId", source = "event.id")

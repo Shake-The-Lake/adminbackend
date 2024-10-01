@@ -24,6 +24,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ *
+ * Service for time slots
+ *
+ */
 @AllArgsConstructor
 @Service
 public class TimeSlotService {
@@ -39,6 +44,12 @@ public class TimeSlotService {
     private final ActivityTypeMapper activityTypeMapper;
     private final ActivityTypeService activityTypeService;
 
+    /**
+     * Create a new time slot
+     *
+     * @param timeSlotDto to create a new time slot
+     * @return TimeSlotDto created from the given CreateTimeSlotDto
+     */
     public TimeSlotDto createTimeSlot(CreateTimeSlotDto timeSlotDto) {
         TimeSlot timeSlot = timeSlotMapper.toEntity(timeSlotDto);
         ActivityType activityType = activityTypeService.getActivityType(timeSlotDto.getActivityTypeId());
@@ -58,6 +69,13 @@ public class TimeSlotService {
         return timeSlotMapper.toDto(timeSlot);
     }
 
+    /**
+     * Update a time slot
+     *
+     * @param id of the time slot to update
+     * @param timeSlotDto to update the time slot
+     * @return TimeSlotDto updated from the given CreateTimeSlotDto
+     */
     public TimeSlotDto updateTimeSlot(long id, CreateTimeSlotDto timeSlotDto) {
         if (!timeSlotRepository.existsById(id)) {
             throw new EntityNotFoundException(TIMESLOT_NOT_FOUND);
@@ -76,6 +94,11 @@ public class TimeSlotService {
         return timeSlotMapper.toDto(timeSlot);
     }
 
+    /**
+     * Delete a time slot
+     *
+     * @param id of the time slot to delete
+     */
     public void deleteTimeSlot(Long id) {
         if (!timeSlotRepository.existsById(id)) {
             throw new EntityNotFoundException(TIMESLOT_NOT_FOUND);
@@ -84,10 +107,22 @@ public class TimeSlotService {
         timeSlotRepository.deleteById(id);
     }
 
+    /**
+     * Get a time slot by id
+     *
+     * @param id of the time slot
+     * @return TimeSlot with the given id
+     */
     public TimeSlot getTimeSlot(Long id) {
         return timeSlotRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(TIMESLOT_NOT_FOUND));
     }
 
+    /**
+     * Get a time slot by id
+     *
+     * @param id of the time slot
+     * @return TimeSlotDto with the given id
+     */
     public TimeSlotDto getTimeSlotDto(Long id) {
         TimeSlot timeSlot = timeSlotRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(TIMESLOT_NOT_FOUND));
@@ -96,10 +131,22 @@ public class TimeSlotService {
 
     }
 
+    /**
+     * Get all time slots
+     *
+     * @return List of all time slots
+     */
     public List<TimeSlotDto> getAllTimeSlots() {
         return timeSlotRepository.findAll().stream().map(timeSlotMapper::toDto).collect(Collectors.toList());
     }
 
+    /**
+     * Get all time slots with details
+     *
+     * @param id of the time slot
+     * @param expand optional parameter to expand the details
+     * @return List of all time slots with details
+     */
     public TimeSlotDto getTimeSlotDto(Long id, Optional<String> expand) {
         TimeSlot timeSlot = getTimeSlot(id);
         TimeSlotDto timeSlotDto = getTimeSlotDto(id);
@@ -123,6 +170,13 @@ public class TimeSlotService {
         return timeSlotDto;
     }
 
+    /**
+     * Get all time slots
+     *
+     * @param expand optional parameter to expand the details
+     * @param eventId of the event
+     * @return List of all time slots with details
+     */
     public List<TimeSlotDto> getAllTimeSlots(Optional<String> expand, Optional<Long> eventId) {
         return timeSlotRepository.findAll()
                 .stream()

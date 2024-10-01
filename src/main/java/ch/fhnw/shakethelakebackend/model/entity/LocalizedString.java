@@ -6,6 +6,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ *
+ * Entity for localized strings
+ *
+ */
 @AllArgsConstructor
 @Embeddable
 @NoArgsConstructor

@@ -17,6 +17,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * Security configuration
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -42,6 +45,12 @@ public class SecurityConfig {
     @Value("${EMPLOYEE_PW:employee}")
     private String employeePassword;
 
+    /**
+     * Create user details service
+     *
+     * @param encoder the password encoder
+     * @return the user details service
+     */
     @Bean
     public UserDetailsService userDetailsService(PasswordEncoder encoder) {
 
@@ -57,6 +66,13 @@ public class SecurityConfig {
         return new InMemoryUserDetailsManager(userAdmin, userCustomer, userEmployee);
     }
 
+    /**
+     * Create security filter chain
+     *
+     * @param http the http security
+     * @return the security filter chain
+     * @throws Exception if an error occurs
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(
@@ -71,6 +87,11 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults()).csrf(AbstractHttpConfigurer::disable).build();
     }
 
+    /**
+     * Create password encoder
+     *
+     * @return the password encoder
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

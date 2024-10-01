@@ -18,6 +18,11 @@ import lombok.Setter;
 
 import java.util.Objects;
 
+/**
+ *
+ * Entity for bookings
+ *
+ */
 @Entity
 @Table(name = "booking")
 @Builder

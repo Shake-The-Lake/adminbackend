@@ -13,9 +13,24 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = MappingConstants.ComponentModel.SPRING)
 public interface ActivityTypeMapper {
+
+    /**
+     *
+     * Maps the CreateActivityTypeDto to the ActivityType entity
+     *
+     * @param createActivityTypeDto to be mapped
+     * @return the mapped ActivityType entity
+     */
     @Mapping(source = "eventId", target = "event.id")
     ActivityType toEntity(CreateActivityTypeDto createActivityTypeDto);
 
+    /**
+     *
+     * Maps the ActivityType entity to the ActivityTypeDto
+     *
+     * @param activityType to be mapped
+     * @return the mapped ActivityTypeDto
+     */
     @Mapping(source = "event.id", target = "eventId")
     ActivityTypeDto toDto(ActivityType activityType);
 
