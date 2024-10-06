@@ -30,6 +30,10 @@ public interface EventMapper {
     @Mapping(target = "activityTypes", ignore = true)
     EventDto toDto(Event event);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
+    void update(CreateEventDto createEventDto, @MappingTarget Event event);
+
+
     default Set<Long> mapActivityTypesToIds(Set<ActivityType> activityTypes) {
         return activityTypes.stream().map(ActivityType::getId).collect(Collectors.toSet());
     }

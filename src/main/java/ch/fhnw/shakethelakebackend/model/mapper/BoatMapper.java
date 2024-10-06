@@ -31,6 +31,9 @@ public interface BoatMapper {
     @Mapping(target = "timeSlots", ignore = true)
     BoatDto toDto(Boat boat);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
+    void update(CreateBoatDto createBoatDto, @MappingTarget Boat boat);
+
 
     @Mapping(target = "timeSlotIds", expression = "java(timeSlotsToTimeSlotIds(boat.getTimeSlots()))")
     @Mapping(target = "timeSlots", qualifiedBy = ToDtoDefault.class)

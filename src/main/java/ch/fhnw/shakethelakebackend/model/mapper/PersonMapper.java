@@ -26,6 +26,9 @@ public interface PersonMapper {
     @Mapping(target = "bookingIds", expression = "java(bookingsToBookingIds(person.getBookings()))")
     PersonDto toDto(Person person);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
+    void update(CreatePersonDto createPersonDto, @MappingTarget Person person);
+
     default List<Long> boatsToBoatIds(List<Boat> boats) {
         return boats.stream().map(Boat::getId).toList();
     }
