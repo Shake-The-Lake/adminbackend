@@ -121,13 +121,10 @@ public class EventService {
             throw new EntityNotFoundException(EVENT_NOT_FOUND);
         }
 
-        Event oldEvent = getEvent(id);
-        Event updateEvent = eventMapper.toEntity(createEventDto);
-        updateEvent.setId(id);
-        updateEvent.setBoats(oldEvent.getBoats());
-        updateEvent.setActivityTypes(oldEvent.getActivityTypes());
-        eventRepository.save(updateEvent);
-        return eventMapper.toDto(updateEvent);
+        Event event = getEvent(id);
+        eventMapper.update(createEventDto, event);
+        eventRepository.save(event);
+        return eventMapper.toDto(event);
 
     }
 

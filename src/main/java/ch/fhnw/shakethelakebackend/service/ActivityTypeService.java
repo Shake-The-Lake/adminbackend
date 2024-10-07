@@ -100,12 +100,12 @@ public class ActivityTypeService {
         if (!activityTypeRepository.existsById(id)) {
             throw new EntityNotFoundException(ACTIVITY_TYPE_NOT_FOUND);
         }
-        ActivityType updateActivityType = activityTypeMapper.toEntity(createActivityTypeDto);
+        ActivityType activityType = getActivityType(id);
         Event event = eventService.getEvent(createActivityTypeDto.getEventId());
-        updateActivityType.setEvent(event);
-        updateActivityType.setId(id);
-        activityTypeRepository.save(updateActivityType);
-        return activityTypeMapper.toDto(updateActivityType);
+        activityTypeMapper.update(createActivityTypeDto, activityType);
+        activityType.setEvent(event);
+        activityTypeRepository.save(activityType);
+        return activityTypeMapper.toDto(activityType);
     }
 
     /**

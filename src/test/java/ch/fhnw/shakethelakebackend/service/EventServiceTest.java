@@ -104,7 +104,6 @@ class EventServiceTest {
         when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
         when(eventRepository.save(event)).thenReturn(event);
         when(eventMapper.toDto(event)).thenReturn(eventDto);
-        when(eventMapper.toEntity(any())).thenReturn(event);
 
         EventDto result = eventService.updateEvent(1L, CreateEventDto.builder().build());
 

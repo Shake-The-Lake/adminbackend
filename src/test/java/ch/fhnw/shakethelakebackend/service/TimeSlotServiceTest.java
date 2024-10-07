@@ -95,7 +95,6 @@ class TimeSlotServiceTest {
     @Test
     void testUpdateTimeSlot() {
         when(timeSlotRepository.existsById(1L)).thenReturn(true);
-        when(timeSlotMapper.toEntity(any(CreateTimeSlotDto.class))).thenReturn(timeSlot);
         when(timeSlotMapper.toDto(any(TimeSlot.class))).thenReturn(timeSlotDto);
         when(timeSlotRepository.findById(1L)).thenReturn(Optional.of(timeSlot));
         when(activityTypeService.getActivityType(1L)).thenReturn(activityType);
@@ -104,7 +103,6 @@ class TimeSlotServiceTest {
         TimeSlotDto result = timeSlotService.updateTimeSlot(1L, createTimeSlotDto);
 
         assertEquals(timeSlotDto, result);
-
 
     }
 

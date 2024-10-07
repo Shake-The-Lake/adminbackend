@@ -46,10 +46,10 @@ public class PersonService {
         if (!personRepository.existsById(id)) {
             throw new EntityNotFoundException(PERSON_NOT_FOUND);
         }
-        Person updatePerson = personMapper.toEntity(createPersonDto);
-        updatePerson.setId(id);
-        personRepository.save(updatePerson);
-        return personMapper.toDto(updatePerson);
+        Person person = getPerson(id);
+        personMapper.update(createPersonDto, person);
+        personRepository.save(person);
+        return personMapper.toDto(person);
 
     }
 

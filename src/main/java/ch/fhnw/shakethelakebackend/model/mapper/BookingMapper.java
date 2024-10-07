@@ -3,9 +3,12 @@ package ch.fhnw.shakethelakebackend.model.mapper;
 import ch.fhnw.shakethelakebackend.model.dto.BookingDto;
 import ch.fhnw.shakethelakebackend.model.dto.CreateBookingDto;
 import ch.fhnw.shakethelakebackend.model.entity.Booking;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
@@ -39,5 +42,8 @@ public interface BookingMapper {
     @Mapping(target = "person", ignore = true)
     @Mapping(target = "timeSlot", ignore = true)
     BookingDto toDto(Booking booking);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
+    void update(CreateBookingDto createBookingDto, @MappingTarget Booking booking);
 
 }
