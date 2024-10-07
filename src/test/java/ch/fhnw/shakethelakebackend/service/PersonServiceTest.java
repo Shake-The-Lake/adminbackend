@@ -20,7 +20,6 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -78,9 +77,9 @@ class PersonServiceTest {
     void testUpdatePerson() {
         // Mocking repository method
         when(personRepository.existsById(1L)).thenReturn(true);
-        when(personMapper.toEntity(any())).thenReturn(person);
         when(personRepository.save(person)).thenReturn(person);
         when(personMapper.toDto(person)).thenReturn(personDto);
+        when(personRepository.findById(1L)).thenReturn(Optional.of(person));
 
         // Calling service method
         PersonDto updatedPersonDto = personService.updatePerson(1L, createPersonDto);

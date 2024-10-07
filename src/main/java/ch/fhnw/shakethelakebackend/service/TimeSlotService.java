@@ -7,7 +7,6 @@ import ch.fhnw.shakethelakebackend.model.dto.CreateTimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.dto.TimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.entity.ActivityType;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
-import ch.fhnw.shakethelakebackend.model.entity.Booking;
 import ch.fhnw.shakethelakebackend.model.entity.TimeSlot;
 import ch.fhnw.shakethelakebackend.model.mapper.ActivityTypeMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.BoatMapper;
@@ -73,23 +72,21 @@ public class TimeSlotService {
      * Update a time slot
      *
      * @param id of the time slot to update
-     * @param timeSlotDto to update the time slot
+     * @param createTimeSlotDto to update the time slot
      * @return TimeSlotDto updated from the given CreateTimeSlotDto
      */
-    public TimeSlotDto updateTimeSlot(long id, CreateTimeSlotDto timeSlotDto) {
+    public TimeSlotDto updateTimeSlot(long id, CreateTimeSlotDto createTimeSlotDto) {
         if (!timeSlotRepository.existsById(id)) {
             throw new EntityNotFoundException(TIMESLOT_NOT_FOUND);
         }
 
-        Set<Booking> bookings = getTimeSlot(id).getBookings();
-        TimeSlot timeSlot = timeSlotMapper.toEntity(timeSlotDto);
-        Boat boat = boatService.getBoat(timeSlotDto.getBoatId());
-        ActivityType activityType = activityTypeService.getActivityType(timeSlotDto.getActivityTypeId());
+        Boat boat = boatService.getBoat(createTimeSlotDto.getBoatId());
+        ActivityType activityType = activityTypeService.getActivityType(createTimeSlotDto.getActivityTypeId());
+        TimeSlot timeSlot = getTimeSlot(id);
 
+        timeSlotMapper.update(createTimeSlotDto, timeSlot);
         timeSlot.setActivityType(activityType);
-        timeSlot.setBookings(bookings);
         timeSlot.setBoat(boat);
-        timeSlot.setId(id);
         timeSlotRepository.save(timeSlot);
         return timeSlotMapper.toDto(timeSlot);
     }

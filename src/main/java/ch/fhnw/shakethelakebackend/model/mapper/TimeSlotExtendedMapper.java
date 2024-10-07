@@ -38,4 +38,5 @@ public interface TimeSlotExtendedMapper {
     default Set<Long> bookingsToBookingIds(Set<Booking> bookings) {
         return bookings.stream().map(Booking::getId).collect(Collectors.toSet());
     }
+
 }

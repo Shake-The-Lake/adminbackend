@@ -84,13 +84,11 @@ public class BoatService {
         }
 
         Event event = eventService.getEvent(createBoatDto.getEventId());
-        Boat newBoat = boatMapper.toEntity(createBoatDto);
-        Boat oldBoat = getBoat(id);
-        newBoat.setEvent(event);
-        newBoat.setId(id);
-        newBoat.setTimeSlots(oldBoat.getTimeSlots());
-        boatRepository.save(newBoat);
-        return boatMapper.toDto(newBoat);
+        Boat boat = getBoat(id);
+        boatMapper.update(createBoatDto, boat);
+        boat.setEvent(event);
+        boatRepository.save(boat);
+        return boatMapper.toDto(boat);
     }
 
     /**
