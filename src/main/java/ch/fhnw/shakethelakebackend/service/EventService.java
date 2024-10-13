@@ -9,6 +9,7 @@ import ch.fhnw.shakethelakebackend.model.mapper.ActivityTypeMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.BoatMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.EventMapper;
 import ch.fhnw.shakethelakebackend.model.repository.EventRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
@@ -16,6 +17,7 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -40,6 +42,16 @@ public class EventService {
     private final ActivityTypeMapper activityTypeMapper;
     private final Expander expander;
     private final JwtService jwtService;
+
+    private final ObjectMapper objectMapper;
+
+    @AllArgsConstructor
+    @Getter
+    static class QRCode {
+        private long eventId;
+        private String userName;
+        private String token;
+    }
 
     /**
      * Get an event by id
@@ -94,12 +106,12 @@ public class EventService {
         eventRepository.save(event);
         Date start = Date.from(event.getDate().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
         Date end = Date.from(event.getDate().atStartOfDay().plusDays(1).atZone(ZoneId.systemDefault()).toInstant());
-        String employeeCode = event.getId() + "-" + jwtService.generateToken("employee", start, end);
-        String customerCode = event.getId() + "-" + jwtService.generateToken("customer", start, end);
-        event.setEmployeeCode(employeeCode);
-        event.setCustomerCode(customerCode);
-        try {
+        QRCode qrCodeEmployee = new QRCode(event.getId(), "employee", jwtService.generateToken("employee", start, end));
+        QRCode qrCodeCustomer = new QRCode(event.getId(), "customer", jwtService.generateToken("customer", start, end));
 
+        try {
+            event.setEmployeeCode(objectMapper.writeValueAsString(qrCodeEmployee));
+            event.setCustomerCode(objectMapper.writeValueAsString(qrCodeCustomer));
             BitMatrix bitMatrix = qrCodeWriter.encode(event.getEmployeeCode(), BarcodeFormat.QR_CODE, 200, 200);
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             MatrixToImageWriter.writeToStream(bitMatrix, "PNG", bos);
