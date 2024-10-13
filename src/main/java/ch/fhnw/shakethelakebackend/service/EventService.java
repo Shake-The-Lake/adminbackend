@@ -9,6 +9,8 @@ import ch.fhnw.shakethelakebackend.model.mapper.ActivityTypeMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.BoatMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.EventMapper;
 import ch.fhnw.shakethelakebackend.model.repository.EventRepository;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
@@ -20,7 +22,9 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
+import java.time.ZoneId;
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +37,7 @@ public class EventService {
     private final BoatMapper boatMapper;
     private final ActivityTypeMapper activityTypeMapper;
     private final Expander expander;
+    private final JwtService jwtService;
 
     public EventDto getEventDto(Long id) {
         Event event = eventRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(EVENT_NOT_FOUND));
@@ -57,14 +62,19 @@ public class EventService {
         Event event = eventMapper.toEntity(createEventDto);
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         eventRepository.save(event);
+        Date start = Date.from(event.getDate().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+        Date end = Date.from(event.getDate().atStartOfDay().plusDays(1).atZone(ZoneId.systemDefault()).toInstant());
+        String EmployeeCode = event.getId() + "-" + jwtService.generateToken("employee", start, end);
+        String CustomerCode = event.getId() + "-" + jwtService.generateToken("customer", start, end);
+        event.setEmployeeCode(EmployeeCode);
+        event.setCustomerCode(CustomerCode);
         try {
-            event.setEmployeeCode(event.getId() + RandomStringUtils.random(16, true, true));
+
             BitMatrix bitMatrix = qrCodeWriter.encode(event.getEmployeeCode(), BarcodeFormat.QR_CODE, 200, 200);
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             MatrixToImageWriter.writeToStream(bitMatrix, "PNG", bos);
             event.setEmployeeBarcode(Base64.getEncoder().encodeToString(bos.toByteArray()));
 
-            event.setCustomerCode(event.getId() + RandomStringUtils.random(16, true, true));
             bitMatrix = qrCodeWriter.encode(event.getCustomerCode(), BarcodeFormat.QR_CODE, 200, 200);
             bos = new ByteArrayOutputStream();
             MatrixToImageWriter.writeToStream(bitMatrix, "PNG", bos);
