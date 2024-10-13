@@ -10,9 +10,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.lang.annotation.Target;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "app_user")

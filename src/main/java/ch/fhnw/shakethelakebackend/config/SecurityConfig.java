@@ -1,9 +1,8 @@
 package ch.fhnw.shakethelakebackend.config;
 
 import ch.fhnw.shakethelakebackend.filter.JwtAuthFilter;
-import ch.fhnw.shakethelakebackend.model.repository.UserRepository;
-import ch.fhnw.shakethelakebackend.service.UserService;
 import ch.fhnw.shakethelakebackend.model.entity.User;
+import ch.fhnw.shakethelakebackend.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,12 +38,10 @@ public class SecurityConfig {
     @Value("${ADMIN_PW:admin}")
     private String adminPassword;
 
-
     @Value("${CUSTOMER_NAME:customer}")
     private String customerName;
     @Value("${CUSTOMER_PW:customer}")
     private String customerPassword;
-
 
     @Value("${EMPLOYEE_NAME:employee}")
     private String employeeName;
@@ -54,7 +51,7 @@ public class SecurityConfig {
     /**
      * Create user details service
      *
-     * @param encoder the password encoder
+     * @param userService the user service
      * @return the user details service
      */
     @Bean
@@ -70,23 +67,37 @@ public class SecurityConfig {
     /**
      * Create security filter chain
      *
-     * @param http the http security
+     * @param http          the http security
+     * @param userService   the user service
+     * @param jwtAuthFilter the jwt auth filter
      * @return the security filter chain
      * @throws Exception if an error occurs
      */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, UserService userService, JwtAuthFilter jwtAuthFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, UserService userService,
+            JwtAuthFilter jwtAuthFilter) throws Exception {
         return http.authorizeHttpRequests(
                         authorizeHttpRequests -> authorizeHttpRequests
-                            .requestMatchers("/public/**", "/auth/**", "/swagger-ui/**", "v3/api-docs/**").permitAll()
-                            .requestMatchers(HttpMethod.GET, "/**").hasAnyRole(ADMIN, CUSTOMER, EMPLOYEE)
-                            .requestMatchers(HttpMethod.POST, "/booking").hasAnyRole(ADMIN, CUSTOMER, EMPLOYEE)
-                            .requestMatchers("/**").hasRole(ADMIN))
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement(
+                                .requestMatchers("/public/**", "/auth/**",
+                                        "/swagger-ui/**", "v3/api-docs/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/**")
+                                .hasAnyRole(ADMIN, CUSTOMER, EMPLOYEE).requestMatchers(HttpMethod.POST, "/booking")
+                                .hasAnyRole(ADMIN, CUSTOMER, EMPLOYEE).requestMatchers("/**").hasRole(ADMIN))
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class).sessionManagement(
                         sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider(userService))
-                .cors(Customizer.withDefaults()).csrf(AbstractHttpConfigurer::disable).build();
+                .authenticationProvider(authenticationProvider(userService)).cors(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable).build();
+    }
+
+    /**
+     * Create authentication manager
+     * @param config the authentication configuration
+     * @return the authentication manager
+     * @throws Exception if an error occurs
+     */
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 
     /**
@@ -95,15 +106,16 @@ public class SecurityConfig {
      * @return the password encoder
      */
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
-
-    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Create authentication provider
+     *
+     * @param userDetailsService the user details service
+     * @return the authentication provider
+     */
     @Bean
     public AuthenticationProvider authenticationProvider(UserService userDetailsService) {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();

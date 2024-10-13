@@ -6,6 +6,9 @@ import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 
+/**
+ * Swagger configuration
+ */
 @OpenAPIDefinition(
     info = @Info(title = "Shake The Lake Backend", version = "1.0"),
     security = @SecurityRequirement(name = "bearerAuth")
@@ -15,10 +18,6 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
         type = SecuritySchemeType.HTTP,
         scheme = "bearer"
 )
-/**
- * Swagger configuration
- */
-@OpenAPIDefinition(info = @Info(title = "Shake The Lake Backend", version = "1.0"))
 public class SwaggerConfig {
 
 }

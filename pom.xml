@@ -176,6 +176,7 @@
                         <exclude>ch/fhnw/shakethelakebackend/model/dto/**</exclude>
                         <exclude>ch/fhnw/shakethelakebackend/controller/**</exclude>
                         <exclude>ch/fhnw/shakethelakebackend/config/*</exclude>
+                        <exclude>ch/fhnw/shakethelakebackend/filter/*</exclude>
                         <exclude>ch/fhnw/shakethelakebackend/*.class</exclude>
                         <exclude>io/truongbn/github/jacoco/JacocoApplication.class</exclude>
                         <!-- FIXME remove this line -->
