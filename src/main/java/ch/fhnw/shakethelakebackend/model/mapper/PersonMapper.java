@@ -5,9 +5,12 @@ import ch.fhnw.shakethelakebackend.model.dto.PersonDto;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.Booking;
 import ch.fhnw.shakethelakebackend.model.entity.Person;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
@@ -22,6 +25,9 @@ public interface PersonMapper {
     @ToDtoDefault
     @Mapping(target = "bookingIds", expression = "java(bookingsToBookingIds(person.getBookings()))")
     PersonDto toDto(Person person);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
+    void update(CreatePersonDto createPersonDto, @MappingTarget Person person);
 
     default List<Long> boatsToBoatIds(List<Boat> boats) {
         return boats.stream().map(Boat::getId).toList();

@@ -10,6 +10,9 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * DTO for search parameters
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

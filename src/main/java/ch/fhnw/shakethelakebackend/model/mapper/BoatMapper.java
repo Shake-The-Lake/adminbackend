@@ -31,16 +31,14 @@ public interface BoatMapper {
     @Mapping(target = "timeSlots", ignore = true)
     BoatDto toDto(Boat boat);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
+    void update(CreateBoatDto createBoatDto, @MappingTarget Boat boat);
+
 
     @Mapping(target = "timeSlotIds", expression = "java(timeSlotsToTimeSlotIds(boat.getTimeSlots()))")
     @Mapping(target = "timeSlots", qualifiedBy = ToDtoDefault.class)
     @Mapping(target = "eventId", source = "event.id")
     BoatDto toDtoWithTimeSlots(Boat boat);
-
-    CreateBoatDto toCreateDto(Boat boat);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    Boat partialUpdate(BoatDto boatDto, @MappingTarget Boat boat);
 
     default Set<Long> timeSlotsToTimeSlotIds(Set<TimeSlot> timeSlots) {
         return timeSlots.stream().map(TimeSlot::getId).collect(Collectors.toSet());

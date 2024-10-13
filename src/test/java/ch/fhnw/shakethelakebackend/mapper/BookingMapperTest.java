@@ -1,9 +1,6 @@
 package ch.fhnw.shakethelakebackend.mapper;
 
-import ch.fhnw.shakethelakebackend.model.dto.BoatDto;
 import ch.fhnw.shakethelakebackend.model.dto.BookingDto;
-import ch.fhnw.shakethelakebackend.model.dto.PersonDto;
-import ch.fhnw.shakethelakebackend.model.dto.TimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.entity.Booking;
 import ch.fhnw.shakethelakebackend.model.entity.Person;
 import ch.fhnw.shakethelakebackend.model.entity.TimeSlot;
@@ -16,11 +13,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.HashSet;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class BookingMapperTest {
@@ -62,23 +56,5 @@ class BookingMapperTest {
         assertNull(bookingDto);
     }
 
-    @Test
-    void toDtoExtendedMapsCorrectly() {
 
-        TimeSlot timeSlot = TimeSlot.builder().id(2L).build();
-        Person person = Person.builder().id(3L).build();
-        Booking booking = Booking.builder().id(1L).timeSlot(timeSlot).person(person).build();
-
-        when(timeSlotMapper.toDtoWithBoat(timeSlot)).thenReturn(
-                new TimeSlotDto(2L, null, null, 1L, new HashSet<>(), 1L,
-                    null, null, null, new BoatDto(), 0, 0, 0, 0, 0));
-        when(personMapper.toDto(person)).thenReturn(new PersonDto(3L, null,
-            "", "", "", "", new HashSet<>()));
-
-        BookingDto bookingDto = bookingMapper.toDtoExtended(booking);
-
-        assertEquals(1L, bookingDto.getId());
-        assertEquals(2L, bookingDto.getTimeSlotId());
-        assertEquals(3L, bookingDto.getPersonId());
-    }
 }

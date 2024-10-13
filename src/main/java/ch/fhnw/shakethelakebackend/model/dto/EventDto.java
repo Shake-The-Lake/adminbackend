@@ -1,6 +1,5 @@
 package ch.fhnw.shakethelakebackend.model.dto;
 
-import ch.fhnw.shakethelakebackend.model.entity.Event;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -16,7 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * DTO for {@link Event}
+ * DTO for {@link ch.fhnw.shakethelakebackend.model.entity.Event}
  */
 @Setter
 @Getter

@@ -20,6 +20,11 @@ import lombok.Setter;
 import java.time.LocalTime;
 import java.util.Set;
 
+/**
+ *
+ * Entity for boats
+ *
+ */
 @Entity
 @Schema(hidden = true)
 @Table(name = "boat")

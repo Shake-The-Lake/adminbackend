@@ -62,8 +62,8 @@ class BoatServiceTest {
         boat.setOperator("John Doe");
 
         createBoatDto = new CreateBoatDto();
-        createBoatDto.setName("Odyssey");
-        createBoatDto.setType("Yacht");
+        createBoatDto.setName("NewOdyssey");
+        createBoatDto.setType("NewYacht");
 
         boatDto = new BoatDto();
         boatDto.setId(1L);
@@ -123,13 +123,11 @@ class BoatServiceTest {
         when(boatRepository.existsById(any())).thenReturn(true);
         when(boatRepository.findById(any())).thenReturn(Optional.of(boat));
         when(boatRepository.save(any())).thenReturn(boat);
-        when(boatMapper.toEntity(any())).thenReturn(boat);
         when(boatMapper.toDto(any())).thenReturn(boatDto);
 
         BoatDto result = boatService.updateBoat(5L, createBoatDto);
 
         assertEquals(boatDto, result);
-        assertEquals(5L, boat.getId());
         verify(boatRepository).save(boat);
     }
 

@@ -10,6 +10,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ *
+ * Entity for locations
+ *
+ */
 @Entity
 @Table(name = "location")
 @AllArgsConstructor

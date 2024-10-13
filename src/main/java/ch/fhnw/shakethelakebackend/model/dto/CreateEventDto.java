@@ -1,6 +1,5 @@
 package ch.fhnw.shakethelakebackend.model.dto;
 
-import ch.fhnw.shakethelakebackend.model.entity.Event;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +11,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
- * DTO for {@link Event}
+ * DTO for {@link ch.fhnw.shakethelakebackend.model.entity.Event}
  */
 @Setter
 @Getter

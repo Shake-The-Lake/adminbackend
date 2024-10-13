@@ -23,6 +23,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Security configuration
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -48,8 +51,12 @@ public class SecurityConfig {
     @Value("${EMPLOYEE_PW:employee}")
     private String employeePassword;
 
-
-
+    /**
+     * Create user details service
+     *
+     * @param encoder the password encoder
+     * @return the user details service
+     */
     @Bean
     public UserDetailsService userDetailsService(UserService userService) {
 
@@ -60,6 +67,13 @@ public class SecurityConfig {
         return userService;
     }
 
+    /**
+     * Create security filter chain
+     *
+     * @param http the http security
+     * @return the security filter chain
+     * @throws Exception if an error occurs
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, UserService userService, JwtAuthFilter jwtAuthFilter) throws Exception {
         return http.authorizeHttpRequests(
@@ -75,6 +89,11 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults()).csrf(AbstractHttpConfigurer::disable).build();
     }
 
+    /**
+     * Create password encoder
+     *
+     * @return the password encoder
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

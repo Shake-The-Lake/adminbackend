@@ -32,6 +32,12 @@ public class TimeSlotController {
 
     private final TimeSlotService timeSlotService;
 
+    /**
+     * Creates a time slot
+     *
+     * @param timeSlot the time slot to create
+     * @return the created time slot
+     */
     @Operation(summary = "Create a time slot", description = "Creates a time slot")
     @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Successfully created a timeslot"),
         @ApiResponse(responseCode = "404", description = "Related entity not found",
@@ -42,6 +48,13 @@ public class TimeSlotController {
         return timeSlotService.createTimeSlot(timeSlot);
     }
 
+    /**
+     * Get a time slot by id
+     *
+     * @param id the id of the time slot
+     * @param expand expand the response with more details from related objects
+     * @return the time slot
+     */
     @Operation(summary = "Get a time slot by id", description = "Returns a time slot as per the id", parameters = {
         @Parameter(name = "expand", description = "Expand the response with more details from related objects",
             required = false,
@@ -54,6 +67,13 @@ public class TimeSlotController {
         return timeSlotService.getTimeSlotDto(id, expand);
     }
 
+    /**
+     * Update a time slot by id
+     *
+     * @param id the id of the time slot
+     * @param timeSlot the time slot to update
+     * @return the updated time slot
+     */
     @Operation(summary = "Update a time slot by id", description = "Updates a time slot as per the id")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully updated a timeslot by id"),
         @ApiResponse(responseCode = "404", description = "Related entity not found",
@@ -63,6 +83,11 @@ public class TimeSlotController {
         return timeSlotService.updateTimeSlot(id, timeSlot);
     }
 
+    /**
+     * Delete a time slot by id
+     *
+     * @param id the id of the time slot
+     */
     @Operation(summary = "Delete a time slot by id", description = "Deletes a time slot as per the id")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully deleted a timeslot by id"),
         @ApiResponse(responseCode = "404", description = "Related entity not found",
@@ -73,10 +98,18 @@ public class TimeSlotController {
         timeSlotService.deleteTimeSlot(id);
     }
 
+    /**
+     *
+     * Get all time slots
+     *
+     * @param expand response with more details from related objects
+     * @param eventId filter the response with eventId
+     * @return all time slots
+     */
     @Operation(summary = "Get all time slots", description = "Returns all time slots", parameters = {
         @Parameter(name = "expand", description = "Expand the response with more details from related objects",
             required = false,
-            example = "activitytype", schema = @Schema(type = "string")),
+            example = "activiyType", schema = @Schema(type = "string")),
         @Parameter(name = "eventId", description = "Filter the response with eventId",
             required = false,
             example = "1", schema = @Schema(type = "long")) })

@@ -5,9 +5,12 @@ import ch.fhnw.shakethelakebackend.model.dto.EventDto;
 import ch.fhnw.shakethelakebackend.model.entity.ActivityType;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.Event;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.Set;
@@ -26,6 +29,10 @@ public interface EventMapper {
     @Mapping(target = "boats", ignore = true)
     @Mapping(target = "activityTypes", ignore = true)
     EventDto toDto(Event event);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
+    void update(CreateEventDto createEventDto, @MappingTarget Event event);
+
 
     default Set<Long> mapActivityTypesToIds(Set<ActivityType> activityTypes) {
         return activityTypes.stream().map(ActivityType::getId).collect(Collectors.toSet());

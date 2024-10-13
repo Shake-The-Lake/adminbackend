@@ -3,7 +3,6 @@ package ch.fhnw.shakethelakebackend.controller;
 import ch.fhnw.shakethelakebackend.model.dto.BoatDto;
 import ch.fhnw.shakethelakebackend.model.dto.CreateBoatDto;
 import ch.fhnw.shakethelakebackend.service.BoatService;
-import ch.fhnw.shakethelakebackend.service.CsvService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,7 +12,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,8 +32,13 @@ import java.util.Optional;
 public class BoatController {
 
     private final BoatService boatService;
-    private final CsvService csvService;
 
+    /**
+     * Create a boat
+     *
+     * @param getBoatDto the boat to create
+     * @return the created boat
+     */
     @Operation(summary = "Create a boat", description = "Creates a boat")
     @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Successfully created a boat"),
         @ApiResponse(responseCode = "404", description = "Related entity not found",
@@ -47,6 +50,13 @@ public class BoatController {
         return boatService.createBoat(getBoatDto);
     }
 
+    /**
+     * Get a boat by id
+     *
+     * @param id the id of the boat
+     * @param expand expand the response with more details from related objects
+     * @return the boat
+     */
     @Operation(summary = "Get a boat by id", description = "Returns a boat as per the id", parameters = {
         @Parameter(name = "expand", description = "Expand the response with more details from related objects",
             required = false,
@@ -59,6 +69,13 @@ public class BoatController {
         return boatService.getBoatWithDetails(id, expand);
     }
 
+    /**
+     * Update a boat by id
+     *
+     * @param id the id of the boat
+     * @param getBoatDto the boat to update
+     * @return the updated boat
+     */
     @Operation(summary = "Update a boat by id", description = "Updates a boat as per the id")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully updated a boat by id"),
         @ApiResponse(responseCode = "404", description = "Related entity not found",
@@ -69,6 +86,11 @@ public class BoatController {
         return boatService.updateBoat(id, getBoatDto);
     }
 
+    /**
+     * Delete a boat by id
+     *
+     * @param id the id of the boat
+     */
     @Operation(summary = "Delete a boat by id", description = "Deletes a boat as per the id")
     @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully deleted a boat by id"),
         @ApiResponse(responseCode = "409", description = "This is still related to other entites") })
@@ -77,6 +99,12 @@ public class BoatController {
         boatService.deleteBoat(id);
     }
 
+    /**
+     * Get all boats
+     *
+     * @param expand expand the response with more details from related objects
+     * @return all boats
+     */
     @Operation(summary = "Get all boats", description = "Returns a list of all boats", parameters = {
         @Parameter(name = "expand", description = "Expand the response with more details from related objects",
             required = false,
@@ -85,18 +113,6 @@ public class BoatController {
     @GetMapping()
     public List<BoatDto> getAllBoats(@RequestParam(required = false) Optional<String> expand) {
         return boatService.getBoatsWithDetails(expand);
-    }
-
-    @Operation(summary = "Export time slots from a boat", description = "Exports time slots from a boat as a CSV file")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200",
-            description = "Successfully exported time slots from a boat"),
-        @ApiResponse(responseCode = "400", description = "No data available for the provided boat ID",
-            content = @Content(mediaType = "",
-            schema = @Schema(implementation = String.class))) })
-    @GetMapping("{id}/exportTimeSlots")
-    public ResponseEntity<String> exportTimeSlotsFromBoat(@PathVariable Long id) {
-        return csvService.exportTimeSlotsFromBoat(id, "timeslots.csv");
-
     }
 
 }

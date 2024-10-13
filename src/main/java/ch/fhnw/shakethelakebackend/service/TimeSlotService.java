@@ -7,7 +7,6 @@ import ch.fhnw.shakethelakebackend.model.dto.CreateTimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.dto.TimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.entity.ActivityType;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
-import ch.fhnw.shakethelakebackend.model.entity.Booking;
 import ch.fhnw.shakethelakebackend.model.entity.TimeSlot;
 import ch.fhnw.shakethelakebackend.model.mapper.ActivityTypeMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.BoatMapper;
@@ -24,6 +23,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ *
+ * Service for time slots
+ *
+ */
 @AllArgsConstructor
 @Service
 public class TimeSlotService {
@@ -39,6 +43,12 @@ public class TimeSlotService {
     private final ActivityTypeMapper activityTypeMapper;
     private final ActivityTypeService activityTypeService;
 
+    /**
+     * Create a new time slot
+     *
+     * @param timeSlotDto to create a new time slot
+     * @return TimeSlotDto created from the given CreateTimeSlotDto
+     */
     public TimeSlotDto createTimeSlot(CreateTimeSlotDto timeSlotDto) {
         TimeSlot timeSlot = timeSlotMapper.toEntity(timeSlotDto);
         ActivityType activityType = activityTypeService.getActivityType(timeSlotDto.getActivityTypeId());
@@ -58,24 +68,34 @@ public class TimeSlotService {
         return timeSlotMapper.toDto(timeSlot);
     }
 
-    public TimeSlotDto updateTimeSlot(long id, CreateTimeSlotDto timeSlotDto) {
+    /**
+     * Update a time slot
+     *
+     * @param id of the time slot to update
+     * @param createTimeSlotDto to update the time slot
+     * @return TimeSlotDto updated from the given CreateTimeSlotDto
+     */
+    public TimeSlotDto updateTimeSlot(long id, CreateTimeSlotDto createTimeSlotDto) {
         if (!timeSlotRepository.existsById(id)) {
             throw new EntityNotFoundException(TIMESLOT_NOT_FOUND);
         }
 
-        Set<Booking> bookings = getTimeSlot(id).getBookings();
-        TimeSlot timeSlot = timeSlotMapper.toEntity(timeSlotDto);
-        Boat boat = boatService.getBoat(timeSlotDto.getBoatId());
-        ActivityType activityType = activityTypeService.getActivityType(timeSlotDto.getActivityTypeId());
+        Boat boat = boatService.getBoat(createTimeSlotDto.getBoatId());
+        ActivityType activityType = activityTypeService.getActivityType(createTimeSlotDto.getActivityTypeId());
+        TimeSlot timeSlot = getTimeSlot(id);
 
+        timeSlotMapper.update(createTimeSlotDto, timeSlot);
         timeSlot.setActivityType(activityType);
-        timeSlot.setBookings(bookings);
         timeSlot.setBoat(boat);
-        timeSlot.setId(id);
         timeSlotRepository.save(timeSlot);
         return timeSlotMapper.toDto(timeSlot);
     }
 
+    /**
+     * Delete a time slot
+     *
+     * @param id of the time slot to delete
+     */
     public void deleteTimeSlot(Long id) {
         if (!timeSlotRepository.existsById(id)) {
             throw new EntityNotFoundException(TIMESLOT_NOT_FOUND);
@@ -84,37 +104,46 @@ public class TimeSlotService {
         timeSlotRepository.deleteById(id);
     }
 
+    /**
+     * Get a time slot by id
+     *
+     * @param id of the time slot
+     * @return TimeSlot with the given id
+     */
     public TimeSlot getTimeSlot(Long id) {
         return timeSlotRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(TIMESLOT_NOT_FOUND));
     }
 
+    /**
+     * Get a time slot by id
+     *
+     * @param id of the time slot
+     * @return TimeSlotDto with the given id
+     */
     public TimeSlotDto getTimeSlotDto(Long id) {
         TimeSlot timeSlot = timeSlotRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(TIMESLOT_NOT_FOUND));
 
-        TimeSlotDto dto = timeSlotMapper.toDto(timeSlot);
-        Set<Booking> bookings = timeSlot.getBookings();
-        Boat boat = timeSlot.getBoat();
+        return timeSlotMapper.toDto(timeSlot);
 
-        if (bookings == null || bookings.isEmpty()) {
-            return dto;
-        }
-
-        int totalSeats = boat.getSeatsViewer() + boat.getSeatsRider();
-        long bookedRiders = bookings.stream().filter(Booking::getIsRider).count();
-        long bookedViewers = bookings.size() - bookedRiders;
-        long totalBookedSeats = bookings.size();
-
-        dto.setAvailableSeats(totalSeats - totalBookedSeats);
-        dto.setAvailableViewerSeats(boat.getSeatsViewer() - bookedViewers);
-        dto.setAvailableRiderSeats(boat.getSeatsRider() - bookedRiders);
-        return dto;
     }
 
+    /**
+     * Get all time slots
+     *
+     * @return List of all time slots
+     */
     public List<TimeSlotDto> getAllTimeSlots() {
         return timeSlotRepository.findAll().stream().map(timeSlotMapper::toDto).collect(Collectors.toList());
     }
 
+    /**
+     * Get all time slots with details
+     *
+     * @param id of the time slot
+     * @param expand optional parameter to expand the details
+     * @return List of all time slots with details
+     */
     public TimeSlotDto getTimeSlotDto(Long id, Optional<String> expand) {
         TimeSlot timeSlot = getTimeSlot(id);
         TimeSlotDto timeSlotDto = getTimeSlotDto(id);
@@ -138,20 +167,19 @@ public class TimeSlotService {
         return timeSlotDto;
     }
 
-    public List<TimeSlotDto> getAllTimeSlots(Optional<String> expand) {
-        List<TimeSlotDto> timeSlotDtos = getAllTimeSlots();
-
-        timeSlotDtos = timeSlotDtos.stream().map(timeSlot -> getTimeSlotDto(timeSlot.getId(), expand)).toList();
-
-        return timeSlotDtos;
-    }
-
+    /**
+     * Get all time slots
+     *
+     * @param expand optional parameter to expand the details
+     * @param eventId of the event
+     * @return List of all time slots with details
+     */
     public List<TimeSlotDto> getAllTimeSlots(Optional<String> expand, Optional<Long> eventId) {
         return timeSlotRepository.findAll()
                 .stream()
                 .filter(timeSlot -> eventId.map(aLong -> timeSlot.getBoat().getEvent().getId().equals(aLong))
                         .orElse(true))
                 .map(timeSlot -> getTimeSlotDto(timeSlot.getId(), expand))
-                .collect(Collectors.toList());
+                .toList();
     }
 }

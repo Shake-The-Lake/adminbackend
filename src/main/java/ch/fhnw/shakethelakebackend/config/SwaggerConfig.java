@@ -15,6 +15,10 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
         type = SecuritySchemeType.HTTP,
         scheme = "bearer"
 )
+/**
+ * Swagger configuration
+ */
+@OpenAPIDefinition(info = @Info(title = "Shake The Lake Backend", version = "1.0"))
 public class SwaggerConfig {
 
 }
