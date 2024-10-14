@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -46,6 +47,9 @@ class EventServiceTest {
     @InjectMocks
     private EventService eventService;
 
+    @Mock
+    private JwtService jwtService;
+
     private Event event;
     private EventDto eventDto;
 
@@ -53,6 +57,7 @@ class EventServiceTest {
     void setUp() {
         event = new Event();
         event.setId(1L);
+        event.setDate(LocalDate.now());
         eventDto = new EventDto();
         eventDto.setId(1L);
 
@@ -90,6 +95,7 @@ class EventServiceTest {
         when(eventMapper.toEntity(any())).thenReturn(event);
         when(eventRepository.save(event)).thenReturn(event).thenReturn(event);
         when(eventMapper.toDto(event)).thenReturn(eventDto);
+        when(jwtService.generateToken(any(), any(), any())).thenReturn("token");
 
         EventDto result = eventService.createEvent(CreateEventDto.builder().build());
 

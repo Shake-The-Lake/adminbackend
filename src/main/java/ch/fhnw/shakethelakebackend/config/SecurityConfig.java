@@ -1,21 +1,26 @@
 package ch.fhnw.shakethelakebackend.config;
 
+import ch.fhnw.shakethelakebackend.filter.JwtAuthFilter;
+import ch.fhnw.shakethelakebackend.model.entity.User;
+import ch.fhnw.shakethelakebackend.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * Security configuration
@@ -33,12 +38,10 @@ public class SecurityConfig {
     @Value("${ADMIN_PW:admin}")
     private String adminPassword;
 
-
     @Value("${CUSTOMER_NAME:customer}")
     private String customerName;
     @Value("${CUSTOMER_PW:customer}")
     private String customerPassword;
-
 
     @Value("${EMPLOYEE_NAME:employee}")
     private String employeeName;
@@ -48,43 +51,53 @@ public class SecurityConfig {
     /**
      * Create user details service
      *
-     * @param encoder the password encoder
+     * @param userService the user service
      * @return the user details service
      */
     @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder encoder) {
+    public UserDetailsService userDetailsService(UserService userService) {
 
-        UserDetails userAdmin = User.withUsername(adminName)
-                .password(encoder.encode(adminPassword)).roles(ADMIN).build();
+        userService.saveUser(User.builder().username(adminName).password(adminPassword).role(ADMIN).build());
+        userService.saveUser(User.builder().username(customerName).password(customerPassword).role(CUSTOMER).build());
+        userService.saveUser(User.builder().username(employeeName).password(employeePassword).role(EMPLOYEE).build());
 
-        UserDetails userCustomer = User.withUsername(customerName)
-                .password(encoder.encode(customerName)).roles(CUSTOMER).build();
-
-        UserDetails userEmployee = User.withUsername(employeeName)
-                .password(encoder.encode(employeePassword)).roles(EMPLOYEE).build();
-
-        return new InMemoryUserDetailsManager(userAdmin, userCustomer, userEmployee);
+        return userService;
     }
 
     /**
      * Create security filter chain
      *
-     * @param http the http security
+     * @param http          the http security
+     * @param userService   the user service
+     * @param jwtAuthFilter the jwt auth filter
      * @return the security filter chain
      * @throws Exception if an error occurs
      */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, UserService userService,
+            JwtAuthFilter jwtAuthFilter) throws Exception {
         return http.authorizeHttpRequests(
                         authorizeHttpRequests -> authorizeHttpRequests
-                            .requestMatchers(HttpMethod.GET, "/**").hasAnyRole(ADMIN, CUSTOMER, EMPLOYEE)
-                            .requestMatchers(HttpMethod.POST, "/booking").hasAnyRole(ADMIN, CUSTOMER, EMPLOYEE)
-                            .requestMatchers("/**").hasRole(ADMIN)
-                            .requestMatchers("/public/**", "/auth/**").permitAll())
-                .httpBasic(Customizer.withDefaults())
-                .sessionManagement(
+                                .requestMatchers("/public/**", "/auth/**",
+                                        "/swagger-ui/**", "v3/api-docs/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/**")
+                                .hasAnyRole(ADMIN, CUSTOMER, EMPLOYEE).requestMatchers(HttpMethod.POST, "/booking")
+                                .hasAnyRole(ADMIN, CUSTOMER, EMPLOYEE).requestMatchers("/**").hasRole(ADMIN))
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class).sessionManagement(
                         sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .cors(Customizer.withDefaults()).csrf(AbstractHttpConfigurer::disable).build();
+                .authenticationProvider(authenticationProvider(userService)).cors(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable).build();
+    }
+
+    /**
+     * Create authentication manager
+     * @param config the authentication configuration
+     * @return the authentication manager
+     * @throws Exception if an error occurs
+     */
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 
     /**
@@ -96,4 +109,19 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    /**
+     * Create authentication provider
+     *
+     * @param userDetailsService the user details service
+     * @return the authentication provider
+     */
+    @Bean
+    public AuthenticationProvider authenticationProvider(UserService userDetailsService) {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(userDetailsService);
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        return authenticationProvider;
+    }
+
 }
