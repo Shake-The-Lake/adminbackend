@@ -15,6 +15,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Where;
+
+import java.util.Date;
 
 /**
  *
@@ -27,6 +32,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
+@Where(clause = "deleted=false")
 public class ActivityType {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -53,4 +59,17 @@ public class ActivityType {
     @JoinColumn(name = "event_id")
     private Event event;
 
+
+    private String createdBy = "TempUser";
+    private String updatedBy = "TempUser";
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private Date createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private Date updatedAt;
+
+    private boolean deleted = Boolean.FALSE;
 }

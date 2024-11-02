@@ -11,6 +11,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -44,4 +45,8 @@ public class EventDto implements Serializable {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Schema(hidden = true)
     private List<ActivityTypeDto> activityTypes = null;
+    private String createdBy;
+    private String updatedBy;
+    private Date createdAt;
+    private Date updatedAt;
 }

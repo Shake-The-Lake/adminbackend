@@ -12,9 +12,15 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -27,7 +33,10 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Getter
+@Setter
 @Builder
+@Where(clause = "deleted=false")
 public class Event {
 
     @Id
@@ -59,6 +68,20 @@ public class Event {
     private String customerCode;
     @Column(columnDefinition = "TEXT")
     private String customerBarcode;
+
+    private String createdBy = "TempUser";
+
+    private String updatedBy = "TempUser";
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private Date createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private Date updatedAt;
+
+    private boolean deleted = Boolean.FALSE;
 
     public Set<ActivityType> getActivityTypes() {
         return activityTypes == null ? Set.of() : activityTypes;

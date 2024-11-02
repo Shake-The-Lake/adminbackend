@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalTime;
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -67,4 +68,8 @@ public class TimeSlotDto {
     private long availableSeats;
     private long availableRiderSeats;
     private long availableViewerSeats;
+    private String createdBy;
+    private String updatedBy;
+    private Date createdAt;
+    private Date updatedAt;
 }

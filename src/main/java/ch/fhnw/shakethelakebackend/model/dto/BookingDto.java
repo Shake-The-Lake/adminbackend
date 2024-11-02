@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+
 /**
  * DTO for {@link ch.fhnw.shakethelakebackend.model.entity.Booking}
  */
@@ -30,5 +32,9 @@ public class BookingDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Schema(hidden = true)
     private TimeSlotDto timeSlot = null;
+    private String createdBy;
+    private String updatedBy;
+    private Date createdAt;
+    private Date updatedAt;
 
 }

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * DTO for {@link ch.fhnw.shakethelakebackend.model.entity.ActivityType}
@@ -24,4 +25,9 @@ public class ActivityTypeDto implements Serializable {
     private LocalizedString checklist;
     private String icon;
     private Long eventId;
+    private String createdBy;
+    private String updatedBy;
+    private Date createdAt;
+    private Date updatedAt;
+
 }

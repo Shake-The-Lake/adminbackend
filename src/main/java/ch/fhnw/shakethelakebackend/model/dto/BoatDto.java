@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalTime;
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -43,5 +44,9 @@ public class BoatDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @Schema(hidden = true)
     private Set<TimeSlotDto> timeSlots = null;
+    private String createdBy;
+    private String updatedBy;
+    private Date createdAt;
+    private Date updatedAt;
 
 }
