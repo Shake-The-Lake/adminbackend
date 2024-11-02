@@ -17,8 +17,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalTime;
+import java.util.Date;
 import java.util.Objects;
 import java.util.Set;
 
@@ -33,6 +37,7 @@ import java.util.Set;
 @Setter
 @Getter
 @Builder
+@Where(clause = "deleted=false")
 public class TimeSlot {
 
     @Id
@@ -62,6 +67,21 @@ public class TimeSlot {
 
     @ManyToOne
     private ActivityType activityType;
+
+    @Column(columnDefinition = "varchar(255) default 'John Snow'")
+    private String createdBy = "TempUser";
+
+    private String updatedBy = "aoijfoiasdjfoisaj";
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private Date createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private Date updatedAt;
+
+    private boolean deleted = Boolean.FALSE;
 
     @Override
     public boolean equals(Object o) {

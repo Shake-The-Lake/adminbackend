@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -26,4 +27,8 @@ public class PersonDto implements Serializable {
     private String emailAddress;
     private String phoneNumber;
     private Set<Long> bookingIds;
+    private String createdBy;
+    private String updatedBy;
+    private Date createdAt;
+    private Date updatedAt;
 }

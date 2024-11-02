@@ -1,6 +1,7 @@
 package ch.fhnw.shakethelakebackend.model.entity;
 
 import ch.fhnw.shakethelakebackend.model.entity.enums.PersonType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,7 +15,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Where;
 
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -29,6 +34,7 @@ import java.util.Set;
 @Builder
 @Getter
 @Setter
+@Where(clause = "deleted=false")
 public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -48,6 +54,19 @@ public class Person {
 
     @NotNull
     private String phoneNumber;
+
+    private String createdBy = "TempUser";
+    private String updatedBy = "TempUser";
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private Date createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private Date updatedAt;
+
+    private boolean deleted = Boolean.FALSE;
 
     @OneToMany(mappedBy = "person")
     private Set<Booking> bookings;

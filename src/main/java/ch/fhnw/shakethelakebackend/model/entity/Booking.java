@@ -2,6 +2,7 @@ package ch.fhnw.shakethelakebackend.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,7 +16,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Where;
 
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -30,6 +35,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Getter
 @Setter
+@Where(clause = "deleted=false")
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -52,6 +58,19 @@ public class Booking {
     @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "timeSlot_id", nullable = false)
     private TimeSlot timeSlot;
+
+    private String createdBy = "TempUser";
+    private String updatedBy = "TempUser";
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private Date createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private Date updatedAt;
+
+    private boolean deleted = Boolean.FALSE;
 
     @Override
     public boolean equals(Object o) {
