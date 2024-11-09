@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -59,8 +60,8 @@ public class Booking {
     @JoinColumn(name = "timeSlot_id", nullable = false)
     private TimeSlot timeSlot;
 
-    private String createdBy = "TempUser";
-    private String updatedBy = "TempUser";
+    private String createdBy;
+    private String updatedBy;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -88,5 +89,15 @@ public class Booking {
     @Override
     public int hashCode() {
         return Objects.hash(id, isRider, isManual, pagerNumber);
+    }
+
+    @PrePersist
+    private void setDefaults() {
+        if (this.createdBy == null) {
+            this.createdBy = "TempUser";
+        }
+        if (this.updatedBy == null) {
+            this.updatedBy = "TempUser";
+        }
     }
 }

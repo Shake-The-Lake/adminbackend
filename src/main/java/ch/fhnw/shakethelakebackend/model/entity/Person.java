@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -55,8 +56,8 @@ public class Person {
     @NotNull
     private String phoneNumber;
 
-    private String createdBy = "TempUser";
-    private String updatedBy = "TempUser";
+    private String createdBy;
+    private String updatedBy;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -75,4 +76,13 @@ public class Person {
         return bookings == null ? Set.of() : Set.copyOf(bookings);
     }
 
+    @PrePersist
+    private void setDefaults() {
+        if (this.createdBy == null) {
+            this.createdBy = "TempUser";
+        }
+        if (this.updatedBy == null) {
+            this.updatedBy = "TempUser";
+        }
+    }
 }
