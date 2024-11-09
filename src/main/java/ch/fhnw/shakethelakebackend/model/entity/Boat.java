@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -74,8 +75,8 @@ public class Boat {
     @OneToMany(mappedBy = "boat", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<TimeSlot> timeSlots;
 
-    private String createdBy = "TempUser";
-    private String updatedBy = "TempUser";
+    private String createdBy;
+    private String updatedBy;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -91,6 +92,16 @@ public class Boat {
 
     public Set<TimeSlot> getTimeSlots() {
         return timeSlots == null ? Set.of() : Set.copyOf(timeSlots);
+    }
+
+    @PrePersist
+    private void setDefaults() {
+        if (this.createdBy == null) {
+            this.createdBy = "TempUser";
+        }
+        if (this.updatedBy == null) {
+            this.updatedBy = "TempUser";
+        }
     }
 
 }

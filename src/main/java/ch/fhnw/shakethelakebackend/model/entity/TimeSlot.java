@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -68,10 +69,9 @@ public class TimeSlot {
     @ManyToOne
     private ActivityType activityType;
 
-    @Column(columnDefinition = "varchar(255) default 'John Snow'")
-    private String createdBy = "TempUser";
+    private String createdBy;
 
-    private String updatedBy = "aoijfoiasdjfoisaj";
+    private String updatedBy;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -99,5 +99,15 @@ public class TimeSlot {
     @Override
     public int hashCode() {
         return Objects.hash(id, fromTime, untilTime);
+    }
+
+    @PrePersist
+    private void setDefaults() {
+        if (this.createdBy == null) {
+            this.createdBy = "TempUser";
+        }
+        if (this.updatedBy == null) {
+            this.updatedBy = "TempUser";
+        }
     }
 }

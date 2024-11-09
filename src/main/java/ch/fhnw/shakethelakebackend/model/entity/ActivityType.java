@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -60,8 +61,8 @@ public class ActivityType {
     private Event event;
 
 
-    private String createdBy = "TempUser";
-    private String updatedBy = "TempUser";
+    private String createdBy;
+    private String updatedBy;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -72,4 +73,14 @@ public class ActivityType {
     private Date updatedAt;
 
     private boolean deleted = Boolean.FALSE;
+
+    @PrePersist
+    private void setDefaults() {
+        if (this.createdBy == null) {
+            this.createdBy = "TempUser";
+        }
+        if (this.updatedBy == null) {
+            this.updatedBy = "TempUser";
+        }
+    }
 }

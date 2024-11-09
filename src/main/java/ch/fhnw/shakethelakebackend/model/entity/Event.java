@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -69,9 +70,9 @@ public class Event {
     @Column(columnDefinition = "TEXT")
     private String customerBarcode;
 
-    private String createdBy = "TempUser";
+    private String createdBy;
 
-    private String updatedBy = "TempUser";
+    private String updatedBy;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -89,5 +90,16 @@ public class Event {
 
     public Set<Boat> getBoats() {
         return boats == null ? Set.of() : boats;
+    }
+
+
+    @PrePersist
+    private void setDefaults() {
+        if (this.createdBy == null) {
+            this.createdBy = "TempUser";
+        }
+        if (this.updatedBy == null) {
+            this.updatedBy = "TempUser";
+        }
     }
 }
