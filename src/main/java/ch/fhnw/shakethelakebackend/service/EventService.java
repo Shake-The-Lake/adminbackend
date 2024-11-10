@@ -41,7 +41,6 @@ public class EventService {
     private final BoatMapper boatMapper;
     private final ActivityTypeMapper activityTypeMapper;
     private final Expander expander;
-    private final JwtService jwtService;
 
     private final ObjectMapper objectMapper;
 
@@ -106,8 +105,8 @@ public class EventService {
         eventRepository.save(event);
         Date start = Date.from(event.getDate().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
         Date end = Date.from(event.getDate().atStartOfDay().plusDays(1).atZone(ZoneId.systemDefault()).toInstant());
-        QRCode qrCodeEmployee = new QRCode(event.getId(), "employee", jwtService.generateToken("employee", start, end));
-        QRCode qrCodeCustomer = new QRCode(event.getId(), "customer", jwtService.generateToken("customer", start, end));
+        QRCode qrCodeEmployee = new QRCode(event.getId(), "employee", "token"); //TODO: firebase integration
+        QRCode qrCodeCustomer = new QRCode(event.getId(), "customer", "token"); //TODO: firebase integration
 
         try {
             event.setEmployeeCode(objectMapper.writeValueAsString(qrCodeEmployee));

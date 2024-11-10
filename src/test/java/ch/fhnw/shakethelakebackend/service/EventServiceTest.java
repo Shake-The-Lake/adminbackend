@@ -47,9 +47,6 @@ class EventServiceTest {
     @InjectMocks
     private EventService eventService;
 
-    @Mock
-    private JwtService jwtService;
-
     private Event event;
     private EventDto eventDto;
 
@@ -95,7 +92,6 @@ class EventServiceTest {
         when(eventMapper.toEntity(any())).thenReturn(event);
         when(eventRepository.save(event)).thenReturn(event).thenReturn(event);
         when(eventMapper.toDto(event)).thenReturn(eventDto);
-        when(jwtService.generateToken(any(), any(), any())).thenReturn("token");
 
         EventDto result = eventService.createEvent(CreateEventDto.builder().build());
 
