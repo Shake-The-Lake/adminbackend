@@ -1,7 +1,6 @@
 package ch.fhnw.shakethelakebackend.config;
 
 import ch.fhnw.shakethelakebackend.filter.FirebaseAuthFilter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -24,16 +23,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private static final String ADMIN = "ADMIN";
-    private static final String CUSTOMER = "USER";
-    private static final String EMPLOYEE = "EMPLOYEE";
-
-    @Value("${ADMIN_NAME:admin}")
-    private String adminName;
-    @Value("${ADMIN_PW:admin}")
-    private String adminPassword;
-
-
     /**
      * Create security filter chain
      *
@@ -49,9 +38,12 @@ public class SecurityConfig {
                         authorizeHttpRequests -> authorizeHttpRequests
                                 .requestMatchers("/public/**", "/auth/**",
                                         "/swagger-ui/**", "v3/api-docs/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/user").hasRole(Roles.ANONYMOUS)
                                 .requestMatchers(HttpMethod.GET, "/**")
-                                .hasAnyRole(ADMIN, CUSTOMER, EMPLOYEE).requestMatchers(HttpMethod.POST, "/booking")
-                                .hasAnyRole(ADMIN, CUSTOMER, EMPLOYEE).requestMatchers("/**").hasRole(ADMIN))
+                                .hasAnyRole(Roles.ADMIN, Roles.CUSTOMER, Roles.EMPLOYEE)
+                                .requestMatchers(HttpMethod.POST, "/booking")
+                                .hasAnyRole(Roles.ADMIN, Roles.CUSTOMER, Roles.EMPLOYEE)
+                                .requestMatchers("/**").hasRole(Roles.ADMIN))
                 .addFilterBefore(firebaseAuthFilter, UsernamePasswordAuthenticationFilter.class).sessionManagement(
                         sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(Customizer.withDefaults())

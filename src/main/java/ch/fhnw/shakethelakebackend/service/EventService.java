@@ -21,11 +21,10 @@ import lombok.Getter;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
-import java.time.ZoneId;
 import java.util.Base64;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  *
@@ -49,7 +48,7 @@ public class EventService {
     static class QRCode {
         private long eventId;
         private String userName;
-        private String token;
+        private String secret;
     }
 
     /**
@@ -98,25 +97,24 @@ public class EventService {
      * @return EventDto created from the given CreateEventDto
      */
     public EventDto createEvent(CreateEventDto createEventDto) {
-        //TODO; location not mvp
-        // Location location = locationRepository.save(createEventDto.getLocationId());
         Event event = eventMapper.toEntity(createEventDto);
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        event.setCustomerSecret(UUID.randomUUID().toString());
+        event.setEmployeeSecret(UUID.randomUUID().toString());
         eventRepository.save(event);
-        Date start = Date.from(event.getDate().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
-        Date end = Date.from(event.getDate().atStartOfDay().plusDays(1).atZone(ZoneId.systemDefault()).toInstant());
-        QRCode qrCodeEmployee = new QRCode(event.getId(), "employee", "token"); //TODO: firebase integration
-        QRCode qrCodeCustomer = new QRCode(event.getId(), "customer", "token"); //TODO: firebase integration
+
+        QRCode qrCodeEmployee = new QRCode(event.getId(), "employee", event.getEmployeeSecret());
+        QRCode qrCodeCustomer = new QRCode(event.getId(), "customer", event.getCustomerSecret());
 
         try {
-            event.setEmployeeCode(objectMapper.writeValueAsString(qrCodeEmployee));
-            event.setCustomerCode(objectMapper.writeValueAsString(qrCodeCustomer));
-            BitMatrix bitMatrix = qrCodeWriter.encode(event.getEmployeeCode(), BarcodeFormat.QR_CODE, 200, 200);
+            BitMatrix bitMatrix = qrCodeWriter.encode(
+                objectMapper.writeValueAsString(qrCodeEmployee), BarcodeFormat.QR_CODE, 200, 200);
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             MatrixToImageWriter.writeToStream(bitMatrix, "PNG", bos);
             event.setEmployeeBarcode(Base64.getEncoder().encodeToString(bos.toByteArray()));
 
-            bitMatrix = qrCodeWriter.encode(event.getCustomerCode(), BarcodeFormat.QR_CODE, 200, 200);
+            bitMatrix = qrCodeWriter.encode(
+                objectMapper.writeValueAsString(qrCodeCustomer), BarcodeFormat.QR_CODE, 200, 200);
             bos = new ByteArrayOutputStream();
             MatrixToImageWriter.writeToStream(bitMatrix, "PNG", bos);
             event.setCustomerBarcode(Base64.getEncoder().encodeToString(bos.toByteArray()));

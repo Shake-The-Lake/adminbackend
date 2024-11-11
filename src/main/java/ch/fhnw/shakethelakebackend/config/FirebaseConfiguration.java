@@ -10,10 +10,12 @@ import lombok.SneakyThrows;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import java.io.ByteArrayInputStream;
 import java.util.Base64;
 
+@Profile("!test")
 @Configuration
 @AllArgsConstructor
 @EnableConfigurationProperties(FirebaseConfigurationProperties.class)

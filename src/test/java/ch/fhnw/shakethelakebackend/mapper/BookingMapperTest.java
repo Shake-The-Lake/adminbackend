@@ -1,5 +1,6 @@
 package ch.fhnw.shakethelakebackend.mapper;
 
+import ch.fhnw.shakethelakebackend.config.FirebaseConfigTest;
 import ch.fhnw.shakethelakebackend.model.dto.BookingDto;
 import ch.fhnw.shakethelakebackend.model.entity.Booking;
 import ch.fhnw.shakethelakebackend.model.entity.Person;
@@ -12,11 +13,15 @@ import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SpringBootTest
+@ActiveProfiles("test")
+@Import(FirebaseConfigTest.class)
 class BookingMapperTest {
 
     @Mock

@@ -1,5 +1,6 @@
 package ch.fhnw.shakethelakebackend.mapper;
 
+import ch.fhnw.shakethelakebackend.config.FirebaseConfigTest;
 import ch.fhnw.shakethelakebackend.model.dto.BoatDto;
 import ch.fhnw.shakethelakebackend.model.dto.CreateBoatDto;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
@@ -13,6 +14,8 @@ import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,6 +24,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
+@ActiveProfiles("test")
+@Import(FirebaseConfigTest.class)
 class BoatMapperTest {
 
     @Mock

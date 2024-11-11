@@ -62,11 +62,11 @@ public class Event {
     @OneToMany(mappedBy = "event", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Boat> boats;
 
-    private String employeeCode;
+    private String employeeSecret;
     @Column(columnDefinition = "TEXT")
     private String employeeBarcode;
 
-    private String customerCode;
+    private String customerSecret;
     @Column(columnDefinition = "TEXT")
     private String customerBarcode;
 
