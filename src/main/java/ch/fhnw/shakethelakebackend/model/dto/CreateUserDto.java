@@ -15,8 +15,6 @@ public class CreateUserDto {
     private String firstName;
     private String lastName;
     private String phoneNumber;
-    private String secret;
-    private Long eventId;
 
     @JsonIgnore
     public Map<String, Object> getAsMap() {

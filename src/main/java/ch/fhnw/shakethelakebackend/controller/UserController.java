@@ -11,7 +11,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -25,7 +28,9 @@ public class UserController {
         @ApiResponse(responseCode = "404", description = "Failed to create a user",
             content = @Content(schema = @Schema(implementation = String.class))) })
     @PostMapping
-    public void createUser(Authentication authentication, CreateUserDto createUserDto) {
-        firebaseService.createUser(authentication.getName(), createUserDto);
+    public void createUser(Authentication authentication, CreateUserDto createUserDto,
+            @RequestParam(required = false) Optional<Long> eventId,
+            @RequestParam(required = false) Optional<String> secret) {
+        firebaseService.createUser(authentication, createUserDto, eventId, secret);
     }
 }

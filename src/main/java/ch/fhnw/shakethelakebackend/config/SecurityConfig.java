@@ -41,7 +41,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/user").hasRole(Roles.ANONYMOUS)
                                 .requestMatchers(HttpMethod.GET, "/**")
                                 .hasAnyRole(Roles.ADMIN, Roles.CUSTOMER, Roles.EMPLOYEE)
-                                .requestMatchers(HttpMethod.POST, "/booking")
+                                .requestMatchers(HttpMethod.POST, "/booking", "/person")
                                 .hasAnyRole(Roles.ADMIN, Roles.CUSTOMER, Roles.EMPLOYEE)
                                 .requestMatchers("/**").hasRole(Roles.ADMIN))
                 .addFilterBefore(firebaseAuthFilter, UsernamePasswordAuthenticationFilter.class).sessionManagement(
