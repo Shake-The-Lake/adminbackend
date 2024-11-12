@@ -1,5 +1,6 @@
 package ch.fhnw.shakethelakebackend.mapper;
 
+import ch.fhnw.shakethelakebackend.config.FirebaseConfigTest;
 import ch.fhnw.shakethelakebackend.model.dto.ActivityTypeDto;
 import ch.fhnw.shakethelakebackend.model.dto.CreateActivityTypeDto;
 import ch.fhnw.shakethelakebackend.model.entity.ActivityType;
@@ -9,10 +10,14 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
+@ActiveProfiles("test")
+@Import(FirebaseConfigTest.class)
 class ActivityTypeMapperTest {
     @InjectMocks
     private ActivityTypeMapper mapper = Mappers.getMapper(ActivityTypeMapper.class);
