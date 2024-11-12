@@ -1,6 +1,5 @@
 package ch.fhnw.shakethelakebackend.model.entity;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,7 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -17,12 +15,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.annotations.Where;
 
 import java.time.LocalTime;
-import java.util.Date;
 import java.util.Set;
 
 /**
@@ -31,15 +25,13 @@ import java.util.Set;
  *
  */
 @Entity
-@Schema(hidden = true)
 @Table(name = "boat")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @Builder
-@Where(clause = "deleted=false")
-public class Boat {
+public class Boat extends BaseEntityAudit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -75,33 +67,11 @@ public class Boat {
     @OneToMany(mappedBy = "boat", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<TimeSlot> timeSlots;
 
-    private String createdBy;
-    private String updatedBy;
-
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private Date createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private Date updatedAt;
-
-    private boolean deleted = Boolean.FALSE;
     @ManyToOne
     private Event event;
 
     public Set<TimeSlot> getTimeSlots() {
         return timeSlots == null ? Set.of() : Set.copyOf(timeSlots);
-    }
-
-    @PrePersist
-    private void setDefaults() {
-        if (this.createdBy == null) {
-            this.createdBy = "TempUser";
-        }
-        if (this.updatedBy == null) {
-            this.updatedBy = "TempUser";
-        }
     }
 
 }

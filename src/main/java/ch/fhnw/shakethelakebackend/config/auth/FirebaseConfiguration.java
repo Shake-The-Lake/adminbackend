@@ -1,4 +1,4 @@
-package ch.fhnw.shakethelakebackend.config;
+package ch.fhnw.shakethelakebackend.config.auth;
 
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.Firestore;

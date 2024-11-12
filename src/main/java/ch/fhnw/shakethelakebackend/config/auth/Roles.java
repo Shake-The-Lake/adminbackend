@@ -1,4 +1,4 @@
-package ch.fhnw.shakethelakebackend.config;
+package ch.fhnw.shakethelakebackend.config.auth;
 
 public final class Roles {
 

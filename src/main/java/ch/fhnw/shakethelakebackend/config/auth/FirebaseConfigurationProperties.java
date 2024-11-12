@@ -1,4 +1,4 @@
-package ch.fhnw.shakethelakebackend.config;
+package ch.fhnw.shakethelakebackend.config.auth;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
