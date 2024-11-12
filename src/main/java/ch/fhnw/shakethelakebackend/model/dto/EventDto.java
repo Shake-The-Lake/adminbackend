@@ -29,8 +29,7 @@ public class EventDto implements Serializable {
     private String title;
     @NotNull
     private String description;
-    // TODO: not in mvp.
-    // private Long locationId;
+
     @NotNull
     private LocalDate date;
 
