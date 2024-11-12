@@ -1,4 +1,4 @@
-package ch.fhnw.shakethelakebackend.config.audit;
+package ch.fhnw.shakethelakebackend.config;
 
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;

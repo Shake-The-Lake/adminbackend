@@ -1,6 +1,6 @@
 package ch.fhnw.shakethelakebackend.config;
 
-import ch.fhnw.shakethelakebackend.config.auth.Roles;
+
 import ch.fhnw.shakethelakebackend.filter.FirebaseAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

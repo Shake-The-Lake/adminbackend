@@ -1,4 +1,4 @@
-package ch.fhnw.shakethelakebackend.config.audit;
+package ch.fhnw.shakethelakebackend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
