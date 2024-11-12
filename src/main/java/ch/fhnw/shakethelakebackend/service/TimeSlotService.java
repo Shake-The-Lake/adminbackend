@@ -52,14 +52,28 @@ public class TimeSlotService {
     public TimeSlotDto createTimeSlot(CreateTimeSlotDto timeSlotDto) {
         TimeSlot timeSlot = timeSlotMapper.toEntity(timeSlotDto);
         ActivityType activityType = activityTypeService.getActivityType(timeSlotDto.getActivityTypeId());
-
-        //Time slot must be in boats time
         Boat boat = boatService.getBoat(timeSlotDto.getBoatId());
 
+        final TimeSlot finalTimeSlot = timeSlot;
+        Set<TimeSlot> boatTimeSlots = boat.getTimeSlots();
+        if (boatTimeSlots.stream().anyMatch(finalTimeSlot::overlaps)) {
+            throw new IllegalArgumentException("Time slot overlaps with existing time slot");
+        }
+
+        if (timeSlot.getFromTime().isAfter(timeSlot.getUntilTime())) {
+            throw new IllegalArgumentException("From time must be before until time");
+        }
+
+        if (timeSlot.getUntilTime().isBefore(timeSlot.getFromTime())) {
+            throw new IllegalArgumentException("Until time must be after from time");
+        }
+
+        //Time slot must be in boats time
         if (boat.getAvailableFrom().isAfter(timeSlot.getFromTime()) || boat.getAvailableUntil()
                 .isBefore(timeSlot.getUntilTime())) {
             throw new IllegalArgumentException("Time slot must be in boats available time");
         }
+
         timeSlot.setActivityType(activityType);
         timeSlot.setBoat(boat);
         timeSlot.setBookings(new HashSet<>());
@@ -133,8 +147,8 @@ public class TimeSlotService {
      *
      * @return List of all time slots
      */
-    public List<TimeSlotDto> getAllTimeSlots() {
-        return timeSlotRepository.findAll().stream().map(timeSlotMapper::toDto).collect(Collectors.toList());
+    public List<TimeSlot> getAllTimeSlots() {
+        return timeSlotRepository.findAll();
     }
 
     /**

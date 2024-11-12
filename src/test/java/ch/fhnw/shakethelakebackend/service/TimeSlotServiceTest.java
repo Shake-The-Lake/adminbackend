@@ -17,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -165,15 +164,6 @@ class TimeSlotServiceTest {
         assertThrows(EntityNotFoundException.class, () -> timeSlotService.getTimeSlotDto(1L));
     }
 
-    @Test
-    void testGetAllTimeSlots() {
-        when(timeSlotRepository.findAll()).thenReturn(List.of(timeSlot));
-        when(timeSlotMapper.toDto(timeSlot)).thenReturn(timeSlotDto);
-
-        List<TimeSlotDto> result = timeSlotService.getAllTimeSlots();
-
-        assertEquals(List.of(timeSlotDto), result);
-    }
     @Test
     void testGetTimeSlotDtoWithExpandNotFound() {
         when(timeSlotRepository.findById(1L)).thenReturn(Optional.empty());

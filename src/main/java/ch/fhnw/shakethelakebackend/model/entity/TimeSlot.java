@@ -82,4 +82,21 @@ public class TimeSlot extends BaseEntityAudit {
         return Objects.hash(id, fromTime, untilTime);
     }
 
+    /**
+     * Checks if this TimeSlot overlaps with another TimeSlot.
+     *
+     * @param other The other TimeSlot to compare with.
+     * @return true if the time slots overlap, false otherwise.
+     */
+    public boolean overlaps(TimeSlot other) {
+        // Ensure both TimeSlots are not null
+        if (other == null) {
+            return false;
+        }
+
+        // Check for overlap: one slot starts before the other ends, and vice versa
+        return (this.fromTime.isBefore(other.untilTime) && this.untilTime.isAfter(other.fromTime))
+            || (other.fromTime.isBefore(this.untilTime) && other.untilTime.isAfter(this.fromTime));
+    }
+
 }
