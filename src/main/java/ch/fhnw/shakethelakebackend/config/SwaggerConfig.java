@@ -11,12 +11,14 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
  */
 @OpenAPIDefinition(
     info = @Info(title = "Shake The Lake Backend", version = "1.0"),
-    security = @SecurityRequirement(name = "bearerAuth")
+    security = @SecurityRequirement(name = "firebaseAuth")
 )
 @SecurityScheme(
-        name = "bearerAuth",
-        type = SecuritySchemeType.HTTP,
-        scheme = "bearer"
+    name = "firebaseAuth",
+    type = SecuritySchemeType.HTTP,
+    scheme = "bearer",
+    bearerFormat = "JWT",
+    description = "Provide Firebase ID Token as Bearer Token"
 )
 public class SwaggerConfig {
 

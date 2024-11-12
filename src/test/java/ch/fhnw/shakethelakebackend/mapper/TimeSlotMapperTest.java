@@ -1,5 +1,6 @@
 package ch.fhnw.shakethelakebackend.mapper;
 
+import ch.fhnw.shakethelakebackend.config.FirebaseConfigTest;
 import ch.fhnw.shakethelakebackend.model.dto.CreateTimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.dto.TimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
@@ -10,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.mockito.InjectMocks;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalTime;
 import java.util.HashSet;
@@ -20,6 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
+@ActiveProfiles("test")
+@Import(FirebaseConfigTest.class)
 class TimeSlotMapperTest {
     @InjectMocks
     private TimeSlotMapper timeSlotMapper = Mappers.getMapper(TimeSlotMapper.class);
