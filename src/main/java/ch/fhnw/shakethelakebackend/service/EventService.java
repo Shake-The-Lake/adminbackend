@@ -47,7 +47,6 @@ public class EventService {
     @Getter
     static class QRCode {
         private long eventId;
-        private String userName;
         private String secret;
     }
 
@@ -103,9 +102,8 @@ public class EventService {
         event.setEmployeeSecret(UUID.randomUUID().toString());
         eventRepository.save(event);
 
-        QRCode qrCodeEmployee = new QRCode(event.getId(), "employee", event.getEmployeeSecret());
-        QRCode qrCodeCustomer = new QRCode(event.getId(), "customer", event.getCustomerSecret());
-
+        QRCode qrCodeEmployee = new QRCode(event.getId(), event.getEmployeeSecret());
+        QRCode qrCodeCustomer = new QRCode(event.getId(), event.getCustomerSecret());
         try {
             BitMatrix bitMatrix = qrCodeWriter.encode(
                 objectMapper.writeValueAsString(qrCodeEmployee), BarcodeFormat.QR_CODE, 200, 200);
