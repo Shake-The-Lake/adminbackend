@@ -1,6 +1,6 @@
 package ch.fhnw.shakethelakebackend.service;
 
-import ch.fhnw.shakethelakebackend.config.auth.Roles;
+import ch.fhnw.shakethelakebackend.config.Roles;
 import ch.fhnw.shakethelakebackend.model.dto.CreateUserDto;
 import ch.fhnw.shakethelakebackend.model.entity.Event;
 import com.google.cloud.firestore.Firestore;
