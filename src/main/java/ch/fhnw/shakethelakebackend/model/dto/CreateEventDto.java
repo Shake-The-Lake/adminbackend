@@ -23,7 +23,6 @@ public class CreateEventDto implements Serializable {
     private String title;
     @NotNull
     private String description;
-    //Long locationId;
     @NotNull
     private LocalDate date;
 

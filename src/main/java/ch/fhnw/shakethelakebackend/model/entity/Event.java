@@ -7,21 +7,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.annotations.Where;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.Set;
 
 /**
@@ -30,15 +23,12 @@ import java.util.Set;
  *
  */
 @Entity
-@Table(name = "event")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Getter
 @Setter
 @Builder
-@Where(clause = "deleted=false")
-public class Event {
+public class Event extends BaseEntityAudit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -70,20 +60,6 @@ public class Event {
     @Column(columnDefinition = "TEXT")
     private String customerBarcode;
 
-    private String createdBy;
-
-    private String updatedBy;
-
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private Date createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private Date updatedAt;
-
-    private boolean deleted = Boolean.FALSE;
-
     public Set<ActivityType> getActivityTypes() {
         return activityTypes == null ? Set.of() : activityTypes;
     }
@@ -92,14 +68,4 @@ public class Event {
         return boats == null ? Set.of() : boats;
     }
 
-
-    @PrePersist
-    private void setDefaults() {
-        if (this.createdBy == null) {
-            this.createdBy = "TempUser";
-        }
-        if (this.updatedBy == null) {
-            this.updatedBy = "TempUser";
-        }
-    }
 }
