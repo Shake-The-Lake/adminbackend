@@ -63,6 +63,9 @@ public class TimeSlot extends BaseEntityAudit {
     @ManyToOne
     private ActivityType activityType;
 
+    @NotNull
+    private String topic;
+
 
     @Override
     public boolean equals(Object o) {

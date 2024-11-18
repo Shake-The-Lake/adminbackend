@@ -5,6 +5,7 @@ import ch.fhnw.shakethelakebackend.model.dto.TimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.entity.ActivityType;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.Booking;
+import ch.fhnw.shakethelakebackend.model.entity.Event;
 import ch.fhnw.shakethelakebackend.model.entity.TimeSlot;
 import ch.fhnw.shakethelakebackend.model.mapper.TimeSlotMapper;
 import ch.fhnw.shakethelakebackend.model.repository.TimeSlotRepository;
@@ -16,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
 
@@ -53,6 +55,8 @@ class TimeSlotServiceTest {
 
     private Boat boat;
 
+    private Event event;
+
     private ActivityType activityType;
 
     private LocalTime fromTime;
@@ -63,7 +67,10 @@ class TimeSlotServiceTest {
         activityType = ActivityType.builder().id(1L).build();
         fromTime = LocalTime.now();
         untilTime = LocalTime.now().plusHours(1);
-        boat = Boat.builder().seatsRider(2).seatsViewer(2).id(1L).availableFrom(
+
+        event = Event.builder().id(1L).date(LocalDate.now()).build();
+
+        boat = Boat.builder().seatsRider(2).seatsViewer(2).id(1L).event(event).availableFrom(
                 fromTime).availableUntil(untilTime)
             .build();
         timeSlot = TimeSlot.builder().fromTime(fromTime).untilTime(untilTime).boat(boat).id(1L)
@@ -98,7 +105,6 @@ class TimeSlotServiceTest {
         when(timeSlotRepository.findById(1L)).thenReturn(Optional.of(timeSlot));
         when(activityTypeService.getActivityType(1L)).thenReturn(activityType);
         when(boatService.getBoat(1L)).thenReturn(boat);
-
         when(timeSlotService.updateTimeSlot(1L, createTimeSlotDto)).thenReturn(timeSlotDto);
 
         TimeSlotDto result = timeSlotService.updateTimeSlot(1L, createTimeSlotDto);
@@ -113,7 +119,6 @@ class TimeSlotServiceTest {
 
         assertThrows(EntityNotFoundException.class, () -> timeSlotService.updateTimeSlot(1L, createTimeSlotDto));
     }
-
 
 
     @Test
