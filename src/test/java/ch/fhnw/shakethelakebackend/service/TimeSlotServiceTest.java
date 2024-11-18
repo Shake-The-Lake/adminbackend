@@ -97,6 +97,8 @@ class TimeSlotServiceTest {
         when(timeSlotMapper.toDto(any(TimeSlot.class))).thenReturn(timeSlotDto);
         when(timeSlotRepository.findById(1L)).thenReturn(Optional.of(timeSlot));
         when(activityTypeService.getActivityType(1L)).thenReturn(activityType);
+        when(boatService.getBoat(1L)).thenReturn(boat);
+
         when(timeSlotService.updateTimeSlot(1L, createTimeSlotDto)).thenReturn(timeSlotDto);
 
         TimeSlotDto result = timeSlotService.updateTimeSlot(1L, createTimeSlotDto);

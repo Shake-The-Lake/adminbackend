@@ -54,25 +54,7 @@ public class TimeSlotService {
         ActivityType activityType = activityTypeService.getActivityType(timeSlotDto.getActivityTypeId());
         Boat boat = boatService.getBoat(timeSlotDto.getBoatId());
 
-        final TimeSlot finalTimeSlot = timeSlot;
-        Set<TimeSlot> boatTimeSlots = boat.getTimeSlots();
-        if (boatTimeSlots.stream().anyMatch(finalTimeSlot::overlaps)) {
-            throw new IllegalArgumentException("Time slot overlaps with existing time slot");
-        }
-
-        if (timeSlot.getFromTime().isAfter(timeSlot.getUntilTime())) {
-            throw new IllegalArgumentException("From time must be before until time");
-        }
-
-        if (timeSlot.getUntilTime().isBefore(timeSlot.getFromTime())) {
-            throw new IllegalArgumentException("Until time must be after from time");
-        }
-
-        //Time slot must be in boats time
-        if (boat.getAvailableFrom().isAfter(timeSlot.getFromTime()) || boat.getAvailableUntil()
-                .isBefore(timeSlot.getUntilTime())) {
-            throw new IllegalArgumentException("Time slot must be in boats available time");
-        }
+        validateTimeRange(boat, timeSlot, 0);
 
         timeSlot.setActivityType(activityType);
         timeSlot.setBoat(boat);
@@ -81,6 +63,7 @@ public class TimeSlotService {
 
         return timeSlotMapper.toDto(timeSlot);
     }
+
 
     /**
      * Update a time slot
@@ -97,6 +80,8 @@ public class TimeSlotService {
         Boat boat = boatService.getBoat(createTimeSlotDto.getBoatId());
         ActivityType activityType = activityTypeService.getActivityType(createTimeSlotDto.getActivityTypeId());
         TimeSlot timeSlot = getTimeSlot(id);
+
+        validateTimeRange(boat, timeSlot, id);
 
         timeSlotMapper.update(createTimeSlotDto, timeSlot);
         timeSlot.setActivityType(activityType);
@@ -196,4 +181,34 @@ public class TimeSlotService {
                 .map(timeSlot -> getTimeSlotDto(timeSlot.getId(), expand))
                 .toList();
     }
+
+
+    /**
+     * Validate the time range of a timeslot
+     * @param boat
+     * @param timeSlot
+     * @param id of the time slot to update. pass 0 for create
+     */
+    private void validateTimeRange(Boat boat, TimeSlot timeSlot, long id) {
+        Set<TimeSlot> boatTimeSlots = boat.getTimeSlots().stream().filter(t -> t.getId() != id).collect(
+            Collectors.toSet());
+        if (boatTimeSlots.stream().anyMatch(timeSlot::overlaps)) {
+            throw new IllegalArgumentException("Time slot overlaps with existing time slot");
+        }
+
+        if (timeSlot.getFromTime().isAfter(timeSlot.getUntilTime())) {
+            throw new IllegalArgumentException("From time must be before until time");
+        }
+
+        if (timeSlot.getUntilTime().isBefore(timeSlot.getFromTime())) {
+            throw new IllegalArgumentException("Until time must be after from time");
+        }
+
+        //Time slot must be in boats time
+        if (boat.getAvailableFrom().isAfter(timeSlot.getFromTime()) || boat.getAvailableUntil()
+            .isBefore(timeSlot.getUntilTime())) {
+            throw new IllegalArgumentException("Time slot must be in boats available time");
+        }
+    }
+
 }
