@@ -120,7 +120,6 @@ class BoatServiceTest {
 
     @Test
     void testUpdateBoatSuccess() {
-        when(boatRepository.existsById(any())).thenReturn(true);
         when(boatRepository.findById(any())).thenReturn(Optional.of(boat));
         when(boatRepository.save(any())).thenReturn(boat);
         when(boatMapper.toDto(any())).thenReturn(boatDto);
