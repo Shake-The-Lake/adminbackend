@@ -79,12 +79,8 @@ public class BoatService {
      * @return BoatDto updated from the given CreateBoatDto
      */
     public BoatDto updateBoat(Long id, CreateBoatDto createBoatDto) {
-        if (!boatRepository.existsById(id)) {
-            throw new EntityNotFoundException(BOAT_NOT_FOUND);
-        }
-
-        Event event = eventService.getEvent(createBoatDto.getEventId());
         Boat boat = getBoat(id);
+        Event event = eventService.getEvent(createBoatDto.getEventId());
         boatMapper.update(createBoatDto, boat);
         boat.setEvent(event);
         boatRepository.save(boat);

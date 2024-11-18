@@ -133,22 +133,19 @@ public class BookingService {
      * @return BookingDto updated from the given CreateBookingDto
      */
     public BookingDto updateBooking(Long id, CreateBookingDto bookingDto) {
-        Booking booking = bookingMapper.toEntity(bookingDto);
 
-        Booking oldBooking = bookingRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(BOOKING_NOT_FOUND));
+        Booking booking = getBooking(id);
         TimeSlot timeSlot = timeSlotService.getTimeSlot(bookingDto.getTimeSlotId());
         Person person = personService.getPerson(bookingDto.getPersonId());
 
-        if (oldBooking.getTimeSlot().equals(timeSlot)) {
-            timeSlot.getBookings().remove(oldBooking);
+        if (booking.getTimeSlot().equals(timeSlot)) {
+            timeSlot.getBookings().remove(booking);
         }
 
-
+        bookingMapper.update(bookingDto, booking);
+        timeSlot.getBookings().add(booking);
         booking.setTimeSlot(timeSlot);
         booking.setPerson(person);
-        booking.setId(id);
-        timeSlot.getBookings().add(booking);
         checkSeatsBooking(booking, timeSlot);
         booking = bookingRepository.save(booking);
         return bookingMapper.toDto(booking);

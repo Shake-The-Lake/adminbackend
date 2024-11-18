@@ -99,8 +99,6 @@ public class BookingServiceTest {
 
     @Test
     void testUpdateBooking() {
-
-        when(bookingMapper.toEntity(any(CreateBookingDto.class))).thenReturn(booking);
         when(bookingRepository.findById(1L)).thenReturn(Optional.of(booking));
         when(personService.getPerson(booking.getPerson().getId())).thenReturn(person);
         when(timeSlotService.getTimeSlot(booking.getTimeSlot().getId())).thenReturn(timeSlot);
