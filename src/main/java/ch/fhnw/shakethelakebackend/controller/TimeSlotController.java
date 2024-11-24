@@ -1,6 +1,7 @@
 package ch.fhnw.shakethelakebackend.controller;
 
 import ch.fhnw.shakethelakebackend.model.dto.CreateTimeSlotDto;
+import ch.fhnw.shakethelakebackend.model.dto.MoveTimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.dto.TimeSlotDto;
 import ch.fhnw.shakethelakebackend.service.TimeSlotService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @AllArgsConstructor
@@ -65,6 +67,23 @@ public class TimeSlotController {
     @GetMapping("/{id}")
     public TimeSlotDto getTimeSlot(@PathVariable Long id, Optional<String> expand) {
         return timeSlotService.getTimeSlotDto(id, expand);
+    }
+
+    /**
+     * Move a time slot by id including the timeslot that follow
+     *
+     * @param id the id of the time slot
+     * @param timeSlot the moveTimeSlotDto
+     * @return the moved time slot
+     */
+    @Operation(summary = "Move a time slot by id with its successing timeSlots",
+        description = "Moves a time slot as per the id with its successing timeSlots")
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully moved a timeslot by id"),
+        @ApiResponse(responseCode = "404", description = TimeSlotService.TIMESLOT_NOT_FOUND,
+            content = @Content(schema = @Schema(implementation = String.class))) })
+    @PostMapping("/{id}")
+    public Set<TimeSlotDto> moveTimeSlot(@PathVariable Long id, @RequestBody @Valid MoveTimeSlotDto timeSlot) {
+        return timeSlotService.moveTimeSlot(id, timeSlot);
     }
 
     /**

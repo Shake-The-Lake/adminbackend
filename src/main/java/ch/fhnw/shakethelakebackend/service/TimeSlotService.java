@@ -4,6 +4,7 @@ import ch.fhnw.shakethelakebackend.model.dto.ActivityTypeDto;
 import ch.fhnw.shakethelakebackend.model.dto.BoatDto;
 import ch.fhnw.shakethelakebackend.model.dto.BookingDto;
 import ch.fhnw.shakethelakebackend.model.dto.CreateTimeSlotDto;
+import ch.fhnw.shakethelakebackend.model.dto.MoveTimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.dto.TimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.entity.ActivityType;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
@@ -14,9 +15,11 @@ import ch.fhnw.shakethelakebackend.model.mapper.BookingMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.TimeSlotMapper;
 import ch.fhnw.shakethelakebackend.model.repository.TimeSlotRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -120,9 +123,7 @@ public class TimeSlotService {
      * @return TimeSlotDto with the given id
      */
     public TimeSlotDto getTimeSlotDto(Long id) {
-        TimeSlot timeSlot = timeSlotRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(TIMESLOT_NOT_FOUND));
-
+        TimeSlot timeSlot = getTimeSlot(id);
         return timeSlotMapper.toDto(timeSlot);
 
     }
@@ -211,4 +212,45 @@ public class TimeSlotService {
         }
     }
 
+    /**
+     * Move a time slot by id including the timeslot that follow
+     *
+     * @param id the id of the time slot
+     * @param timeSlot the moveTimeSlotDto
+     * @return the moved time slot
+     */
+    public Set<TimeSlotDto> moveTimeSlot(Long id, @Valid MoveTimeSlotDto timeSlot) {
+        long addedMinutes = timeSlot.getMinutes();
+
+        TimeSlot timeSlotToMove = getTimeSlot(id);
+        Boat boat = timeSlotToMove.getBoat();
+        List<TimeSlot> succeedingTimeSlots = boat.getTimeSlots().stream()
+            .filter(t -> t.getFromTime().isAfter(timeSlotToMove.getFromTime())).collect(Collectors.toList());
+        succeedingTimeSlots.add(timeSlotToMove);
+        succeedingTimeSlots.sort(Comparator.comparing(TimeSlot::getFromTime));
+
+        if (succeedingTimeSlots.get(succeedingTimeSlots.size()-1).getUntilTime().isAfter(boat.getAvailableUntil())) {
+            throw new IllegalArgumentException("Time slot must be in boats available time");
+        }
+
+        moveTimeSlots(succeedingTimeSlots, addedMinutes);
+        //TODO: Inform all bookings about the change
+        List<TimeSlot> timeSlots = timeSlotRepository.saveAll(succeedingTimeSlots);
+        return timeSlots.stream().map(timeSlotMapper::toDto).collect(Collectors.toSet());
+    }
+
+    /**
+     * Move the time slots
+     *
+     * @param succeedingTimeSlots the time slots to move
+     * @param addedMinutes the minutes to add
+     */
+    private static void moveTimeSlots(List<TimeSlot> succeedingTimeSlots, long addedMinutes) {
+        succeedingTimeSlots.forEach(t -> {
+            t.setOriginalFromTime(t.getFromTime());
+            t.setOriginalUntilTime(t.getUntilTime());
+            t.setFromTime(t.getFromTime().plusMinutes(addedMinutes));
+            t.setUntilTime(t.getUntilTime().plusMinutes(addedMinutes));
+        });
+    }
 }
