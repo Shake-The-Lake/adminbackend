@@ -78,10 +78,10 @@ public class TimeSlotController {
      */
     @Operation(summary = "Move a time slot by id with its successing timeSlots",
         description = "Moves a time slot as per the id with its successing timeSlots")
-    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully moved a timeslot by id"),
+    @ApiResponses(value = { @ApiResponse(responseCode = "200", description = "Successfully moved timeslots"),
         @ApiResponse(responseCode = "404", description = TimeSlotService.TIMESLOT_NOT_FOUND,
             content = @Content(schema = @Schema(implementation = String.class))) })
-    @PostMapping("/{id}")
+    @PostMapping("/{id}/move")
     public Set<TimeSlotDto> moveTimeSlot(@PathVariable Long id, @RequestBody @Valid MoveTimeSlotDto timeSlot) {
         return timeSlotService.moveTimeSlot(id, timeSlot);
     }
