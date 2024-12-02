@@ -20,7 +20,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
+import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -177,4 +179,152 @@ class TimeSlotServiceTest {
 
         assertThrows(EntityNotFoundException.class, () -> timeSlotService.getTimeSlotDto(1L, Optional.of("expand")));
     }
+
+    @Test
+    void shouldThrowExceptionWhenTimeSlotOverlaps() {
+        Boat boat = Boat.builder().availableFrom(LocalTime.of(8, 0)).availableUntil(LocalTime.of(18, 0)).build();
+        TimeSlot existingTimeSlot = TimeSlot.builder().id(1L).
+            fromTime(LocalTime.of(10, 0)).untilTime(LocalTime.of(11, 0)).build();
+        boat.setTimeSlots(Set.of(existingTimeSlot));
+        TimeSlot newTimeSlot = TimeSlot.builder().id(2L).
+            fromTime(LocalTime.of(10, 30)).untilTime(LocalTime.of(11, 30)).build();
+
+        assertThrows(IllegalArgumentException.class, () -> timeSlotService.validateTimeRange(boat, newTimeSlot, 0));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenFromTimeIsAfterUntilTime() {
+        Boat boat = Boat.builder().availableFrom(LocalTime.of(8, 0)).availableUntil(LocalTime.of(18, 0)).build();
+        TimeSlot timeSlot = TimeSlot.builder().id(1L).
+            fromTime(LocalTime.of(12, 0)).untilTime(LocalTime.of(11, 0)).build();
+
+        assertThrows(IllegalArgumentException.class, () -> timeSlotService.validateTimeRange(boat, timeSlot, 0));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUntilTimeIsBeforeFromTime() {
+        Boat boat = Boat.builder().availableFrom(LocalTime.of(8, 0)).availableUntil(LocalTime.of(18, 0)).build();
+        TimeSlot timeSlot = TimeSlot.builder().id(1L).
+            fromTime(LocalTime.of(11, 0)).untilTime(LocalTime.of(10, 0)).build();
+
+        assertThrows(IllegalArgumentException.class, () -> timeSlotService.validateTimeRange(boat, timeSlot, 0));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenTimeSlotIsOutsideBoatAvailableTime() {
+        Boat boat = Boat.builder().availableFrom(LocalTime.of(8, 0)).availableUntil(LocalTime.of(18, 0)).build();
+        TimeSlot timeSlot = TimeSlot.builder().id(1L).
+            fromTime(LocalTime.of(7, 0)).untilTime(LocalTime.of(9, 0)).build();
+
+        assertThrows(IllegalArgumentException.class, () -> timeSlotService.validateTimeRange(boat, timeSlot, 0));
+    }
+
+    @Test
+    void shouldNotThrowExceptionForValidTimeSlot() {
+        Boat boat = Boat.builder().availableFrom(LocalTime.of(8, 0)).availableUntil(LocalTime.of(18, 0)).build();
+        TimeSlot timeSlot = TimeSlot.builder().id(1L).
+            fromTime(LocalTime.of(9, 0)).untilTime(LocalTime.of(10, 0)).build();
+
+        timeSlotService.validateTimeRange(boat, timeSlot, 0);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenNewTimeSlotStartsAtSameTimeAsExistingOne() {
+        Boat boat = Boat.builder().availableFrom(LocalTime.of(8, 0)).availableUntil(LocalTime.of(18, 0)).build();
+        TimeSlot existingTimeSlot = TimeSlot.builder().id(1L).
+            fromTime(LocalTime.of(10, 0)).untilTime(LocalTime.of(11, 0)).build();
+        boat.setTimeSlots(Set.of(existingTimeSlot));
+        TimeSlot newTimeSlot = TimeSlot.builder().id(2L).
+            fromTime(LocalTime.of(10, 0)).untilTime(LocalTime.of(11, 30)).build();
+
+        assertThrows(IllegalArgumentException.class, () -> timeSlotService.validateTimeRange(boat, newTimeSlot, 0));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenNewTimeSlotEndsAtSameTimeAsExistingOne() {
+        Boat boat = Boat.builder().availableFrom(LocalTime.of(8, 0)).availableUntil(LocalTime.of(18, 0)).build();
+        TimeSlot existingTimeSlot = TimeSlot.builder().id(1L).
+            fromTime(LocalTime.of(10, 0)).untilTime(LocalTime.of(11, 0)).build();
+        boat.setTimeSlots(Set.of(existingTimeSlot));
+        TimeSlot newTimeSlot = TimeSlot.builder().id(2L).
+            fromTime(LocalTime.of(9, 30)).untilTime(LocalTime.of(11, 0)).build();
+
+        assertThrows(IllegalArgumentException.class, () -> timeSlotService.validateTimeRange(boat, newTimeSlot, 0));
+    }
+
+    @Test
+    void shouldNotThrowExceptionWhenUpdatingTimeSlotWithSameValues() {
+        Boat boat = Boat.builder().availableFrom(LocalTime.of(8, 0)).availableUntil(LocalTime.of(18, 0)).build();
+        TimeSlot existingTimeSlot = TimeSlot.builder().id(1L).
+            fromTime(LocalTime.of(10, 0)).untilTime(LocalTime.of(11, 0)).build();
+        boat.setTimeSlots(Set.of(existingTimeSlot));
+        TimeSlot updatedTimeSlot = TimeSlot.builder().id(1L).
+            fromTime(LocalTime.of(10, 0)).untilTime(LocalTime.of(11, 0)).build();
+
+        assertDoesNotThrow(() -> timeSlotService.validateTimeRange(boat, updatedTimeSlot, 1L));
+    }
+
+    @Test
+    void shouldNotThrowExceptionForNonOverlappingTimeSlot() {
+        Boat boat = Boat.builder().availableFrom(LocalTime.of(8, 0)).availableUntil(LocalTime.of(18, 0)).build();
+        TimeSlot existingTimeSlot = TimeSlot.builder().id(1L).
+            fromTime(LocalTime.of(10, 0)).untilTime(LocalTime.of(11, 0)).build();
+        boat.setTimeSlots(Set.of(existingTimeSlot));
+        TimeSlot newTimeSlot = TimeSlot.builder().id(2L).
+            fromTime(LocalTime.of(11, 0)).untilTime(LocalTime.of(12, 0)).build();
+
+        assertDoesNotThrow(() -> timeSlotService.validateTimeRange(boat, newTimeSlot, 0));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenNewTimeSlotCompletelyOverlapsExistingOne() {
+        Boat boat = Boat.builder().availableFrom(LocalTime.of(8, 0)).availableUntil(LocalTime.of(18, 0)).build();
+        TimeSlot existingTimeSlot = TimeSlot.builder().id(1L).
+            fromTime(LocalTime.of(10, 0)).untilTime(LocalTime.of(11, 0)).build();
+        boat.setTimeSlots(Set.of(existingTimeSlot));
+        TimeSlot newTimeSlot = TimeSlot.builder().id(2L).
+            fromTime(LocalTime.of(9, 30)).untilTime(LocalTime.of(11, 30)).build();
+
+        assertThrows(IllegalArgumentException.class, () -> timeSlotService.validateTimeRange(boat, newTimeSlot, 0));
+    }
+
+    @Test
+    void shouldNotThrowExceptionForAdjacentTimeSlots() {
+        Boat boat = Boat.builder().availableFrom(LocalTime.of(8, 0)).availableUntil(LocalTime.of(18, 0)).build();
+        TimeSlot existingTimeSlot = TimeSlot.builder().id(1L).
+            fromTime(LocalTime.of(10, 0)).untilTime(LocalTime.of(11, 0)).build();
+        boat.setTimeSlots(Set.of(existingTimeSlot));
+        TimeSlot newTimeSlot = TimeSlot.builder().id(2L).
+            fromTime(LocalTime.of(11, 0)).untilTime(LocalTime.of(12, 0)).build();
+
+        assertDoesNotThrow(() -> timeSlotService.validateTimeRange(boat, newTimeSlot, 0));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenTimeSlotSpansEntireBoatAvailability() {
+        Boat boat = Boat.builder().availableFrom(LocalTime.of(8, 0)).availableUntil(LocalTime.of(18, 0)).build();
+        TimeSlot timeSlot = TimeSlot.builder().id(1L).
+            fromTime(LocalTime.of(7, 0)).untilTime(LocalTime.of(19, 0)).build();
+
+        assertThrows(IllegalArgumentException.class, () -> timeSlotService.validateTimeRange(boat, timeSlot, 0));
+    }
+
+    @Test
+    void shouldNotThrowExceptionForSingleMinuteTimeSlotWithinAvailability() {
+        Boat boat = Boat.builder().availableFrom(LocalTime.of(8, 0)).availableUntil(LocalTime.of(18, 0)).build();
+        TimeSlot timeSlot = TimeSlot.builder().id(1L).
+            fromTime(LocalTime.of(10, 0)).untilTime(LocalTime.of(10, 1)).build();
+
+        assertDoesNotThrow(() -> timeSlotService.validateTimeRange(boat, timeSlot, 0));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenBoatHasNoAvailableTimeSet() {
+        Boat boat = Boat.builder().build(); // No availableFrom or availableUntil set
+        TimeSlot timeSlot = TimeSlot.builder().id(1L).
+            fromTime(LocalTime.of(10, 0)).untilTime(LocalTime.of(11, 0)).build();
+
+        assertThrows(NullPointerException.class, () -> timeSlotService.validateTimeRange(boat, timeSlot, 0));
+    }
+
 }

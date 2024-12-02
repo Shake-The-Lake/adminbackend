@@ -276,7 +276,7 @@ public class TimeSlotService {
      * @param timeSlot
      * @param id of the time slot to update. pass 0 for create
      */
-    private void validateTimeRange(Boat boat, TimeSlot timeSlot, long id) {
+    void validateTimeRange(Boat boat, TimeSlot timeSlot, long id) {
         Set<TimeSlot> boatTimeSlots = boat.getTimeSlots().stream().filter(t -> t.getId() != id).collect(
             Collectors.toSet());
         if (boatTimeSlots.stream().anyMatch(timeSlot::overlaps)) {
