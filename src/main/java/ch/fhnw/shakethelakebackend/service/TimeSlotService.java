@@ -15,6 +15,8 @@ import ch.fhnw.shakethelakebackend.model.mapper.TimeSlotMapper;
 import ch.fhnw.shakethelakebackend.model.repository.TimeSlotRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -51,14 +53,32 @@ public class TimeSlotService {
     private final Map<Long, ScheduledFuture<?>> scheduledNotifications = new ConcurrentHashMap<>();
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm");
 
+    /**
+     * Bootstrap the service
+     */
+    @EventListener(ApplicationReadyEvent.class)
+    public void bootstrap() {
+        timeSlotRepository.findAll().forEach(this::createNotification);
+    }
 
-    LocalDateTime getTimeSlotTime(TimeSlot timeSlot) {
+    /**
+     * Get the time slot time
+     *
+     * @param timeSlot to get the time slot time
+     * @return LocalDateTime of the time slot
+     */
+    LocalDateTime getTimeSlotDateTime(TimeSlot timeSlot) {
         return timeSlot.getBoat().getEvent().getDate().atTime(timeSlot.getFromTime());
     }
 
+    /**
+     * Create a notification for a time slot
+     *
+     * @param timeSlot to create a notification for
+     */
     private void createNotification(TimeSlot timeSlot) {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime timeSlotTime = getTimeSlotTime(timeSlot);
+        LocalDateTime timeSlotTime = getTimeSlotDateTime(timeSlot);
         LocalDateTime notificationTime = timeSlotTime.minusMinutes(15);
 
         if (notificationTime.isBefore(now)) {
@@ -93,7 +113,6 @@ public class TimeSlotService {
 
         timeSlot.setActivityType(activityType);
         timeSlot.setBoat(boat);
-        LocalDateTime timeSlotTime = getTimeSlotTime(timeSlot);
         timeSlot.setTopic(UUID.randomUUID().toString());
         timeSlot.setBookings(new HashSet<>());
         timeSlot = timeSlotRepository.save(timeSlot);
