@@ -72,4 +72,6 @@ public class TimeSlotDto {
     private String updatedBy;
     private Date createdAt;
     private Date updatedAt;
+
+    private String topic;
 }

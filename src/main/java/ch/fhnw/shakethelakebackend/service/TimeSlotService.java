@@ -14,21 +14,27 @@ import ch.fhnw.shakethelakebackend.model.mapper.BookingMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.TimeSlotMapper;
 import ch.fhnw.shakethelakebackend.model.repository.TimeSlotRepository;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
 
 /**
- *
  * Service for time slots
- *
  */
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class TimeSlotService {
 
@@ -42,6 +48,55 @@ public class TimeSlotService {
     private final BoatMapper boatMapper;
     private final ActivityTypeMapper activityTypeMapper;
     private final ActivityTypeService activityTypeService;
+    private final FirebaseService firebaseService;
+
+    private final Map<Long, ScheduledFuture<?>> scheduledNotifications = new ConcurrentHashMap<>();
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm");
+
+    /**
+     * Bootstrap the service
+     */
+    @EventListener(ApplicationReadyEvent.class)
+    public void bootstrap() {
+        timeSlotRepository.findAll().forEach(this::createNotification);
+    }
+
+    /**
+     * Get the time slot time
+     *
+     * @param timeSlot to get the time slot time
+     * @return LocalDateTime of the time slot
+     */
+    LocalDateTime getTimeSlotDateTime(TimeSlot timeSlot) {
+        return timeSlot.getBoat().getEvent().getDate().atTime(timeSlot.getFromTime());
+    }
+
+    /**
+     * Create a notification for a time slot
+     *
+     * @param timeSlot to create a notification for
+     */
+    private void createNotification(TimeSlot timeSlot) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime timeSlotTime = getTimeSlotDateTime(timeSlot);
+        LocalDateTime notificationTime = timeSlotTime.minusMinutes(15);
+
+        if (notificationTime.isBefore(now)) {
+            return;
+        }
+
+        Long id = timeSlot.getId();
+        ScheduledFuture<?> future = firebaseService.createScheduledNotification(
+            timeSlot.getTopic(),
+            "You have a booking in 15 minutes",
+            "Make your self ready for the upcoming ride",
+            notificationTime,
+            () -> {
+                scheduledNotifications.remove(id);
+            }
+        );
+        scheduledNotifications.put(id, future);
+    }
 
     /**
      * Create a new time slot
@@ -58,9 +113,10 @@ public class TimeSlotService {
 
         timeSlot.setActivityType(activityType);
         timeSlot.setBoat(boat);
+        timeSlot.setTopic(UUID.randomUUID().toString());
         timeSlot.setBookings(new HashSet<>());
         timeSlot = timeSlotRepository.save(timeSlot);
-
+        createNotification(timeSlot);
         return timeSlotMapper.toDto(timeSlot);
     }
 
@@ -68,7 +124,7 @@ public class TimeSlotService {
     /**
      * Update a time slot
      *
-     * @param id of the time slot to update
+     * @param id                of the time slot to update
      * @param createTimeSlotDto to update the time slot
      * @return TimeSlotDto updated from the given CreateTimeSlotDto
      */
@@ -87,6 +143,14 @@ public class TimeSlotService {
         timeSlot.setActivityType(activityType);
         timeSlot.setBoat(boat);
         timeSlotRepository.save(timeSlot);
+
+        if (scheduledNotifications.containsKey(id)) {
+            scheduledNotifications.get(id).cancel(true);
+            scheduledNotifications.remove(id);
+        }
+
+        createNotification(timeSlot);
+
         return timeSlotMapper.toDto(timeSlot);
     }
 
@@ -98,6 +162,11 @@ public class TimeSlotService {
     public void deleteTimeSlot(Long id) {
         if (!timeSlotRepository.existsById(id)) {
             throw new EntityNotFoundException(TIMESLOT_NOT_FOUND);
+        }
+
+        if (scheduledNotifications.containsKey(id)) {
+            scheduledNotifications.get(id).cancel(true);
+            scheduledNotifications.remove(id);
         }
 
         timeSlotRepository.deleteById(id);
@@ -121,7 +190,7 @@ public class TimeSlotService {
      */
     public TimeSlotDto getTimeSlotDto(Long id) {
         TimeSlot timeSlot = timeSlotRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(TIMESLOT_NOT_FOUND));
+            .orElseThrow(() -> new EntityNotFoundException(TIMESLOT_NOT_FOUND));
 
         return timeSlotMapper.toDto(timeSlot);
 
@@ -139,7 +208,7 @@ public class TimeSlotService {
     /**
      * Get all time slots with details
      *
-     * @param id of the time slot
+     * @param id     of the time slot
      * @param expand optional parameter to expand the details
      * @return List of all time slots with details
      */
@@ -169,17 +238,17 @@ public class TimeSlotService {
     /**
      * Get all time slots
      *
-     * @param expand optional parameter to expand the details
+     * @param expand  optional parameter to expand the details
      * @param eventId of the event
      * @return List of all time slots with details
      */
     public List<TimeSlotDto> getAllTimeSlots(Optional<String> expand, Optional<Long> eventId) {
         return timeSlotRepository.findAll()
-                .stream()
-                .filter(timeSlot -> eventId.map(aLong -> timeSlot.getBoat().getEvent().getId().equals(aLong))
-                        .orElse(true))
-                .map(timeSlot -> getTimeSlotDto(timeSlot.getId(), expand))
-                .toList();
+            .stream()
+            .filter(timeSlot -> eventId.map(aLong -> timeSlot.getBoat().getEvent().getId().equals(aLong))
+                .orElse(true))
+            .map(timeSlot -> getTimeSlotDto(timeSlot.getId(), expand))
+            .toList();
     }
 
 
