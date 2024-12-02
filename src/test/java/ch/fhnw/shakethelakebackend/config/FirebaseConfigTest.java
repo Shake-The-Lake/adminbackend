@@ -3,6 +3,7 @@ package ch.fhnw.shakethelakebackend.config;
 import com.google.cloud.firestore.Firestore;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.messaging.FirebaseMessaging;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
@@ -28,5 +29,10 @@ public class FirebaseConfigTest {
     @Bean
     public Firestore firestore() {
         return mock(Firestore.class);
+    }
+
+    @Bean
+    public FirebaseMessaging firebaseMessaging() {
+        return mock(FirebaseMessaging.class);
     }
 }
