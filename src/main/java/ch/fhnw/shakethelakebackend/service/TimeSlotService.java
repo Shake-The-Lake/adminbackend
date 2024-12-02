@@ -56,14 +56,14 @@ public class TimeSlotService {
     private final FirebaseService firebaseService;
 
     private final Map<Long, ScheduledFuture<?>> scheduledNotifications = new ConcurrentHashMap<>();
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm");
+    private final DateTimeFormatter textFormat = DateTimeFormatter.ofPattern("HH-mm");
 
     /**
      * Bootstrap the service
      */
     @EventListener(ApplicationReadyEvent.class)
     public void bootstrap() {
-        timeSlotRepository.findAll().forEach(this::createNotification);
+        timeSlotRepository.findAll().forEach(t -> createScheduledNotification(t, 15));
     }
 
     /**
@@ -80,11 +80,12 @@ public class TimeSlotService {
      * Create a notification for a time slot
      *
      * @param timeSlot to create a notification for
+     * @param minutes minutes before the start of the timeslot to create the notification
      */
-    private void createNotification(TimeSlot timeSlot) {
+    private void createScheduledNotification(TimeSlot timeSlot, int minutes) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime timeSlotTime = getTimeSlotDateTime(timeSlot);
-        LocalDateTime notificationTime = timeSlotTime.minusMinutes(15);
+        LocalDateTime notificationTime = timeSlotTime.minusMinutes(minutes);
 
         if (notificationTime.isBefore(now)) {
             return;
@@ -93,9 +94,23 @@ public class TimeSlotService {
         Long id = timeSlot.getId();
         ScheduledFuture<?> future = firebaseService.createScheduledNotification(
             timeSlot.getTopic(),
-            "You have a booking in 15 minutes",
-            "Make your self ready for the upcoming ride",
+            "You have a booking in " + minutes + " minutes",
+            "Make yourself ready for the upcoming ride",
             notificationTime,
+            () -> {
+                scheduledNotifications.remove(id);
+            }
+        );
+        scheduledNotifications.put(id, future);
+    }
+
+    void createNotificationNow(TimeSlot timeSlot, String title, String text) {
+        Long id = timeSlot.getId();
+        ScheduledFuture<?> future = firebaseService.createScheduledNotification(
+            timeSlot.getTopic(),
+            title,
+            text,
+            null,
             () -> {
                 scheduledNotifications.remove(id);
             }
@@ -121,7 +136,7 @@ public class TimeSlotService {
         timeSlot.setTopic(UUID.randomUUID().toString());
         timeSlot.setBookings(new HashSet<>());
         timeSlot = timeSlotRepository.save(timeSlot);
-        createNotification(timeSlot);
+        createScheduledNotification(timeSlot, 15);
         return timeSlotMapper.toDto(timeSlot);
     }
 
@@ -149,14 +164,17 @@ public class TimeSlotService {
         timeSlot.setBoat(boat);
         timeSlotRepository.save(timeSlot);
 
+        removeNotification(id);
+        createScheduledNotification(timeSlot, 15);
+
+        return timeSlotMapper.toDto(timeSlot);
+    }
+
+    void removeNotification(long id) {
         if (scheduledNotifications.containsKey(id)) {
             scheduledNotifications.get(id).cancel(true);
             scheduledNotifications.remove(id);
         }
-
-        createNotification(timeSlot);
-
-        return timeSlotMapper.toDto(timeSlot);
     }
 
     /**
@@ -297,12 +315,14 @@ public class TimeSlotService {
         succeedingTimeSlots.add(timeSlotToMove);
         succeedingTimeSlots.sort(Comparator.comparing(TimeSlot::getFromTime));
 
-        if (succeedingTimeSlots.get(succeedingTimeSlots.size()-1).getUntilTime().isAfter(boat.getAvailableUntil())) {
-            throw new IllegalArgumentException("Time slot must be in boats available time");
-        }
-
         moveTimeSlots(succeedingTimeSlots, addedMinutes);
-        //TODO: Inform all bookings about the change
+        String title = "Your starting time has changed!";
+        succeedingTimeSlots.forEach(t -> {
+            removeNotification(t.getId());
+            String text = String.format("Your TimeSlot has been moved to the new Time: %s",
+                t.getFromTime().format(textFormat));
+            createNotificationNow(t, title, text);
+        });
         List<TimeSlot> timeSlots = timeSlotRepository.saveAll(succeedingTimeSlots);
         return timeSlots.stream().map(timeSlotMapper::toDto).collect(Collectors.toSet());
     }
@@ -313,7 +333,7 @@ public class TimeSlotService {
      * @param succeedingTimeSlots the time slots to move
      * @param addedMinutes the minutes to add
      */
-    private static void moveTimeSlots(List<TimeSlot> succeedingTimeSlots, long addedMinutes) {
+    void moveTimeSlots(List<TimeSlot> succeedingTimeSlots, long addedMinutes) {
         succeedingTimeSlots.forEach(t -> {
             t.setOriginalFromTime(t.getFromTime());
             t.setOriginalUntilTime(t.getUntilTime());

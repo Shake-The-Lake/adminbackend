@@ -128,15 +128,20 @@ public class FirebaseService {
         Notification notification = Notification.builder().setTitle(title).setBody(text).build();
         Message message = Message.builder().setNotification(notification).setTopic(topic).build();
 
-        ZoneId zone = ZoneId.systemDefault(); // or use ZoneOffset.UTC for UTC
-        ZonedDateTime zonedDateTime = time.atZone(zone);
-        Instant instant = zonedDateTime.toInstant();
-        log.info("Scheduling notification for {}", instant);
-        log.info("Topic: {}", topic);
+        if (time != null) {
+            // Schedule notification for the future
+            ZoneId zone = ZoneId.systemDefault(); // or use ZoneOffset.UTC for UTC
+            ZonedDateTime zonedDateTime = time.atZone(zone);
+            Instant instant = zonedDateTime.toInstant();
 
-        return taskScheduler.schedule(() -> {
+            return taskScheduler.schedule(() -> {
+                sendNotification(message, onCompletion);
+            }, instant);
+        } else {
+            // Send notification immediately
             sendNotification(message, onCompletion);
-        }, instant);
+            return null;
+        }
     }
 
     /**
@@ -145,10 +150,8 @@ public class FirebaseService {
      * @param message the message
      */
     private void sendNotification(Message message, Runnable onCompletion) {
-        log.info("Sending notification");
         try {
             String res = firebaseMessaging.send(message);
-            log.info("Notification sent {}", res);
         } catch (FirebaseMessagingException e) {
             log.error("Failed to send notification", e);
         }
