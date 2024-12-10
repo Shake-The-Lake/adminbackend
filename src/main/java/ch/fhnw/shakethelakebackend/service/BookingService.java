@@ -172,7 +172,7 @@ public class BookingService {
      * @return BookingDto with the given id and details
      */
     public BookingDto getBookingWithDetails(Long id, Optional<String> expand) {
-        Booking booking = getBooking(id);
+            Booking booking = getBooking(id);
         BookingDto bookingDto = bookingMapper.toDto(booking);
 
         expander.applyExpansion(expand, "person", () -> {

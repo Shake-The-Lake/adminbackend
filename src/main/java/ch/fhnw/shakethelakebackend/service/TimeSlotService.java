@@ -5,6 +5,7 @@ import ch.fhnw.shakethelakebackend.model.dto.BoatDto;
 import ch.fhnw.shakethelakebackend.model.dto.BookingDto;
 import ch.fhnw.shakethelakebackend.model.dto.CreateTimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.dto.TimeSlotDto;
+import ch.fhnw.shakethelakebackend.model.dto.expo.ExpoNotification;
 import ch.fhnw.shakethelakebackend.model.entity.ActivityType;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.TimeSlot;
@@ -49,6 +50,7 @@ public class TimeSlotService {
     private final ActivityTypeMapper activityTypeMapper;
     private final ActivityTypeService activityTypeService;
     private final FirebaseService firebaseService;
+    private final ExpoNotificationService expoNotificationService;
 
     private final Map<Long, ScheduledFuture<?>> scheduledNotifications = new ConcurrentHashMap<>();
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm");
@@ -86,16 +88,38 @@ public class TimeSlotService {
         }
 
         Long id = timeSlot.getId();
-        ScheduledFuture<?> future = firebaseService.createScheduledNotification(
-            timeSlot.getTopic(),
-            "You have a booking in 15 minutes",
-            "Make your self ready for the upcoming ride",
+        var future = expoNotificationService.createScheduledTimeSlotNotification(
+            ExpoNotification.builder()
+                    .title("You have a booking in 15 minutes")
+                    .body("Make your self ready for the upcoming ride")
+                    .build(),
+            id,
             notificationTime,
             () -> {
                 scheduledNotifications.remove(id);
             }
         );
+//        FIXME Sending of firebase notifictions is currently not supported
+//        ScheduledFuture<?> future = firebaseService.createScheduledNotification(
+//            timeSlot.getTopic(),
+//            "You have a booking in 15 minutes",
+//            "Make your self ready for the upcoming ride",
+//            notificationTime,
+//            () -> {
+//                scheduledNotifications.remove(id);
+//            }
+//        );
         scheduledNotifications.put(id, future);
+    }
+
+    /**
+     * Get all users which have a booking on a time slot to send them a notification
+     * @param timeSlotId
+     * @return
+     */
+    public List<Long> getAllUsersForTimeSlot(Long timeSlotId) {
+        TimeSlot timeSlot = getTimeSlot(timeSlotId);
+        return timeSlot.getBookings().stream().map(booking -> booking.getPerson().getId()).collect(Collectors.toList());
     }
 
     /**
