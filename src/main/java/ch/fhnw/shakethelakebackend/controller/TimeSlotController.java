@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @RestController
 @AllArgsConstructor
@@ -82,7 +81,7 @@ public class TimeSlotController {
         @ApiResponse(responseCode = "404", description = TimeSlotService.TIMESLOT_NOT_FOUND,
             content = @Content(schema = @Schema(implementation = String.class))) })
     @PostMapping("/{id}/move")
-    public Set<TimeSlotDto> moveTimeSlot(@PathVariable Long id, @RequestBody @Valid MoveTimeSlotDto timeSlot) {
+    public List<TimeSlotDto> moveTimeSlot(@PathVariable Long id, @RequestBody @Valid MoveTimeSlotDto timeSlot) {
         return timeSlotService.moveTimeSlot(id, timeSlot);
     }
 

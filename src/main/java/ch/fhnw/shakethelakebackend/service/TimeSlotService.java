@@ -21,6 +21,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
@@ -106,7 +107,7 @@ public class TimeSlotService {
 
     void createNotificationNow(TimeSlot timeSlot, String title, String text) {
         Long id = timeSlot.getId();
-        ScheduledFuture<?> future = firebaseService.createScheduledNotification(
+        firebaseService.createScheduledNotification(
             timeSlot.getTopic(),
             title,
             text,
@@ -115,7 +116,6 @@ public class TimeSlotService {
                 scheduledNotifications.remove(id);
             }
         );
-        scheduledNotifications.put(id, future);
     }
 
     /**
@@ -305,26 +305,50 @@ public class TimeSlotService {
      * @param timeSlot the moveTimeSlotDto
      * @return the moved time slot
      */
-    public Set<TimeSlotDto> moveTimeSlot(Long id, @Valid MoveTimeSlotDto timeSlot) {
-        long addedMinutes = timeSlot.getMinutes();
-
+    public List<TimeSlotDto> moveTimeSlot(Long id, @Valid MoveTimeSlotDto timeSlot) {
         TimeSlot timeSlotToMove = getTimeSlot(id);
-        Boat boat = timeSlotToMove.getBoat();
-        List<TimeSlot> succeedingTimeSlots = boat.getTimeSlots().stream()
-            .filter(t -> t.getFromTime().isAfter(timeSlotToMove.getFromTime())).collect(Collectors.toList());
-        succeedingTimeSlots.add(timeSlotToMove);
-        succeedingTimeSlots.sort(Comparator.comparing(TimeSlot::getFromTime));
+        Long oldDuration = Duration.between(timeSlotToMove.getFromTime(), timeSlotToMove.getUntilTime()).toMinutes();
+        Long newDuration = Duration.between(timeSlot.getFromTime(), timeSlot.getUntilTime()).toMinutes();
+        if (timeSlot.getFromTime().isBefore(timeSlotToMove.getFromTime()) || timeSlot.getUntilTime().isBefore(timeSlotToMove.getUntilTime())) {
+            throw new IllegalArgumentException("Time slot must be moved to a later time");
+        }
+        if (timeSlot.getFromTime().isAfter(timeSlotToMove.getFromTime()) && !newDuration.equals(
+            oldDuration)) {
+            throw new IllegalArgumentException("Time slot cannot be moved to a later time with a different duration");
+        }
 
+        long addedMinutes = timeSlot.getFromTime().equals(timeSlotToMove.getFromTime()) ?
+            Duration.between(timeSlotToMove.getUntilTime(), timeSlot.getUntilTime()).toMinutes()
+             : Duration.between(timeSlotToMove.getFromTime(), timeSlot.getFromTime()).toMinutes();
+
+        List<TimeSlot> succeedingTimeSlots = getSucceedingTimeSlots(timeSlotToMove);
+
+        moveTimeSlot(timeSlotToMove, timeSlot);
         moveTimeSlots(succeedingTimeSlots, addedMinutes);
+        succeedingTimeSlots.add(timeSlotToMove); // add current timeslot for notification
         String title = "Your starting time has changed!";
-        succeedingTimeSlots.forEach(t -> {
+        notifyMove(succeedingTimeSlots, title);
+
+        List<TimeSlot> timeSlots = timeSlotRepository.saveAll(succeedingTimeSlots);
+        List<TimeSlotDto> timeSlotsDtos = timeSlots.stream().map(timeSlotMapper::toDto).toList();
+        return timeSlotsDtos.stream().sorted(Comparator.comparing(TimeSlotDto::getFromTime)).toList();
+
+    }
+
+    private void notifyMove(List<TimeSlot> timeSlots, String title) {
+        timeSlots.forEach(t -> {
             removeNotification(t.getId());
             String text = String.format("Your TimeSlot has been moved to the new Time: %s",
                 t.getFromTime().format(textFormat));
             createNotificationNow(t, title, text);
+            createScheduledNotification(t, 15);
         });
-        List<TimeSlot> timeSlots = timeSlotRepository.saveAll(succeedingTimeSlots);
-        return timeSlots.stream().map(timeSlotMapper::toDto).collect(Collectors.toSet());
+    }
+
+    private static List<TimeSlot> getSucceedingTimeSlots(TimeSlot timeSlotToMove) {
+        Boat boat = timeSlotToMove.getBoat();
+        return boat.getTimeSlots().stream()
+            .filter(t -> t.getFromTime().isAfter(timeSlotToMove.getFromTime())).collect(Collectors.toList());
     }
 
     /**
@@ -340,5 +364,12 @@ public class TimeSlotService {
             t.setFromTime(t.getFromTime().plusMinutes(addedMinutes));
             t.setUntilTime(t.getUntilTime().plusMinutes(addedMinutes));
         });
+    }
+
+    void moveTimeSlot(TimeSlot timeSlotToMove, MoveTimeSlotDto timeSlot) {
+        timeSlotToMove.setOriginalFromTime(timeSlotToMove.getFromTime());
+        timeSlotToMove.setOriginalUntilTime(timeSlotToMove.getUntilTime());
+        timeSlotToMove.setFromTime(timeSlot.getFromTime());
+        timeSlotToMove.setUntilTime(timeSlot.getUntilTime());
     }
 }
