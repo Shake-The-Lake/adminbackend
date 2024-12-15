@@ -3,6 +3,7 @@ stages:          # List of stages for jobs, and their order of execution
   - visualize
   - containerize
   - release
+  - e2e
 
 build-job:       # This job runs in the build stage, which runs first.
   stage: build
@@ -77,4 +78,15 @@ release-job:
   
     only:
         - tags
-   
+
+e2e:
+  stage: e2e
+  trigger:
+    project: ip34-24bb/ip34-24bb_shakethelake/shakethelakee2e
+    branch: main
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always # Trigger when the pipeline is for a merge request
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      when: always # Trigger on pushes (optional)
+
