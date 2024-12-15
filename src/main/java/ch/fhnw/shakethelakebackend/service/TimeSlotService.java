@@ -36,9 +36,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
 
 /**
- *
  * Service for time slots
- *
  */
 @RequiredArgsConstructor
 @Service
@@ -157,11 +155,12 @@ public class TimeSlotService {
         ActivityType activityType = activityTypeService.getActivityType(createTimeSlotDto.getActivityTypeId());
         TimeSlot timeSlot = getTimeSlot(id);
 
-        validateTimeRange(boat, timeSlot, id);
-
         timeSlotMapper.update(createTimeSlotDto, timeSlot);
         timeSlot.setActivityType(activityType);
         timeSlot.setBoat(boat);
+
+        validateTimeRange(boat, timeSlot, id);
+
         timeSlotRepository.save(timeSlot);
 
         removeNotification(id);
@@ -292,8 +291,8 @@ public class TimeSlotService {
         }
 
         //Time slot must be in boats time
-        if (boat.getAvailableFrom().isAfter(timeSlot.getFromTime()) || boat.getAvailableUntil()
-            .isBefore(timeSlot.getUntilTime())) {
+        if (boat.getAvailableFrom().isAfter(timeSlot.getFromTime())
+            || boat.getAvailableUntil().isBefore(timeSlot.getUntilTime())) {
             throw new IllegalArgumentException("Time slot must be in boats available time");
         }
     }
@@ -309,27 +308,33 @@ public class TimeSlotService {
         TimeSlot timeSlotToMove = getTimeSlot(id);
         Long oldDuration = Duration.between(timeSlotToMove.getFromTime(), timeSlotToMove.getUntilTime()).toMinutes();
         Long newDuration = Duration.between(timeSlot.getFromTime(), timeSlot.getUntilTime()).toMinutes();
-        if (timeSlot.getFromTime().isBefore(timeSlotToMove.getFromTime()) || timeSlot.getUntilTime().isBefore(timeSlotToMove.getUntilTime())) {
+        if (timeSlot.getFromTime().isBefore(timeSlotToMove.getFromTime())
+            || timeSlot.getUntilTime().isBefore(timeSlotToMove.getUntilTime())) {
             throw new IllegalArgumentException("Time slot must be moved to a later time");
         }
-        if (timeSlot.getFromTime().isAfter(timeSlotToMove.getFromTime()) && !newDuration.equals(
-            oldDuration)) {
+        if (timeSlot.getFromTime().isAfter(timeSlotToMove.getFromTime()) && !newDuration.equals(oldDuration)) {
             throw new IllegalArgumentException("Time slot cannot be moved to a later time with a different duration");
         }
 
-        long addedMinutes = timeSlot.getFromTime().equals(timeSlotToMove.getFromTime()) ?
-            Duration.between(timeSlotToMove.getUntilTime(), timeSlot.getUntilTime()).toMinutes()
-             : Duration.between(timeSlotToMove.getFromTime(), timeSlot.getFromTime()).toMinutes();
+        long addedMinutes = timeSlot.getFromTime().equals(timeSlotToMove.getFromTime())
+            ? Duration.between(timeSlotToMove.getUntilTime(), timeSlot.getUntilTime()).toMinutes()
+            : Duration.between(timeSlotToMove.getFromTime(), timeSlot.getFromTime()).toMinutes();
 
         List<TimeSlot> succeedingTimeSlots = getSucceedingTimeSlots(timeSlotToMove);
 
         moveTimeSlot(timeSlotToMove, timeSlot);
         moveTimeSlots(succeedingTimeSlots, addedMinutes);
-        succeedingTimeSlots.add(timeSlotToMove); // add current timeslot for notification
+
+        succeedingTimeSlots.add(timeSlotToMove); // add current timeslot for notification and validation
+
+        var boat = timeSlotToMove.getBoat();
+        succeedingTimeSlots.forEach(t -> validateTimeRange(boat, t, t.getId()));
+
+        List<TimeSlot> timeSlots = timeSlotRepository.saveAll(succeedingTimeSlots);
+
         String title = "Your starting time has changed!";
         notifyMove(succeedingTimeSlots, title);
 
-        List<TimeSlot> timeSlots = timeSlotRepository.saveAll(succeedingTimeSlots);
         List<TimeSlotDto> timeSlotsDtos = timeSlots.stream().map(timeSlotMapper::toDto).toList();
         return timeSlotsDtos.stream().sorted(Comparator.comparing(TimeSlotDto::getFromTime)).toList();
 
@@ -339,7 +344,7 @@ public class TimeSlotService {
         timeSlots.forEach(t -> {
             removeNotification(t.getId());
             String text = String.format("Your TimeSlot has been moved to the new Time: %s",
-                t.getFromTime().format(textFormat));
+                    t.getFromTime().format(textFormat));
             createNotificationNow(t, title, text);
             createScheduledNotification(t, 15);
         });
