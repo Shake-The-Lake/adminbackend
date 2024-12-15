@@ -1,10 +1,13 @@
 package ch.fhnw.shakethelakebackend.controller;
 
+import ch.fhnw.shakethelakebackend.model.dto.BookingDto;
 import ch.fhnw.shakethelakebackend.model.dto.CreateTimeSlotSubscription;
 import ch.fhnw.shakethelakebackend.model.dto.CreateUserDto;
 import ch.fhnw.shakethelakebackend.model.dto.expo.ExpoNotification;
-import ch.fhnw.shakethelakebackend.service.ExpoNotificationService;
+import ch.fhnw.shakethelakebackend.service.BookingService;
+import ch.fhnw.shakethelakebackend.service.TimeSlotSubscriptionService;
 import ch.fhnw.shakethelakebackend.service.FirebaseService;
+import com.google.firebase.auth.FirebaseToken;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,7 +17,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -23,7 +26,8 @@ import java.util.Optional;
 public class UserController {
 
     private final FirebaseService firebaseService;
-    private final ExpoNotificationService expoNotificationService;
+    private final TimeSlotSubscriptionService timeSlotSubscriptionService;
+    private final BookingService bookingService;
 
     @Operation(summary = "Create a user", description = "Creates a user")
     @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Successfully created a user"),
@@ -38,14 +42,20 @@ public class UserController {
 
     @PostMapping("/subscribe/time-slot")
     public void subscribeForTimeSlot(Authentication authentication, CreateTimeSlotSubscription dto) {
-        expoNotificationService.subscribeToTimeSlot(
+        timeSlotSubscriptionService.subscribeToTimeSlot(
                 authentication,
                 Long.parseLong(dto.getTimeSlotId()), dto.getExpoToken()
         );
     }
 
+    @GetMapping("/bookings")
+    public List<BookingDto> getAllBookingsForUser(Authentication authentication) {
+        String uid = ((FirebaseToken) authentication.getCredentials()).getUid();
+        return bookingService.getAllBookingsOfUser(uid);
+    }
+
     @PostMapping("/send-notification")
     public void sendNotification(ExpoNotification notification) {
-        expoNotificationService.sendTestNotificationToAllDevices(notification);
+        timeSlotSubscriptionService.sendTestNotificationToAllDevices(notification);
     }
 }

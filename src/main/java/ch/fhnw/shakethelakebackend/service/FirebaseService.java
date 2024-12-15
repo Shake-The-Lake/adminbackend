@@ -39,7 +39,7 @@ public class FirebaseService {
     private final EventService eventService;
     private final FirebaseMessaging firebaseMessaging;
     private final TaskScheduler taskScheduler;
-    private final ExpoNotificationService expoNotificationService;
+    private final TimeSlotSubscriptionService timeSlotSubscriptionService;
 
     /**
      * Authenticate a user with a Firebase token

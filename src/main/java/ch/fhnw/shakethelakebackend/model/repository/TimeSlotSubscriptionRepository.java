@@ -10,4 +10,5 @@ import java.util.UUID;
 @Repository
 public interface TimeSlotSubscriptionRepository extends JpaRepository<TimeSlotSubscription, UUID> {
     List<TimeSlotSubscription> findAllByTimeSlotId(long timeSlotId);
+    boolean existsByTimeSlotIdAndFirebaseUserId(long timeSlotId, String firebaseUserId);
 }

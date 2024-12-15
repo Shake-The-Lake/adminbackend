@@ -21,6 +21,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
@@ -50,7 +51,7 @@ public class TimeSlotService {
     private final ActivityTypeMapper activityTypeMapper;
     private final ActivityTypeService activityTypeService;
     private final FirebaseService firebaseService;
-    private final ExpoNotificationService expoNotificationService;
+    private final TimeSlotSubscriptionService timeSlotSubscriptionService;
 
     private final Map<Long, ScheduledFuture<?>> scheduledNotifications = new ConcurrentHashMap<>();
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm");
@@ -60,7 +61,10 @@ public class TimeSlotService {
      */
     @EventListener(ApplicationReadyEvent.class)
     public void bootstrap() {
-        timeSlotRepository.findAll().forEach(this::createNotification);
+        // FIXME this should call timeSlotRepository.findAllByFromTimeBefore(LocalTime.now()) instead of findAll()
+        timeSlotRepository
+                .findByFromTimeBefore(LocalTime.now())
+                .forEach(this::createNotification);
     }
 
     /**
@@ -88,7 +92,7 @@ public class TimeSlotService {
         }
 
         Long id = timeSlot.getId();
-        var future = expoNotificationService.createScheduledTimeSlotNotification(
+        var future = timeSlotSubscriptionService.createScheduledTimeSlotNotification(
             ExpoNotification.builder()
                     .title("You have a booking in 15 minutes")
                     .body("Make your self ready for the upcoming ride")
