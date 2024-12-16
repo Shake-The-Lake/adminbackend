@@ -1,5 +1,6 @@
 package ch.fhnw.shakethelakebackend.config;
 
+import com.google.firebase.auth.FirebaseToken;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +17,8 @@ class SecurityAuditorAware implements AuditorAware<String> {
             return Optional.empty();
         }
 
-        return Optional.ofNullable(authentication.getName());
+        var userId = ((FirebaseToken) authentication.getCredentials()).getUid();
+
+        return Optional.of("%s|%s" .formatted(authentication.getName(), userId));
     }
 }
