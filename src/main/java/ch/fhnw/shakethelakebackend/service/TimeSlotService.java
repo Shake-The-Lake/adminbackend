@@ -61,7 +61,6 @@ public class TimeSlotService {
      */
     @EventListener(ApplicationReadyEvent.class)
     public void bootstrap() {
-        // FIXME this should call timeSlotRepository.findAllByFromTimeBefore(LocalTime.now()) instead of findAll()
         timeSlotRepository
                 .findByFromTimeBefore(LocalTime.now())
                 .forEach(this::createNotification);
@@ -103,27 +102,7 @@ public class TimeSlotService {
                 scheduledNotifications.remove(id);
             }
         );
-//        FIXME Sending of firebase notifictions is currently not supported
-//        ScheduledFuture<?> future = firebaseService.createScheduledNotification(
-//            timeSlot.getTopic(),
-//            "You have a booking in 15 minutes",
-//            "Make your self ready for the upcoming ride",
-//            notificationTime,
-//            () -> {
-//                scheduledNotifications.remove(id);
-//            }
-//        );
         scheduledNotifications.put(id, future);
-    }
-
-    /**
-     * Get all users which have a booking on a time slot to send them a notification
-     * @param timeSlotId
-     * @return
-     */
-    public List<Long> getAllUsersForTimeSlot(Long timeSlotId) {
-        TimeSlot timeSlot = getTimeSlot(timeSlotId);
-        return timeSlot.getBookings().stream().map(booking -> booking.getPerson().getId()).collect(Collectors.toList());
     }
 
     /**

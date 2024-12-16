@@ -126,8 +126,8 @@ public class BookingService {
 
     /**
      * Get all bookings by specif user id
-     * @param userId
-     * @return
+     * @param userId id of user
+     * @return All bookings of specific user
      */
     public List<BookingDto> getAllBookingsOfUser(String userId) {
         return bookingRepository.findAll()
@@ -185,7 +185,7 @@ public class BookingService {
      * @return BookingDto with the given id and details
      */
     public BookingDto getBookingWithDetails(Long id, Optional<String> expand) {
-            Booking booking = getBooking(id);
+        Booking booking = getBooking(id);
         BookingDto bookingDto = bookingMapper.toDto(booking);
 
         expander.applyExpansion(expand, "person", () -> {

@@ -38,7 +38,8 @@ public class TimeSlotSubscriptionService {
         log.info("Time slot id: {}", timeSlotId);
 
         return taskScheduler.schedule(() -> {
-            List<ExpoNotification> notifications = timeSlotSubscriptionRepository.findAllByTimeSlotId(timeSlotId).stream()
+            List<ExpoNotification> notifications = timeSlotSubscriptionRepository
+                    .findAllByTimeSlotId(timeSlotId).stream()
                     .map(subscription -> {
                         ExpoNotification notificationCopy = new ExpoNotification(notification);
                         notificationCopy.setTo(subscription.getExpoToken());

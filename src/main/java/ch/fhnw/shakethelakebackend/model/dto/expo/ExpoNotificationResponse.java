@@ -1,6 +1,10 @@
 package ch.fhnw.shakethelakebackend.model.dto.expo;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.Map;
@@ -11,6 +15,6 @@ import java.util.Map;
 @AllArgsConstructor
 @Builder
 public class ExpoNotificationResponse {
-    Map<String, Object> data;
-    List<Map<String, String>> errors;
+    private Map<String, Object> data;
+    private List<Map<String, String>> errors;
 }

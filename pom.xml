@@ -104,19 +104,6 @@
             <artifactId>jjwt-jackson</artifactId>
             <version>0.11.5</version>
         </dependency>
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/net.javacrumbs.shedlock/shedlock-spring &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>net.javacrumbs.shedlock</groupId>-->
-<!--            <artifactId>shedlock-spring</artifactId>-->
-<!--            <version>6.0.2</version>-->
-<!--        </dependency>-->
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/net.javacrumbs.shedlock/shedlock-provider-jdbc-template &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>net.javacrumbs.shedlock</groupId>-->
-<!--            <artifactId>shedlock-provider-jdbc-template</artifactId>-->
-<!--            <version>6.0.2</version>-->
-<!--        </dependency>-->
-
     </dependencies>
 
     <build>

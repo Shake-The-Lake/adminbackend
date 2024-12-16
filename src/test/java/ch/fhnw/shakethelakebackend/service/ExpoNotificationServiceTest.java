@@ -7,16 +7,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.web.client.RestClient;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class ExpoNotificationServiceTest {
@@ -26,36 +26,38 @@ public class ExpoNotificationServiceTest {
     @Mock
     private ExpoNotificationService expoNotificationService;
 
-    @Test
-    void givenTimeSlotAndScheduler_whenSchedulerTriggers_thenNotificationsAreSent() throws InterruptedException {
+    private final long timeSlotId = 1L;
 
-        // GIVEN subscription with different time slot ids
-        var timeSlotId = 1L;
-        var expoToken1 = "ExpoToken[1]";
-        var expoToken2 = "ExpoToken[2]";
-        var expoToken3 = "ExpoToken[3]";
+    void before() {
         when(timeSlotSubscriptionRepository.findAllByTimeSlotId(timeSlotId)).thenReturn(
                 Stream.of(
                         TimeSlotSubscription.builder()
                                 .id(UUID.randomUUID())
                                 .timeSlotId(timeSlotId)
                                 .firebaseUserId("<user1>")
-                                .expoToken(expoToken1)
+                                .expoToken("ExpoToken[1]")
                                 .build(),
                         TimeSlotSubscription.builder()
                                 .id(UUID.randomUUID())
                                 .timeSlotId(2L)
                                 .firebaseUserId("<user3>")
-                                .expoToken(expoToken3)
+                                .expoToken("ExpoToken[3]")
                                 .build(),
                         TimeSlotSubscription.builder()
                                 .id(UUID.randomUUID())
                                 .timeSlotId(timeSlotId)
                                 .firebaseUserId("<user2>")
-                                .expoToken(expoToken2)
+                                .expoToken("ExpoToken[2]")
                                 .build()
                 ).toList()
         );
+    }
+
+    @Test
+    void givenTimeSlotAndSchedulerWhenSchedulerTriggersThenNotificationsAreSent() throws InterruptedException {
+
+        // GIVEN subscription with different time slot ids
+        before();
         var scheduler = new ThreadPoolTaskScheduler();
         scheduler.initialize();
         var notificationService = new TimeSlotSubscriptionService(
