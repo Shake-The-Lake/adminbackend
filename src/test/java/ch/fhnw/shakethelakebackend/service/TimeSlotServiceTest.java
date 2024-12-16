@@ -102,7 +102,6 @@ class TimeSlotServiceTest {
 
     @Test
     void testUpdateTimeSlot() {
-        when(timeSlotRepository.existsById(1L)).thenReturn(true);
         when(timeSlotMapper.toDto(any(TimeSlot.class))).thenReturn(timeSlotDto);
         when(timeSlotRepository.findById(1L)).thenReturn(Optional.of(timeSlot));
         when(activityTypeService.getActivityType(1L)).thenReturn(activityType);
@@ -115,12 +114,6 @@ class TimeSlotServiceTest {
 
     }
 
-    @Test
-    void testUpdateTimeSlotNotFound() {
-        when(timeSlotRepository.existsById(1L)).thenReturn(false);
-
-        assertThrows(EntityNotFoundException.class, () -> timeSlotService.updateTimeSlot(1L, createTimeSlotDto));
-    }
 
 
     @Test

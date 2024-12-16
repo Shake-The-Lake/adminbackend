@@ -151,15 +151,16 @@ public class TimeSlotService {
         Boat boat = boatService.getBoat(createTimeSlotDto.getBoatId());
         ActivityType activityType = activityTypeService.getActivityType(createTimeSlotDto.getActivityTypeId());
 
+        if (!(timeSlot.getFromTime().equals(createTimeSlotDto.getFromTime()))) {
+            timeSlot.setOriginalFromTime(timeSlot.getFromTime());
+        }
+        if (!(timeSlot.getUntilTime().equals(createTimeSlotDto.getUntilTime()))) {
+            timeSlot.setOriginalUntilTime(timeSlot.getUntilTime());
+        }
+
         timeSlotMapper.update(createTimeSlotDto, timeSlot);
         timeSlot.setActivityType(activityType);
         timeSlot.setBoat(boat);
-        if (!(timeSlot.getFromTime().equals(createTimeSlotDto.getFromTime()))){
-            timeSlot.setOriginalFromTime(createTimeSlotDto.getFromTime());
-        }
-        if (!(timeSlot.getUntilTime().equals(createTimeSlotDto.getUntilTime()))){
-            timeSlot.setOriginalUntilTime(createTimeSlotDto.getUntilTime());
-        }
 
         validateTimeRange(boat, timeSlot, id);
 
