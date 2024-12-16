@@ -125,6 +125,19 @@ public class BookingService {
     }
 
     /**
+     * Get all bookings by specif user id
+     * @param userId id of user
+     * @return All bookings of specific user
+     */
+    public List<BookingDto> getAllBookingsOfUser(String userId) {
+        return bookingRepository.findAll()
+                .stream()
+                .filter(b -> b.getCreatedBy().equals(userId))
+                .map(bookingMapper::toDto)
+                .toList();
+    }
+
+    /**
      *
      * Update a booking
      *

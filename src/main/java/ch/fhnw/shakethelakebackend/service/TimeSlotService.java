@@ -6,6 +6,7 @@ import ch.fhnw.shakethelakebackend.model.dto.BookingDto;
 import ch.fhnw.shakethelakebackend.model.dto.CreateTimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.dto.MoveTimeSlotDto;
 import ch.fhnw.shakethelakebackend.model.dto.TimeSlotDto;
+import ch.fhnw.shakethelakebackend.model.dto.expo.ExpoNotification;
 import ch.fhnw.shakethelakebackend.model.entity.ActivityType;
 import ch.fhnw.shakethelakebackend.model.entity.Boat;
 import ch.fhnw.shakethelakebackend.model.entity.TimeSlot;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -53,6 +55,7 @@ public class TimeSlotService {
     private final ActivityTypeMapper activityTypeMapper;
     private final ActivityTypeService activityTypeService;
     private final FirebaseService firebaseService;
+    private final TimeSlotSubscriptionService timeSlotSubscriptionService;
 
     private final Map<Long, ScheduledFuture<?>> scheduledNotifications = new ConcurrentHashMap<>();
     private final DateTimeFormatter textFormat = DateTimeFormatter.ofPattern("HH-mm");
@@ -62,7 +65,9 @@ public class TimeSlotService {
      */
     @EventListener(ApplicationReadyEvent.class)
     public void bootstrap() {
-        timeSlotRepository.findAll().forEach(t -> createScheduledNotification(t, 15));
+        timeSlotRepository
+                .findByFromTimeBefore(LocalTime.now())
+                .forEach(n -> createScheduledNotification(n, 15));
     }
 
     /**
@@ -91,14 +96,16 @@ public class TimeSlotService {
         }
 
         Long id = timeSlot.getId();
-        ScheduledFuture<?> future = firebaseService.createScheduledNotification(
-            timeSlot.getTopic(),
-            "You have a booking in " + minutes + " minutes",
-            "Make yourself ready for the upcoming ride",
-            notificationTime,
-            () -> {
-                scheduledNotifications.remove(id);
-            }
+        var future = timeSlotSubscriptionService.createScheduledTimeSlotNotification(
+                ExpoNotification.builder()
+                        .title("You have a booking in 15 minutes")
+                        .body("Make your self ready for the upcoming ride")
+                        .build(),
+                id,
+                notificationTime,
+                () -> {
+                    scheduledNotifications.remove(id);
+                }
         );
         scheduledNotifications.put(id, future);
     }
