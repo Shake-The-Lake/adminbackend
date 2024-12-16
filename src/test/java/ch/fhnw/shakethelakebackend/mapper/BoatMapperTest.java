@@ -31,7 +31,7 @@ class BoatMapperTest {
     @Mock
     private TimeSlotMapper timeSlotMapper;
     @InjectMocks
-    private BoatMapper boatMapper = Mappers.getMapper(BoatMapper.class);
+    private final BoatMapper boatMapper = Mappers.getMapper(BoatMapper.class);
 
 
     private Boat boat;

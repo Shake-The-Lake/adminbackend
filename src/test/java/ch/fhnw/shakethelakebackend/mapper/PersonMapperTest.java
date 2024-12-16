@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 @Import(FirebaseConfigTest.class)
 class PersonMapperTest {
     @InjectMocks
-    private PersonMapper personMapper = Mappers.getMapper(PersonMapper.class);
+    private final PersonMapper personMapper = Mappers.getMapper(PersonMapper.class);
 
     @Test
     void testToEntity() {

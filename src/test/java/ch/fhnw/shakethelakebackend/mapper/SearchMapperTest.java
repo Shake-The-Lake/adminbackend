@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class SearchMapperTest {
 
     @InjectMocks
-    private SearchMapper searchMapper = Mappers.getMapper(SearchMapper.class);
+    private final SearchMapper searchMapper = Mappers.getMapper(SearchMapper.class);
 
     @Test
     void mapToSearchDto() {

@@ -39,7 +39,7 @@ public class Event extends BaseEntityAudit {
     private String title;
 
     @NotNull
-    @Column(name = "event_description")
+    @Column(name = "event_description", columnDefinition = "TEXT")
     private String description;
 
     @NotNull

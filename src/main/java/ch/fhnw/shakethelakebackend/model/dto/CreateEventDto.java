@@ -26,5 +26,4 @@ public class CreateEventDto implements Serializable {
     @NotNull
     private LocalDate date;
 
-
 }

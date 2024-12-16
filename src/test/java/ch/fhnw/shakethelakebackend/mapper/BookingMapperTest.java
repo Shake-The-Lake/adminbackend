@@ -29,7 +29,7 @@ class BookingMapperTest {
     @Mock
     private TimeSlotExtendedMapper timeSlotMapper;
     @InjectMocks
-    private BookingMapper bookingMapper = Mappers.getMapper(BookingMapper.class);
+    private final BookingMapper bookingMapper = Mappers.getMapper(BookingMapper.class);
 
     @Test
     void toEntityHandlesNull() {
