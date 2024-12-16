@@ -1,8 +1,13 @@
 package ch.fhnw.shakethelakebackend.model.entity;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,8 +30,22 @@ import java.util.Date;
 @Where(clause = "deleted=false")
 public class BaseEntityAudit {
     @CreatedBy
-    private String createdBy;
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "firebaseToken", column = @Column(name = "created_by_user_id")),
+        @AttributeOverride(name = "firebaseUserName", column = @Column(name = "created_by_user_name"))
+    })
+    private User createdByUser;
+
     @LastModifiedBy
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "firebaseToken", column = @Column(name = "updated_by_user_id")),
+        @AttributeOverride(name = "firebaseUserName", column = @Column(name = "updated_by_user_name"))
+    })
+    private User updatedByUser;
+
+    private String createdBy;
     private String updatedBy;
 
     @CreationTimestamp
@@ -38,5 +57,20 @@ public class BaseEntityAudit {
     private Date updatedAt;
 
     private boolean deleted = Boolean.FALSE;
+
+    @PrePersist
+    public void prePersist() {
+        if (createdByUser != null) {
+            this.createdBy = createdByUser.getFirebaseUserName();
+            preUpdate();
+        }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        if (updatedByUser != null) {
+            this.updatedBy = updatedByUser.getFirebaseUserName();
+        }
+    }
 
 }
