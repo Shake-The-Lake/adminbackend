@@ -147,17 +147,19 @@ public class TimeSlotService {
      * @return TimeSlotDto updated from the given CreateTimeSlotDto
      */
     public TimeSlotDto updateTimeSlot(long id, CreateTimeSlotDto createTimeSlotDto) {
-        if (!timeSlotRepository.existsById(id)) {
-            throw new EntityNotFoundException(TIMESLOT_NOT_FOUND);
-        }
-
+        TimeSlot timeSlot = getTimeSlot(id);
         Boat boat = boatService.getBoat(createTimeSlotDto.getBoatId());
         ActivityType activityType = activityTypeService.getActivityType(createTimeSlotDto.getActivityTypeId());
-        TimeSlot timeSlot = getTimeSlot(id);
 
         timeSlotMapper.update(createTimeSlotDto, timeSlot);
         timeSlot.setActivityType(activityType);
         timeSlot.setBoat(boat);
+        if (!(timeSlot.getFromTime().equals(createTimeSlotDto.getFromTime()))){
+            timeSlot.setOriginalFromTime(createTimeSlotDto.getFromTime());
+        }
+        if (!(timeSlot.getUntilTime().equals(createTimeSlotDto.getUntilTime()))){
+            timeSlot.setOriginalUntilTime(createTimeSlotDto.getUntilTime());
+        }
 
         validateTimeRange(boat, timeSlot, id);
 
