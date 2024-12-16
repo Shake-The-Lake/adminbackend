@@ -327,17 +327,13 @@ public class TimeSlotService {
 
         succeedingTimeSlots.add(timeSlotToMove); // add current timeslot for notification and validation
 
-        var boat = timeSlotToMove.getBoat();
+        Boat boat = timeSlotToMove.getBoat();
         succeedingTimeSlots.forEach(t -> validateTimeRange(boat, t, t.getId()));
 
         List<TimeSlot> timeSlots = timeSlotRepository.saveAll(succeedingTimeSlots);
-
-        String title = "Your starting time has changed!";
-        notifyMove(succeedingTimeSlots, title);
-
+        notifyMove(succeedingTimeSlots, "Your starting time has changed!");
         List<TimeSlotDto> timeSlotsDtos = timeSlots.stream().map(timeSlotMapper::toDto).toList();
         return timeSlotsDtos.stream().sorted(Comparator.comparing(TimeSlotDto::getFromTime)).toList();
-
     }
 
     private void notifyMove(List<TimeSlot> timeSlots, String title) {
