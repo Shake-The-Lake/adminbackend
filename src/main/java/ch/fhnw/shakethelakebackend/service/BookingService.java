@@ -132,7 +132,8 @@ public class BookingService {
     public List<BookingDto> getAllBookingsOfUser(String userId) {
         return bookingRepository.findAll()
                 .stream()
-                .filter(booking -> booking.getCreatedByUser().getFirebaseToken().equals(userId) || booking.getUpdatedByUser().getFirebaseToken().equals(userId))
+                .filter(booking -> booking.getCreatedByUser().getFirebaseToken().equals(userId)
+                    || booking.getUpdatedByUser().getFirebaseToken().equals(userId))
                 .map(bookingMapper::toDto)
                 .toList();
     }
