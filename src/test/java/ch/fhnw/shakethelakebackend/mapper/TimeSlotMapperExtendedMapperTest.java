@@ -16,9 +16,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.Collections;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -28,8 +30,11 @@ public class TimeSlotMapperExtendedMapperTest {
 
     @Mock
     private BoatMapper boatMapper;
+    @Mock
+    private TimeSlotExtendedMapper mapper;
+
     @InjectMocks
-    private TimeSlotExtendedMapper timeSlotExtendedMapper = Mappers.getMapper(TimeSlotExtendedMapper.class);
+    private final TimeSlotExtendedMapper timeSlotExtendedMapper = Mappers.getMapper(TimeSlotExtendedMapper.class);
 
     @Test
     void testTimeSlotMapperWithBoatName() {
@@ -62,5 +67,74 @@ public class TimeSlotMapperExtendedMapperTest {
         assertEquals(Set.of(1L), timeSlotDto.getBookingIds());
     }
 
+    @Test
+    void testToDtoWithBoatNullTimeSlot() {
+        TimeSlotDto result = mapper.toDtoWithBoat(null);
+        assertNull(result, "Result should be null when input TimeSlot is null");
+    }
 
+    @Test
+    void testToDtoWithBoatEmptyBookingsSet() {
+        Boat boat = Boat.builder().id(1L).name("Boat").build();
+        TimeSlot timeSlot = TimeSlot.builder().boat(boat).bookings(Collections.emptySet()).build();
+        BoatDto boatDto = BoatDto.builder().id(1L).name("Boat").build();
+
+        when(boatMapper.toDto(boat)).thenReturn(boatDto);
+
+        TimeSlotDto result = mapper.toDtoWithBoat(timeSlot);
+
+        assertNull(result);
+    }
+
+    @Test
+    void testToDtoWithBoatNullBoat() {
+        TimeSlot timeSlot = TimeSlot.builder().boat(null).build();
+
+        TimeSlotDto result = mapper.toDtoWithBoat(timeSlot);
+
+        assertNull(result);
+    }
+
+    @Test
+    void testToDtoWithBoatNullBookingsSet() {
+        Boat boat = Boat.builder().id(1L).name("Boat").build();
+        TimeSlot timeSlot = TimeSlot.builder().boat(boat).bookings(null).build();
+        BoatDto boatDto = BoatDto.builder().id(1L).name("Boat").build();
+
+        when(boatMapper.toDto(boat)).thenReturn(boatDto);
+
+        TimeSlotDto result = mapper.toDtoWithBoat(timeSlot);
+
+        assertNull(result);
+    }
+
+    @Test
+    void testToDtoWithBoatBookingWithNullFields() {
+        Boat boat = Boat.builder().id(1L).name("Boat").build();
+        Booking booking = Booking.builder().id(null).build(); // Booking with null ID
+        TimeSlot timeSlot = TimeSlot.builder().boat(boat).bookings(Set.of(booking)).build();
+        BoatDto boatDto = BoatDto.builder().id(1L).name("Boat").build();
+
+        when(boatMapper.toDto(boat)).thenReturn(boatDto);
+
+        TimeSlotDto result = mapper.toDtoWithBoat(timeSlot);
+
+        assertNull(result);
+    }
+
+    @Test
+    void testToDtoWithBoatPartialActivityType() {
+        Boat boat = Boat.builder().id(1L).name("Boat").build();
+        TimeSlot timeSlot = TimeSlot.builder()
+            .boat(boat)
+            .activityType(null) // Missing ActivityType
+            .build();
+        BoatDto boatDto = BoatDto.builder().id(1L).name("Boat").build();
+
+        when(boatMapper.toDto(boat)).thenReturn(boatDto);
+
+        TimeSlotDto result = mapper.toDtoWithBoat(timeSlot);
+
+        assertNull(result);
+    }
 }

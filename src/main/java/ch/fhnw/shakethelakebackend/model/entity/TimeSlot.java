@@ -39,6 +39,12 @@ public class TimeSlot extends BaseEntityAudit {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(name = "original_from_time", columnDefinition = "TIME")
+    private LocalTime originalFromTime;
+
+    @Column(name = "original_until_time", columnDefinition = "TIME")
+    private LocalTime originalUntilTime;
+
     @NotNull
     @Column(name = "from_time", columnDefinition = "TIME")
     private LocalTime fromTime;

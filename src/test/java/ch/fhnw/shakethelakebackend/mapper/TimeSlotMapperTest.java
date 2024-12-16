@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @Import(FirebaseConfigTest.class)
 class TimeSlotMapperTest {
     @InjectMocks
-    private TimeSlotMapper timeSlotMapper = Mappers.getMapper(TimeSlotMapper.class);
+    private final TimeSlotMapper timeSlotMapper = Mappers.getMapper(TimeSlotMapper.class);
 
     @Test
     void testToEntity() {

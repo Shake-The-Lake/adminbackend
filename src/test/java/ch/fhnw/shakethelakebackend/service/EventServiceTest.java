@@ -6,6 +6,8 @@ import ch.fhnw.shakethelakebackend.model.entity.Event;
 import ch.fhnw.shakethelakebackend.model.mapper.BoatMapper;
 import ch.fhnw.shakethelakebackend.model.mapper.EventMapper;
 import ch.fhnw.shakethelakebackend.model.repository.EventRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +36,9 @@ class EventServiceTest {
 
     @Mock
     private EventRepository eventRepository;
+
+    @Mock
+    private ObjectMapper objectMapper;
 
     @Mock
     private EventMapper eventMapper;
@@ -88,10 +93,11 @@ class EventServiceTest {
     }
 
     @Test
-    void createEventSavesAndReturnsEventDto() {
+    void createEventSavesAndReturnsEventDto() throws JsonProcessingException {
         when(eventMapper.toEntity(any())).thenReturn(event);
-        when(eventRepository.save(event)).thenReturn(event).thenReturn(event);
+        when(eventRepository.save(event)).thenReturn(event);
         when(eventMapper.toDto(event)).thenReturn(eventDto);
+        when(objectMapper.writeValueAsString(any())).thenReturn("{\"id\":1,\"secret\":\"test\"}");
 
         EventDto result = eventService.createEvent(CreateEventDto.builder().build());
 

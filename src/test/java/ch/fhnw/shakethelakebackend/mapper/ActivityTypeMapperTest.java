@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Import(FirebaseConfigTest.class)
 class ActivityTypeMapperTest {
     @InjectMocks
-    private ActivityTypeMapper mapper = Mappers.getMapper(ActivityTypeMapper.class);
+    private final ActivityTypeMapper mapper = Mappers.getMapper(ActivityTypeMapper.class);
 
     private ActivityType activityType;
     private ActivityTypeDto activityTypeDto;
