@@ -58,8 +58,8 @@ public class UserController {
         return bookingService.getAllBookingsOfUser(uid);
     }
 
-    @PostMapping("/send-notification")
-    public void sendNotification(ExpoNotification notification) {
-        timeSlotSubscriptionService.sendTestNotificationToAllDevices(notification);
+    @PostMapping("/send-notification/{timeSlotId}")
+    public void sendNotification(ExpoNotification notification, Long timeSlotId) {
+        timeSlotSubscriptionService.sendAdHocNotification(notification, timeSlotId);
     }
 }
