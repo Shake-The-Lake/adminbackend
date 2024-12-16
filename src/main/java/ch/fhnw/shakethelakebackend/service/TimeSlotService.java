@@ -111,15 +111,12 @@ public class TimeSlotService {
     }
 
     void createNotificationNow(TimeSlot timeSlot, String title, String text) {
-        Long id = timeSlot.getId();
-        firebaseService.createScheduledNotification(
-            timeSlot.getTopic(),
-            title,
-            text,
-            null,
-            () -> {
-                scheduledNotifications.remove(id);
-            }
+        timeSlotSubscriptionService.sendAdHocNotification(
+                ExpoNotification.builder()
+                        .title(title)
+                        .body(text)
+                        .build(),
+                timeSlot.getId()
         );
     }
 

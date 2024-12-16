@@ -14,7 +14,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.stream.Collectors;
 
@@ -38,14 +37,7 @@ public class TimeSlotSubscriptionService {
         log.info("Time slot id: {}", timeSlotId);
 
         return taskScheduler.schedule(() -> {
-            List<ExpoNotification> notifications = timeSlotSubscriptionRepository
-                    .findAllByTimeSlotId(timeSlotId).stream()
-                    .map(subscription -> {
-                        ExpoNotification notificationCopy = new ExpoNotification(notification);
-                        notificationCopy.setTo(subscription.getExpoToken());
-                        return notificationCopy;
-                    }).collect(Collectors.toList());
-            expoNotificationService.sendNotification(notifications);
+            sendAdHocNotification(notification, timeSlotId);
             onCompletion.run();
         }, instant);
     }
@@ -62,12 +54,12 @@ public class TimeSlotSubscriptionService {
         }
     }
 
-    // TODO: Remove me when feature is implemented
-    public void sendTestNotificationToAllDevices(ExpoNotification notification) {
-        List<ExpoNotification> notifications = timeSlotSubscriptionRepository.findAll().stream()
-                .map(userId -> {
+    public void sendAdHocNotification(ExpoNotification notification, Long timeSlotId) {
+        var notifications = timeSlotSubscriptionRepository
+                .findAllByTimeSlotId(timeSlotId).stream()
+                .map(subscription -> {
                     ExpoNotification notificationCopy = new ExpoNotification(notification);
-                    notificationCopy.setTo(userId.getExpoToken());
+                    notificationCopy.setTo(subscription.getExpoToken());
                     return notificationCopy;
                 }).collect(Collectors.toList());
         expoNotificationService.sendNotification(notifications);
