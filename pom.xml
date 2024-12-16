@@ -185,6 +185,7 @@
                         <exclude>ch/fhnw/shakethelakebackend/*.class</exclude>
                         <exclude>ch/fhnw/shakethelakebackend/service/FirebaseService.class</exclude>
                         <exclude>ch/fhnw/shakethelakebackend/service/TimeSlotService.class</exclude>
+                        <exclude>ch/fhnw/shakethelakebackend/service/ExpoNotificationService.class</exclude>
                         <exclude>io/truongbn/github/jacoco/JacocoApplication.class</exclude>
                     </excludes>
                 </configuration>
